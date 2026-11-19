@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f8f6f0;
+  --color-ink: #202b24;
+  --color-muted: #526056;
+  --color-line: #dedfd5;
+  --color-pine: #213e32;
+  --color-pine-hover: #305345;
+  --color-sage: #e7ede4;
+  --color-clay: #8b4330;
+  --color-blush: #f5e9e1;
+  --font-display: "Iowan Old Style", Georgia, "Times New Roman", serif;
+  --font-sans: "Segoe UI", system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply min-h-dvh bg-paper font-sans text-ink antialiased;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-4 outline-clay;
+  }
+
+  button:not(:disabled) {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-2xl border border-line bg-white;
+  }
+
+  .brand-mark {
+    @apply relative inline-block size-8 shrink-0 rounded-full bg-pine;
+  }
+
+  .brand-mark::before,
+  .brand-mark::after {
+    @apply absolute top-[0.58rem] size-[0.66rem] rounded-full border border-white content-[''];
+  }
+
+  .brand-mark::before {
+    @apply left-[0.47rem];
+  }
+
+  .brand-mark::after {
+    @apply right-[0.47rem];
+  }
+}
