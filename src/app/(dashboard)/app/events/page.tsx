@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { EventList } from "../_components/wedding-lists";
-import { demoWedding } from "../_data/demo-wedding";
+import { demoWedding } from "@/app/_data/demo-wedding";
 
 export const metadata: Metadata = { title: "Events" };
 

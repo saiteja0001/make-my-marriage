@@ -1,3 +1,4 @@
+// Shared fixture for the public landing previews and the demo workspace.
 export type WeddingEvent = {
   id: string;
   name: string;

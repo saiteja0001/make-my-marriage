@@ -1,0 +1,527 @@
+@font-face {
+  font-family: Manrope;
+  src: url("./_fonts/manrope.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Playfair Display";
+  src: url("./_fonts/playfair-display.woff2") format("woff2");
+  font-weight: 500 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Playfair Display";
+  src: url("./_fonts/playfair-display-italic.woff2") format("woff2");
+  font-weight: 500 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+.page {
+  --ink: #252c23;
+  --muted: #56574e;
+  --green: #1e4b3e;
+  --dark: #143629;
+  --ochre: #80571e;
+  --paper: #fff8f3;
+  --soft: #faf1e8;
+  --line: #e3d9cb;
+  --serif: "Playfair Display", Georgia, serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: Manrope, "Segoe UI", sans-serif;
+}
+
+.page :focus-visible { outline-color: var(--ochre); }
+.page section[id], .weddingEvents { scroll-margin-top: 1rem; }
+
+.shell, .headerInner {
+  width: min(86rem, calc(100% - clamp(2rem, 6vw, 6rem)));
+  margin-inline: auto;
+}
+
+.skipLink {
+  position: absolute;
+  z-index: 2;
+  inset: 0.5rem auto auto 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: white;
+  transform: translateY(-150%);
+}
+.skipLink:focus { transform: none; }
+
+.header { border-bottom: 1px solid var(--line); background: #fffdfa; }
+.headerInner {
+  display: grid;
+  min-height: 4.5rem;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1.25rem;
+  padding-block: 0.65rem;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  justify-self: start;
+  color: var(--dark);
+  font: 700 1.23rem/1.2 var(--serif);
+}
+
+.brandMark {
+  display: grid;
+  width: 2.05rem;
+  height: 2.05rem;
+  flex: 0 0 2.05rem;
+  place-items: center;
+  border-radius: 0.4rem;
+  background: var(--green);
+  color: #f1d18a;
+  font: 700 1.32rem/1 Georgia, serif;
+}
+
+.sectionNav, .accountNav, .footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: clamp(0.7rem, 2vw, 1.5rem);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+.accountNav { justify-self: end; }
+
+.sectionNav a:hover, .accountNav > a:first-child:hover, .footer a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.primaryAction, .outlinedAction, .goldAction, .lightAction {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.68rem 1.14rem;
+  border: 1px solid transparent;
+  border-radius: 0.45rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+}
+.primaryAction { background: var(--green); color: white; }
+.primaryAction:hover { background: var(--dark); }
+.outlinedAction { border-color: #cbbcaa; background: #fffdfa; color: var(--dark); }
+.outlinedAction:hover { border-color: var(--green); background: #f6f1e8; }
+
+.hero {
+  padding-block: clamp(3.25rem, 6vw, 5.5rem) clamp(3.5rem, 7vw, 6.5rem);
+  background: radial-gradient(ellipse at 50% 0, #efe8d8 0, transparent 56%);
+  text-align: center;
+}
+.eyebrow {
+  color: var(--ochre);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.hero h1 {
+  margin: 1rem 0 1.2rem;
+  font: 600 clamp(2.55rem, 5.1vw, 5rem)/1.06 var(--serif);
+  letter-spacing: -0.055em;
+  text-wrap: balance;
+}
+.hero h1 em { display: block; color: var(--green); font-weight: 500; }
+.heroDescription, .sectionHeading > p, .previewHeading > p, .closing p {
+  max-width: 43rem;
+  margin: 1rem auto 0;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.4vw, 1.125rem);
+  line-height: 1.75;
+  text-wrap: pretty;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.7rem;
+}
+
+.workspace {
+  width: min(100%, 75rem);
+  margin: clamp(2.6rem, 5vw, 4.5rem) auto 0;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 1.4rem 3rem #2f22151a, 0 0.2rem 0.45rem #2f22150a;
+  text-align: left;
+}
+.previewBar {
+  display: flex;
+  min-height: 3.25rem;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem 0.85rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.83rem;
+  font-weight: 700;
+}
+.windowDots { display: flex; gap: 0.25rem; }
+.windowDots span {
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 50%;
+  background: #c59a45;
+}
+.windowDots span:nth-child(2) { background: #d7cbbb; }
+.windowDots span:nth-child(3) { background: #467262; }
+.previewLabel {
+  margin-left: auto;
+  padding: 0.15rem 0.56rem;
+  border-radius: 1rem;
+  background: #ebece4;
+  color: var(--green);
+  white-space: nowrap;
+}
+.previewBody {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.22fr) minmax(0, 1fr);
+  gap: 0.6rem;
+  padding: 0.75rem;
+}
+.previewSidebar, .previewTotals > div, .previewPanel,
+.featureCard, .audienceCard, .eventCard {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+}
+.previewSidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: #f9f2eb;
+}
+.previewIdentity {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--dark);
+  font-size: 0.88rem;
+}
+.previewIdentity div > span { display: block; color: var(--muted); font-size: 0.77rem; }
+.coupleMark {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--green);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+.previewNav {
+  display: grid;
+  gap: 0.2rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--line);
+}
+.previewNav a, .previewGuestLink {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  padding: 0.35rem 0.53rem;
+  border-radius: 0.35rem;
+  color: var(--green);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+.previewNav a:first-child, .previewNav a:hover { background: #e9e0d3; }
+.previewGuestLink {
+  justify-content: center;
+  margin-top: auto;
+  border: 1px solid #cbbcaa;
+  background: #fffdfa;
+  text-align: center;
+}
+.previewGuestLink:hover { border-color: var(--green); }
+
+.previewContent, .previewTotals, .previewPanels { display: grid; gap: 0.55rem; }
+.previewTotals { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.previewTotals > div { padding: 0.6rem 0.75rem 0.7rem; background: #fffaf4; }
+.previewTotals dt { color: var(--muted); font-size: 0.82rem; }
+.previewTotals dd {
+  margin-top: 0.13rem;
+  color: var(--dark);
+  font: 600 1.37rem/1.2 var(--serif);
+}
+.previewPanels { grid-template-columns: minmax(0, 1.32fr) minmax(0, 1fr); }
+.previewPanel { padding: 0.75rem; }
+.previewPanel h2 { margin-bottom: 0.55rem; font-size: 0.92rem; font-weight: 700; }
+.timeline, .responseList { display: grid; gap: 0.37rem; font-size: 0.87rem; }
+.timeline li, .responseList li {
+  padding: 0.42rem 0.48rem;
+  border: 1px solid #ebdfd2;
+  border-radius: 0.35rem;
+  background: #fcf7f1;
+}
+.timeline li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.65rem;
+}
+.timeline time {
+  display: grid;
+  min-width: 2.12rem;
+  justify-items: center;
+  padding: 0.23rem;
+  border-radius: 0.25rem;
+  background: #efe3c8;
+  color: #5e461e;
+  font-size: 0.77rem;
+  line-height: 1.12;
+}
+.timeline li:nth-child(even) time { background: #deebe2; color: var(--green); }
+.timeline p, .responseList p > span { color: var(--muted); font-size: 0.79rem; }
+.responseList li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.2rem 0.55rem;
+}
+.attending, .waiting {
+  padding: 0.17rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.attending { background: #deebe2; color: var(--green); }
+.waiting { background: #f2e6ce; color: #674919; }
+
+.metricStrip {
+  padding-block: 1.8rem 2rem;
+  border-block: 1px solid var(--line);
+  background: var(--soft);
+  text-align: center;
+}
+.metrics {
+  display: grid;
+  max-width: 48rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0.9rem auto 0;
+}
+.metrics > div { display: flex; flex-direction: column-reverse; gap: 0.25rem; }
+.metrics > div + div { border-left: 1px solid var(--line); }
+.metrics dt { color: var(--muted); font-size: 0.88rem; font-weight: 600; }
+.metrics dd {
+  color: var(--green);
+  font: 600 clamp(1.45rem, 3.1vw, 2.4rem)/1.1 var(--serif);
+  font-variant-numeric: lining-nums tabular-nums;
+}
+
+.section, .tintedSection, .closing { padding-block: clamp(3.7rem, 7vw, 6.4rem); }
+.tintedSection { border-block: 1px solid var(--line); background: var(--soft); }
+.sectionHeading { margin-bottom: clamp(1.8rem, 4vw, 3.5rem); text-align: center; }
+.sectionHeading h2, .previewHeading h2, .closing h2 {
+  font: 600 clamp(2rem, 3.4vw, 3.2rem)/1.13 var(--serif);
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+.featureGrid, .audienceGrid { display: grid; gap: clamp(0.85rem, 2vw, 1.55rem); }
+.featureGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.audienceGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.featureCard, .audienceCard { padding: clamp(1.1rem, 2vw, 1.6rem); background: #fffdfa; }
+.featureCard { display: flex; min-height: 16rem; flex-direction: column; }
+.featureMark {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  border-radius: 0.45rem;
+  background: #eee5d7;
+  color: var(--green);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.featureCard h3, .audienceCard h3, .invitationCallout h3 {
+  margin-top: 0.85rem;
+  font: 600 clamp(1.22rem, 2vw, 1.59rem)/1.25 var(--serif);
+  letter-spacing: -0.022em;
+}
+.featureCard > p, .invitationCallout p {
+  margin: 0.55rem 0 0.9rem;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.exampleRows, .exampleTask {
+  margin-top: auto;
+  padding: 0.52rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: var(--soft);
+  font-size: 0.87rem;
+  line-height: 1.55;
+}
+.exampleRows div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.25rem 0.75rem;
+  padding-block: 0.14rem;
+}
+.exampleRows dd { color: var(--green); font-weight: 700; white-space: nowrap; }
+.exampleTask strong { color: var(--green); }
+.exampleTask p { margin-top: 0.25rem; color: var(--muted); }
+.invitationCallout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.85rem 1.5rem;
+  margin-top: 1.3rem;
+  padding: 1.1rem 1.35rem;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: #fffaf4;
+}
+.invitationCallout h3 { margin-top: 0; }
+.invitationCallout p { margin-bottom: 0; }
+
+.audienceCard h3 {
+  margin-top: 0.45rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--line);
+}
+.audienceCard ul {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.9rem;
+  padding-left: 1.15rem;
+  color: var(--muted);
+  line-height: 1.6;
+  list-style: disc;
+}
+.audienceCard li::marker { color: var(--ochre); }
+
+.previewHeading { margin-bottom: 1.7rem; }
+.previewHeading > p { margin-left: 0; }
+.weddingCard {
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 0.95rem;
+  background: #fffdfa;
+  box-shadow: 0 0.9rem 1.5rem #2f221513;
+}
+.weddingCover {
+  display: grid;
+  min-height: 17rem;
+  grid-template-columns: 1fr minmax(0, 0.9fr);
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(125deg, #f3e8d9, #fffcf6);
+}
+.weddingIntro { align-self: center; padding: clamp(1.3rem, 4vw, 3.3rem); }
+.weddingEyebrow { color: var(--ochre); font-size: 0.89rem; font-weight: 700; }
+.weddingIntro h3 {
+  margin-top: 0.35rem;
+  color: var(--dark);
+  font: 600 clamp(2.15rem, 4.7vw, 4.35rem)/1.14 var(--serif);
+  letter-spacing: -0.055em;
+}
+.weddingDate {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.95rem;
+  margin: 0.75rem 0 1rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+.weddingPhoto, .eventPhoto { position: relative; min-height: 0; background: #e9ddcb; }
+.weddingPhoto img, .eventPhoto img { object-fit: cover; }
+.weddingPhoto img { object-position: center 32%; }
+
+.weddingEvents { padding: clamp(1rem, 3vw, 2rem); }
+.weddingEvents h4 { margin-bottom: 0.8rem; font: 600 1.45rem/1.25 var(--serif); }
+.weddingEvents ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; }
+.eventCard { overflow: hidden; background: #fdf7ef; }
+.eventPhoto { aspect-ratio: 16 / 10; }
+.eventPhoto time {
+  position: absolute;
+  top: 0.55rem;
+  left: 0.55rem;
+  padding: 0.24rem 0.45rem;
+  border-radius: 0.25rem;
+  background: #fffdfa;
+  color: var(--dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.eventDetails { padding: 0.7rem 0.8rem 0.85rem; }
+.eventDetails p { margin-top: 0.14rem; color: var(--muted); font-size: 0.85rem; }
+
+.closing {
+  border-top: 1px solid #194234;
+  background: radial-gradient(ellipse at 50% 0, #245544, #15392c 72%);
+  color: #fffaf0;
+  text-align: center;
+}
+.closing p { color: #e2e7de; }
+.closing :focus-visible, .footer :focus-visible { outline-color: #f5d382; }
+.goldAction { background: #e4bd6f; color: #213a2e; }
+.goldAction:hover { background: #f1cf8a; }
+.lightAction { border-color: #a2b4a6; color: #fffaf0; }
+.lightAction:hover { background: #2c5547; }
+.footer { background: #102e23; color: #e4e9e2; }
+.footer .shell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 1.5rem;
+  padding-block: 1.4rem;
+}
+.footerBrand { color: #ebcf92; font: 600 1.16rem/1.2 var(--serif); }
+
+@media (max-width: 960px) {
+  .headerInner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.45rem 0.75rem;
+  }
+  .brand { grid-column: 1 / -1; }
+  .sectionNav { min-height: 2.65rem; }
+  .weddingEvents ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 740px) {
+  .previewBody, .previewPanels, .featureGrid, .audienceGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .previewSidebar { gap: 0.45rem; }
+  .previewNav { display: flex; flex-wrap: wrap; gap: 0.1rem 0.35rem; }
+  .previewGuestLink { align-self: start; }
+  .previewTotals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .featureCard { min-height: auto; }
+  .featureCard > p { margin-bottom: 1rem; }
+  .weddingCover { grid-template-columns: minmax(0, 1fr); }
+  .weddingPhoto { aspect-ratio: 16 / 9; }
+}
+
+@media (max-width: 440px) {
+  .headerInner { grid-template-columns: minmax(0, 1fr); }
+  .brand { font-size: 1.01rem; }
+  .brandMark { width: 1.77rem; height: 1.77rem; flex-basis: 1.77rem; }
+  .accountNav { justify-self: start; gap: 0.55rem; }
+  .accountNav .primaryAction { padding-inline: 0.5rem; }
+  .sectionNav { gap: 0.42rem 0.95rem; }
+  .sectionNav a { padding-block: 0.4rem; }
+  .previewBar { padding-inline: 0.6rem; }
+  .previewBody { padding: 0.52rem; }
+  .weddingEvents ul { grid-template-columns: minmax(0, 1fr); }
+}

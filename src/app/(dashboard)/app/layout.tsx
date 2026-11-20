@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { WorkspaceNavigation } from "./_components/workspace-navigation";
-import { demoWedding } from "./_data/demo-wedding";
+import { demoWedding } from "@/app/_data/demo-wedding";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (

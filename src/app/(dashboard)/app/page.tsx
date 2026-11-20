@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { EventList, TaskList } from "./_components/wedding-lists";
-import { demoWedding, formatDemoDate } from "./_data/demo-wedding";
+import { demoWedding, formatDemoDate } from "@/app/_data/demo-wedding";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
