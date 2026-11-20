@@ -31,7 +31,9 @@ when applicable.
 | `/` | Public landing page and demo entry |
 | `/login`, `/signup` | Organiser account forms |
 | `/app`, `/onboarding` | Private wedding overview with a local-date countdown and three-step wedding setup |
+| `/app/edit` | Edit the saved wedding details |
 | `POST /api/wedding` | Create a wedding and its first Admin membership |
+| `PATCH /api/wedding` | Update submitted wedding fields as an Admin or Manager |
 | `/demo` | Public sample wedding overview and countdown |
 | `/demo/events`, `/demo/tasks` | Read-only sample schedule and checklist |
 | `/api/health` | Application liveness. Returns HTTP 200 with `{"data":{"status":"ok"}}`. |

@@ -94,3 +94,20 @@ any pending integration work.
   input method editor composition.
 - Location autocomplete, cover uploads, and gallery token creation are
   planned with their respective features.
+
+## Edit wedding details — complete
+
+- Added Edit wedding to the private overview and a prefilled, responsive form
+  at `/app/edit` for Admins and Managers. Saving returns to the overview with
+  updated details, a refreshed countdown, and confirmation.
+- The form retains edits after failed saves and session expiry. It warns before
+  leaving with unsaved edits and checks that a retried draft is still tied to
+  the original account and wedding.
+- `PATCH /api/wedding` updates submitted details and allows clearing the title
+  and description. It scopes writes through the current membership and
+  preserves the website slug and any existing gallery token.
+- Passed lint, TypeScript, and the production build. Chrome checks at 1440 and
+  390 pixels covered prefill, validation, cancel/discard, the browser leave
+  warning, retry, reauthentication, and refreshed overview data. Isolated
+  MongoDB checks covered Admin and Manager edits, concurrent partial updates,
+  clearing optional fields, cross-wedding isolation, and link stability.

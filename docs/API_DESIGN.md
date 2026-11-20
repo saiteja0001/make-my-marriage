@@ -797,6 +797,16 @@ Any subset:
 
 Existing wedding slug should remain unchanged when names/date change.
 
+Updates apply only to the submitted details. Editable fields include
+`brideName`, `groomName`, `weddingDate`, `timeZone`, `title`, `description`,
+and `location.formattedAddress`. Empty strings clear `title` or `description`.
+The existing website slug and gallery link are preserved.
+
+The form may send `draftAccountId` and `draftWeddingId` as preconditions for
+the open draft. The server selects the wedding through the signed-in user's
+Admin or Manager membership. Changed account or wedding context returns
+`409 ACCOUNT_CHANGED` or `409 WEDDING_CHANGED` without applying edits.
+
 ---
 
 # 20. Wedding Dashboard

@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState, type ChangeEvent, type CompositionEvent, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type FormEvent, type ReactNode } from "react";
 import {
   defaultWeddingTimeZone,
   weddingCreationSchema,
   weddingFieldLimits,
 } from "@/modules/wedding/validation";
 import { formatWeddingDate } from "@/modules/wedding/wedding-date";
-import { capitalizeFirstLetter } from "@/modules/wedding/wedding-text";
+import { useWeddingTextInput } from "../_components/use-wedding-text-input";
 import styles from "./onboarding.module.css";
 
 const steps = [
@@ -42,7 +42,6 @@ const initialDraft = {
 
 type FieldName = keyof typeof initialDraft;
 type TextFieldName = Exclude<FieldName, "weddingDate" | "timeZone">;
-type TextControl = HTMLInputElement | HTMLTextAreaElement;
 type FieldErrors = Record<string, string>;
 
 const stepFields = [
@@ -82,7 +81,7 @@ export function WeddingOnboarding({ draftAccountId, timeZones }: { draftAccountI
   const [saveError, setSaveError] = useState("");
   const [accountAction, setAccountAction] = useState<"login" | "switch" | null>(null);
   const [saving, setSaving] = useState(false);
-  const [composition, setComposition] = useState<{ field: TextFieldName; initialValue: string } | null>(null);
+  const { textInput: capitalizeInput, resetComposition } = useWeddingTextInput(updateField);
   const heading = useRef<HTMLHeadingElement>(null);
   const activeStep = steps[step];
   const lastStep = step === steps.length - 1;
@@ -94,7 +93,7 @@ export function WeddingOnboarding({ draftAccountId, timeZones }: { draftAccountI
     setStep(next);
     setSaveError("");
     setAccountAction(null);
-    setComposition(null);
+    resetComposition();
     requestAnimationFrame(() => heading.current?.focus());
   }
 
@@ -131,47 +130,7 @@ export function WeddingOnboarding({ draftAccountId, timeZones }: { draftAccountI
   }
 
   function textInput(name: TextFieldName, maxLength: number) {
-    function applyCapitalization(control: TextControl, previousValue: string) {
-      const { value, selectionStart, selectionEnd, selectionDirection } = control;
-      const capitalized = /\p{L}/u.test(previousValue) ? value : capitalizeFirstLetter(value);
-      // Some letters expand when uppercased. Keep the full entry within the field limit.
-      if (capitalized === value || capitalized.length > maxLength) {
-        updateField(name, value);
-        return;
-      }
-
-      control.value = capitalized;
-      if (selectionStart !== null && selectionEnd !== null) {
-        control.setSelectionRange(
-          capitalizeFirstLetter(value.slice(0, selectionStart)).length,
-          capitalizeFirstLetter(value.slice(0, selectionEnd)).length,
-          selectionDirection ?? "none",
-        );
-      }
-      updateField(name, capitalized);
-    }
-
-    return {
-      ...input(name),
-      autoCapitalize: "none",
-      maxLength,
-      onChange: (event: ChangeEvent<TextControl>) => {
-        const { currentTarget, nativeEvent } = event;
-        if (composition?.field === name || ("isComposing" in nativeEvent && nativeEvent.isComposing)) {
-          updateField(name, currentTarget.value);
-        } else {
-          applyCapitalization(currentTarget, draft[name]);
-        }
-      },
-      onCompositionStart: ({ currentTarget }: CompositionEvent<TextControl>) => {
-        setComposition({ field: name, initialValue: currentTarget.value });
-      },
-      onCompositionEnd: ({ currentTarget }: CompositionEvent<TextControl>) => {
-        const previousValue = composition?.field === name ? composition.initialValue : draft[name];
-        setComposition(null);
-        applyCapitalization(currentTarget, previousValue);
-      },
-    };
+    return { ...input(name), ...capitalizeInput(name, draft[name], maxLength) };
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {

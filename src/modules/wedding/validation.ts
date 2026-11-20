@@ -19,20 +19,33 @@ const timeZone = z.string().trim().max(100).refine((value) => {
   }
 }, "Select a valid timezone.");
 
-export const weddingCreationSchema = z.object({
+const weddingDetailsSchema = z.object({
   brideName: requiredText("Enter the bride’s name.", weddingFieldLimits.name),
   groomName: requiredText("Enter the groom’s name.", weddingFieldLimits.name),
   weddingDate: z.iso.date({ error: "Enter a valid wedding date." }),
   location: z.strictObject({
     formattedAddress: requiredText("Enter your wedding city or location.", weddingFieldLimits.location),
   }),
-  timeZone: timeZone.default(defaultWeddingTimeZone),
+  timeZone,
   title: boundedText(weddingFieldLimits.title).optional(),
   description: boundedText(weddingFieldLimits.description).optional(),
 });
 
+export const weddingCreationSchema = weddingDetailsSchema.extend({
+  timeZone: timeZone.default(defaultWeddingTimeZone),
+});
+
+const draftAccountId = z.string().min(1).max(128).optional();
+
 export const weddingCreationRequestSchema = weddingCreationSchema.extend({
-  draftAccountId: z.string().min(1).max(128).optional(),
+  draftAccountId,
+});
+
+export const weddingUpdateSchema = weddingDetailsSchema.partial().strict();
+export const weddingUpdateRequestSchema = weddingUpdateSchema.extend({
+  draftAccountId,
+  draftWeddingId: z.string().regex(/^[a-f0-9]{24}$/i).optional(),
 });
 
 export type WeddingCreation = z.output<typeof weddingCreationSchema>;
+export type WeddingUpdate = z.output<typeof weddingUpdateSchema>;

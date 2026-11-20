@@ -146,6 +146,40 @@
 
 .overviewHeading > div { flex: 1 1 19rem; min-width: 0; }
 
+.overviewTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  margin-bottom: 0.65rem;
+}
+
+.overviewTitle h1 { margin-bottom: 0; }
+
+.editWedding {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.72rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  color: var(--burgundy);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.editWedding:hover { background: var(--blush); }
+
+.updated {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: var(--blush);
+  color: var(--burgundy);
+  font-weight: 700;
+}
+
 .countdown {
   align-self: flex-start;
   padding: 0.55rem 0.9rem;

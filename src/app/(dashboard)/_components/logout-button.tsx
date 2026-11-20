@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 
-export function LogoutButton({ className }: { className: string }) {
+export function LogoutButton({ className, onRequestLeave, onLoggedOut }: {
+  className: string;
+  onRequestLeave?: (leave: () => void) => void;
+  onLoggedOut?: () => void;
+}) {
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -13,6 +17,7 @@ export function LogoutButton({ className }: { className: string }) {
     try {
       const response = await fetch("/api/auth/logout", { method: "POST" });
       if (!response.ok && response.status !== 401) throw new Error();
+      onLoggedOut?.();
       window.location.replace("/login");
     } catch {
       setFailed(true);
@@ -24,7 +29,7 @@ export function LogoutButton({ className }: { className: string }) {
     <div>
       <button
         type="button"
-        onClick={submit}
+        onClick={() => onRequestLeave ? onRequestLeave(submit) : void submit()}
         disabled={pending}
         className={className}
       >

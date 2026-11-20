@@ -2,9 +2,12 @@ import "server-only";
 import { randomBytes } from "node:crypto";
 import { connectDatabase } from "@/server/db/mongoose";
 import { connectWeddingStorage, Wedding, WeddingMembership } from "./models";
-import type { WeddingCreation } from "./validation";
+import type { WeddingCreation, WeddingUpdate } from "./validation";
 
 export class AlreadyHasWedding extends Error {}
+export class WeddingDraftChanged extends Error {}
+
+const weddingDetailsProjection = "brideName groomName title description weddingDate timeZone location.formattedAddress";
 
 function slugFor({ brideName, groomName, weddingDate }: WeddingCreation) {
   const names = `${brideName} ${groomName}`.normalize("NFKD").toLowerCase()
@@ -29,12 +32,41 @@ export async function getWeddingForUser(userId: string) {
   if (!membership) return null;
 
   const wedding = await Wedding.findById(membership.weddingId)
-    .select("brideName groomName title description weddingDate timeZone location.formattedAddress")
+    .select(weddingDetailsProjection)
     .lean().exec();
   if (!wedding) throw new Error("Wedding membership could not be resolved.");
 
   const { _id, ...details } = wedding;
   return { membership: { role: membership.role }, wedding: { id: _id.toString(), ...details } };
+}
+
+export async function updateWedding(userId: string, changes: WeddingUpdate, draftWeddingId?: string) {
+  await connectDatabase();
+  const membership = await WeddingMembership.findOne({ userId, role: { $in: ["ADMIN", "MANAGER"] } })
+    .select("weddingId").lean().exec();
+  if (!membership) return null;
+
+  if (draftWeddingId !== undefined && !membership.weddingId.equals(draftWeddingId)) {
+    throw new WeddingDraftChanged();
+  }
+
+  const { location, title, description, ...details } = changes;
+  const set: Record<string, string> = details;
+  const unset: Record<string, 1> = {};
+  if (location) set["location.formattedAddress"] = location.formattedAddress;
+  for (const [field, value] of Object.entries({ title, description })) {
+    if (value === "") unset[field] = 1;
+    else if (value !== undefined) set[field] = value;
+  }
+
+  const wedding = await Wedding.findByIdAndUpdate(membership.weddingId, { $set: set, $unset: unset }, {
+    returnDocument: "after",
+    runValidators: true,
+  }).select(weddingDetailsProjection).lean().exec();
+  if (!wedding) return null;
+
+  const { _id, ...saved } = wedding;
+  return { id: _id.toString(), ...saved };
 }
 
 export async function createWedding(userId: string, input: WeddingCreation) {
