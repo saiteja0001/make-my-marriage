@@ -12,6 +12,13 @@ and [API_DESIGN.md](docs/API_DESIGN.md) for HTTP contracts. Check the current
 source before relying on historical implementation notes. Surface conflicting
 requirements before choosing a resolution.
 
+## Project status
+
+Maintain [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md). Add or update an
+entry in the same change whenever a major feature is built or its status
+changes. Record what was delivered, the validation performed, and any mock
+data or pending integrations.
+
 ## Code boundaries
 
 - Keep `src/app/` focused on routing, layouts, and thin UI and HTTP entry
