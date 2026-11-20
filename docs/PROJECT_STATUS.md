@@ -72,8 +72,8 @@ any pending integration work.
   Organisers without a membership are directed to setup, and the account API
   reports the saved membership and wedding summary.
 - Setup offers optional capitalization for couple names and the description.
-  The overview shows the chosen casing. The dashboard header shows the
-  signed-in organiser’s name and wedding membership role next to Log out.
+  The creation API and overview preserve the chosen casing. The dashboard
+  header shows the signed-in organiser’s name and membership role next to Log out.
 - The overview counts calendar days in the saved wedding timezone and updates
   while open. It shows a separate message on the wedding day and after it passes.
 - Passed lint, TypeScript, and the production build. Chrome checks at 1440 and
@@ -86,5 +86,8 @@ any pending integration work.
 - API regression checks with simulated storage covered account changes during
   onboarding, unsupported location fields, and a membership lookup failure
   before login creates a session.
+- Focused checks confirmed that the API and overview preserve lowercase name
+  particles and mixed-case descriptions, and that applying a capitalization
+  suggestion returns keyboard focus to the field.
 - Location autocomplete, cover uploads, and gallery token creation are
   planned with their respective features.
