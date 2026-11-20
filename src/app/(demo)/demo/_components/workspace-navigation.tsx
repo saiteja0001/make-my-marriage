@@ -6,9 +6,9 @@ import { useRef, useState } from "react";
 import { Wordmark } from "@/components/ui/wordmark";
 
 const links = [
-  { href: "/app", label: "Dashboard" },
-  { href: "/app/events", label: "Events" },
-  { href: "/app/tasks", label: "Tasks" },
+  { href: "/demo", label: "Dashboard" },
+  { href: "/demo/events", label: "Events" },
+  { href: "/demo/tasks", label: "Tasks" },
 ];
 
 export function WorkspaceNavigation() {

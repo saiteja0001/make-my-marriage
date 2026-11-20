@@ -4,9 +4,9 @@ import { sampleGuestResponses } from "../_data/landing-content";
 import styles from "../homepage.module.css";
 
 const workspaceLinks = [
-  { href: "/app", label: "Overview" },
-  { href: "/app/events", label: "Wedding events" },
-  { href: "/app/tasks", label: "Family tasks" },
+  { href: "/demo", label: "Overview" },
+  { href: "/demo/events", label: "Wedding events" },
+  { href: "/demo/tasks", label: "Family tasks" },
 ];
 
 export function WorkspacePreview() {

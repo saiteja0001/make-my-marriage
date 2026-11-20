@@ -44,7 +44,7 @@ export default function HomePage() {
               Explore a sample wedding schedule, family checklist, and website for guests.
             </p>
             <div className={styles.actions}>
-              <Link href="/app" className={styles.primaryAction}>Explore the demo</Link>
+              <Link href="/demo" className={styles.primaryAction}>Explore the demo</Link>
               <a href="#wedding-preview" className={styles.outlinedAction}>Preview a wedding website</a>
             </div>
             <WorkspacePreview />
@@ -148,7 +148,7 @@ export default function HomePage() {
             <h2 id="closing-title">Bring your families into one plan</h2>
             <p>Explore a sample wedding to see how the workspace fits together.</p>
             <div className={styles.actions}>
-              <Link href="/app" className={styles.goldAction}>Explore the demo</Link>
+              <Link href="/demo" className={styles.goldAction}>Explore the demo</Link>
               <Link href="/signup" className={styles.lightAction}>Sign up</Link>
             </div>
           </div>

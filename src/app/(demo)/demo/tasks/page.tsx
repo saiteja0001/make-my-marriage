@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { TaskList } from "../_components/wedding-lists";
 import { demoWedding } from "@/app/_data/demo-wedding";
 
-export const metadata: Metadata = { title: "Tasks" };
+export const metadata: Metadata = { title: "Demo tasks" };
 
 export default function TasksPage() {
   return (

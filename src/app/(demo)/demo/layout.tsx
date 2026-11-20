@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { WorkspaceNavigation } from "./_components/workspace-navigation";
 import { demoWedding } from "@/app/_data/demo-wedding";
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export default function DemoLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-dvh lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]">
       <a

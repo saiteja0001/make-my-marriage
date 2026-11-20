@@ -1,4 +1,8 @@
-import { formatDemoDate, type WeddingEvent, type WeddingTask } from "@/app/_data/demo-wedding";
+import {
+  formatDemoDate,
+  type WeddingEvent,
+  type WeddingTask,
+} from "@/app/_data/demo-wedding";
 
 export function EventList({ events }: { events: WeddingEvent[] }) {
   return (

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { EventList } from "../_components/wedding-lists";
 import { demoWedding } from "@/app/_data/demo-wedding";
 
-export const metadata: Metadata = { title: "Events" };
+export const metadata: Metadata = { title: "Demo events" };
 
 export default function EventsPage() {
   return (
