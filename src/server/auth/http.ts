@@ -42,12 +42,12 @@ export function authUnavailable(error: unknown) {
   return authError(503, "INTERNAL_ERROR", "Account access is temporarily unavailable. Please try again.");
 }
 
-async function readCredentialJson(request: Request) {
+export async function readJson(request: Request, subject: "account" | "wedding") {
   if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") {
-    return { error: authError(415, "VALIDATION_ERROR", "Send the account details as JSON.") };
+    return { error: authError(415, "VALIDATION_ERROR", `Send the ${subject} details as JSON.`) };
   }
   const reader = request.body?.getReader();
-  if (!reader) return { error: authError(400, "VALIDATION_ERROR", "Enter your account details.") };
+  if (!reader) return { error: authError(400, "VALIDATION_ERROR", `Enter your ${subject} details.`) };
 
   const decoder = new TextDecoder();
   let bytes = 0;
@@ -59,17 +59,27 @@ async function readCredentialJson(request: Request) {
       bytes += value.byteLength;
       if (bytes > maxBodyBytes) {
         await reader.cancel().catch(() => {});
-        return { error: authError(413, "VALIDATION_ERROR", "Account details are too large.") };
+        const label = subject === "account" ? "Account" : "Wedding";
+        return { error: authError(413, "VALIDATION_ERROR", `${label} details are too large.`) };
       }
       body += decoder.decode(value, { stream: true });
     }
     const value: unknown = JSON.parse(body + decoder.decode());
     return { value };
   } catch {
-    return { error: authError(400, "VALIDATION_ERROR", "Enter valid account details.") };
+    return { error: authError(400, "VALIDATION_ERROR", `Enter valid ${subject} details.`) };
   } finally {
     reader.releaseLock();
   }
+}
+
+export function validationError(error: z.ZodError) {
+  const details: Record<string, string> = {};
+  for (const issue of error.issues) {
+    const field = issue.path.join(".");
+    if (field) details[field] ??= issue.message;
+  }
+  return authError(400, "VALIDATION_ERROR", "Check the highlighted fields.", details);
 }
 
 function rateLimitClient(request: Request) {
@@ -83,6 +93,7 @@ type SignedInAccount = {
   user: { id: string; name: string; email: string };
   token: string;
   expiresAt: Date;
+  hasWedding: boolean;
 };
 
 export async function handleCredentials<T extends Credentials>(
@@ -94,17 +105,10 @@ export async function handleCredentials<T extends Credentials>(
   try {
     if (!sameOrigin(request)) return forbiddenOrigin();
 
-    const body = await readCredentialJson(request);
+    const body = await readJson(request, "account");
     if (body.error) return body.error;
     const parsed = schema.safeParse(body.value);
-    if (!parsed.success) {
-      const details: Record<string, string> = {};
-      for (const issue of parsed.error.issues) {
-        const field = issue.path[0];
-        if (typeof field === "string") details[field] ??= issue.message;
-      }
-      return authError(400, "VALIDATION_ERROR", "Check the highlighted fields.", details);
-    }
+    if (!parsed.success) return validationError(parsed.error);
 
     const retryAfter = await authRetryAfter(action, parsed.data.email, rateLimitClient(request));
     if (retryAfter !== null) {
@@ -114,7 +118,9 @@ export async function handleCredentials<T extends Credentials>(
     }
 
     const account = await authenticate(parsed.data);
-    const response = authJson({ data: { user: account.user, hasWedding: false } }, action === "signup" ? 201 : 200);
+    const response = authJson({
+      data: { user: account.user, hasWedding: account.hasWedding },
+    }, action === "signup" ? 201 : 200);
     response.cookies.set(sessionCookieName, account.token, {
       ...sessionCookieOptions,
       expires: account.expiresAt,

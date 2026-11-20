@@ -53,14 +53,14 @@ export async function signUp(input: AccountInput & { name: string }) {
       await new Session({ userId: user._id, expiresAt, tokenHash }).save({ session: transaction });
       return publicUser(user);
     });
-    return { user, token, expiresAt };
+    return { user, token, expiresAt, hasWedding: false };
   } catch (error) {
     if (isDuplicateEmail(error)) throw new AuthError("EMAIL_ALREADY_EXISTS");
     throw error;
   }
 }
 
-export async function logIn(input: AccountInput) {
+export async function logIn(input: AccountInput, loadHasWedding: (userId: string) => Promise<boolean>) {
   await connectAuthDatabase();
   const user = await User.findOne({ emailNormalized: normalizeEmail(input.email) })
     .select("name email +passwordHash")
@@ -72,9 +72,11 @@ export async function logIn(input: AccountInput) {
     throw new AuthError("INVALID_CREDENTIALS");
   }
 
+  const identity = publicUser(user);
+  const hasWedding = await loadHasWedding(identity.id);
   const { token, expiresAt, tokenHash } = newSession();
   await Session.create({ userId: user._id, expiresAt, tokenHash });
-  return { user: publicUser(user), token, expiresAt };
+  return { user: identity, token, expiresAt, hasWedding };
 }
 
 function activeSession(token: string) {

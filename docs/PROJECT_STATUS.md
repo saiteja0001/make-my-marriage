@@ -54,4 +54,37 @@ any pending integration work.
 - Regression checks with simulated storage covered login after repeated
   failures, requests without a trusted client address, and concurrent retry
   after an index setup failure.
-- Wedding creation and password reset are planned as separate features.
+- Password reset is planned as a separate feature.
+
+## Wedding onboarding — complete
+
+- Built the three-step Couple Details, Wedding Details, and Personalize flow
+  using the Royal Heritage Stitch designs. Organisers review their details,
+  keep their entries when going back, and can retry a failed save.
+- An open draft stays tied to the account that started it. Organisers who
+  switched accounts can return to their original account and retry the save.
+- Wedding location uses manual entry. The wedding date is stored as a
+  date-only value, and the editable timezone starts at `Asia/Kolkata`.
+- `POST /api/wedding` reserves a stable slug and creates the wedding and its
+  first Admin membership in one MongoDB transaction. A unique membership
+  index enforces one wedding per account.
+- `/app` shows the organiser’s own wedding after creation and on later sign-ins.
+  Organisers without a membership are directed to setup, and the account API
+  reports the saved membership and wedding summary.
+- Setup offers optional capitalization for couple names and the description.
+  The overview shows the chosen casing. The dashboard header shows the
+  signed-in organiser’s name and wedding membership role next to Log out.
+- The overview counts calendar days in the saved wedding timezone and updates
+  while open. It shows a separate message on the wedding day and after it passes.
+- Passed lint, TypeScript, and the production build. Chrome checks at 1440 and
+  390 pixels covered field validation, retained values when going back, save
+  failure and retry, and return to the private overview after logout and login.
+  API checks on an isolated MongoDB replica set verified the one-wedding rule
+  under concurrent submissions, slug collisions, and membership isolation.
+- Countdown checks covered local midnight, different timezones at the same
+  instant, daylight saving changes, leap day, and past wedding dates.
+- API regression checks with simulated storage covered account changes during
+  onboarding, unsupported location fields, and a membership lookup failure
+  before login creates a session.
+- Location autocomplete, cover uploads, and gallery token creation are
+  planned with their respective features.

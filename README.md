@@ -2,7 +2,8 @@
 
 A wedding planning workspace for couples and their families. The public demo
 uses sample wedding data, including a countdown based on a fixed planning date.
-Organisers can create an account and sign in to their wedding setup screen.
+Organisers can create an account, set up a wedding, and open their private
+wedding overview.
 
 ## Local development
 
@@ -20,8 +21,8 @@ to the Git-ignored `.env.local` and set `MONGODB_URI` to a development
 database and `SESSION_SECRET` to a private, random value. Restart the
 development server after changing these settings.
 
-Use a MongoDB replica set or Atlas cluster because signup creates the account
-and its first session in one transaction. When setting `NEXT_PUBLIC_APP_URL`,
+Use a MongoDB replica set or Atlas cluster for account signup and wedding
+creation transactions. When setting `NEXT_PUBLIC_APP_URL`,
 use the same origin that visitors use to open the app, including the port
 when applicable.
 
@@ -29,7 +30,8 @@ when applicable.
 | --- | --- |
 | `/` | Public landing page and demo entry |
 | `/login`, `/signup` | Organiser account forms |
-| `/app`, `/onboarding` | Signed-in workspace entry and wedding setup screen |
+| `/app`, `/onboarding` | Private wedding overview with a local-date countdown and three-step wedding setup |
+| `POST /api/wedding` | Create a wedding and its first Admin membership |
 | `/demo` | Public sample wedding overview and countdown |
 | `/demo/events`, `/demo/tasks` | Read-only sample schedule and checklist |
 | `/api/health` | Application liveness. Returns HTTP 200 with `{"data":{"status":"ok"}}`. |

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-export function LogoutButton() {
+export function LogoutButton({ className }: { className: string }) {
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -26,7 +26,7 @@ export function LogoutButton() {
         type="button"
         onClick={submit}
         disabled={pending}
-        className="min-h-11 rounded-lg border border-line bg-white px-4 py-2.5 text-sm font-semibold text-ink hover:border-pine disabled:opacity-70"
+        className={className}
       >
         {pending ? "Logging out…" : "Log out"}
       </button>

@@ -672,6 +672,12 @@ Authentication required.
 
 Only users without an existing Wedding Membership can use this endpoint.
 
+The onboarding release accepts `location.formattedAddress` as the sole
+location field and defaults `timeZone` to `Asia/Kolkata` if it is omitted.
+Onboarding submits `draftAccountId` with the ID of the account that opened
+the draft. When supplied, it must match the authenticated account. The
+server always creates the wedding for the authenticated account.
+
 ### Request
 
 ```json
@@ -683,13 +689,7 @@ Only users without an existing Wedding Membership can use this endpoint.
   "weddingDate": "2027-02-14",
   "timeZone": "Asia/Kolkata",
   "location": {
-    "formattedAddress": "Dehradun, Uttarakhand, India",
-    "city": "Dehradun",
-    "state": "Uttarakhand",
-    "country": "India",
-    "latitude": 30.3165,
-    "longitude": 78.0322,
-    "googlePlaceId": "..."
+    "formattedAddress": "Dehradun, Uttarakhand, India"
   }
 }
 ```
@@ -704,12 +704,8 @@ Create Wedding
 Create ADMIN Wedding Membership
 ```
 
-Also generate:
-
-```text
-website.slug
-gallery token
-```
+Creation also reserves `website.slug`. Gallery token creation will be
+introduced with the gallery feature.
 
 ### Response
 
@@ -731,6 +727,7 @@ gallery token
 
 ```text
 ALREADY_HAS_WEDDING
+ACCOUNT_CHANGED
 VALIDATION_ERROR
 ```
 
