@@ -79,14 +79,6 @@
 .control::placeholder { color: #746963; }
 .control[aria-invalid="true"] { border-color: #a12836; background: #fff7f7; }
 .fieldError { color: #9c2436; font-size: 0.79rem; font-weight: 700; }
-.capitalize {
-  justify-self: start;
-  min-height: 1.75rem;
-  color: var(--burgundy);
-  font-size: 0.8rem;
-  font-weight: 700;
-  text-decoration: underline;
-}
 
 .divider {
   display: flex;

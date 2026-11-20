@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useRef, useState, type ChangeEvent, type CompositionEvent, type FormEvent, type ReactNode } from "react";
 import {
   defaultWeddingTimeZone,
   weddingCreationSchema,
   weddingFieldLimits,
 } from "@/modules/wedding/validation";
 import { formatWeddingDate } from "@/modules/wedding/wedding-date";
-import { suggestDescriptionCapitalization, suggestNameCapitalization } from "@/modules/wedding/wedding-text";
+import { capitalizeFirstLetter } from "@/modules/wedding/wedding-text";
 import styles from "./onboarding.module.css";
 
 const steps = [
@@ -41,6 +41,8 @@ const initialDraft = {
 };
 
 type FieldName = keyof typeof initialDraft;
+type TextFieldName = Exclude<FieldName, "weddingDate" | "timeZone">;
+type TextControl = HTMLInputElement | HTMLTextAreaElement;
 type FieldErrors = Record<string, string>;
 
 const stepFields = [
@@ -80,6 +82,7 @@ export function WeddingOnboarding({ draftAccountId, timeZones }: { draftAccountI
   const [saveError, setSaveError] = useState("");
   const [accountAction, setAccountAction] = useState<"login" | "switch" | null>(null);
   const [saving, setSaving] = useState(false);
+  const [composition, setComposition] = useState<{ field: TextFieldName; initialValue: string } | null>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const activeStep = steps[step];
   const lastStep = step === steps.length - 1;
@@ -91,6 +94,7 @@ export function WeddingOnboarding({ draftAccountId, timeZones }: { draftAccountI
     setStep(next);
     setSaveError("");
     setAccountAction(null);
+    setComposition(null);
     requestAnimationFrame(() => heading.current?.focus());
   }
 
@@ -126,25 +130,48 @@ export function WeddingOnboarding({ draftAccountId, timeZones }: { draftAccountI
     };
   }
 
-  function capitalizationAction(name: "brideName" | "groomName" | "description", label: string) {
-    const value = draft[name];
-    const isDescription = name === "description";
-    const suggestion = isDescription ? suggestDescriptionCapitalization(value) : suggestNameCapitalization(value);
-    const limit = isDescription ? weddingFieldLimits.description : weddingFieldLimits.name;
-    if (suggestion === value.trim() || suggestion.length > limit) return null;
+  function textInput(name: TextFieldName, maxLength: number) {
+    function applyCapitalization(control: TextControl, previousValue: string) {
+      const { value, selectionStart, selectionEnd, selectionDirection } = control;
+      const capitalized = /\p{L}/u.test(previousValue) ? value : capitalizeFirstLetter(value);
+      // Some letters expand when uppercased. Keep the full entry within the field limit.
+      if (capitalized === value || capitalized.length > maxLength) {
+        updateField(name, value);
+        return;
+      }
 
-    return (
-      <button
-        type="button"
-        className={styles.capitalize}
-        onClick={() => {
-          updateField(name, suggestion);
-          document.getElementById("wedding-" + name)?.focus();
-        }}
-      >
-        {label}
-      </button>
-    );
+      control.value = capitalized;
+      if (selectionStart !== null && selectionEnd !== null) {
+        control.setSelectionRange(
+          capitalizeFirstLetter(value.slice(0, selectionStart)).length,
+          capitalizeFirstLetter(value.slice(0, selectionEnd)).length,
+          selectionDirection ?? "none",
+        );
+      }
+      updateField(name, capitalized);
+    }
+
+    return {
+      ...input(name),
+      autoCapitalize: "none",
+      maxLength,
+      onChange: (event: ChangeEvent<TextControl>) => {
+        const { currentTarget, nativeEvent } = event;
+        if (composition?.field === name || ("isComposing" in nativeEvent && nativeEvent.isComposing)) {
+          updateField(name, currentTarget.value);
+        } else {
+          applyCapitalization(currentTarget, draft[name]);
+        }
+      },
+      onCompositionStart: ({ currentTarget }: CompositionEvent<TextControl>) => {
+        setComposition({ field: name, initialValue: currentTarget.value });
+      },
+      onCompositionEnd: ({ currentTarget }: CompositionEvent<TextControl>) => {
+        const previousValue = composition?.field === name ? composition.initialValue : draft[name];
+        setComposition(null);
+        applyCapitalization(currentTarget, previousValue);
+      },
+    };
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -224,13 +251,11 @@ export function WeddingOnboarding({ draftAccountId, timeZones }: { draftAccountI
               <legend className="sr-only">{activeStep.label}</legend>
               {step === 0 && <>
                 <Field name="brideName" label="Bride’s name" error={errorFor("brideName")}>
-                  <input {...input("brideName")} placeholder="Enter bride’s name" autoCapitalize="none" maxLength={weddingFieldLimits.name} required />
-                  {capitalizationAction("brideName", "Capitalize bride’s name")}
+                  <input {...textInput("brideName", weddingFieldLimits.name)} placeholder="Enter bride’s name" required />
                 </Field>
                 <div className={styles.divider} aria-hidden="true"><span>♡</span></div>
                 <Field name="groomName" label="Groom’s name" error={errorFor("groomName")}>
-                  <input {...input("groomName")} placeholder="Enter groom’s name" autoCapitalize="none" maxLength={weddingFieldLimits.name} required />
-                  {capitalizationAction("groomName", "Capitalize groom’s name")}
+                  <input {...textInput("groomName", weddingFieldLimits.name)} placeholder="Enter groom’s name" required />
                 </Field>
               </>}
               {step === 1 && <>
@@ -238,7 +263,7 @@ export function WeddingOnboarding({ draftAccountId, timeZones }: { draftAccountI
                   <input {...input("weddingDate")} type="date" required />
                 </Field>
                 <Field name="location" label="Wedding city or location" error={errorFor("location")}>
-                  <input {...input("location")} placeholder="Enter your wedding city" maxLength={weddingFieldLimits.location} required />
+                  <input {...textInput("location", weddingFieldLimits.location)} placeholder="Enter your wedding city" required />
                 </Field>
                 <Field name="timeZone" label="Timezone" error={errorFor("timeZone")}>
                   <select {...input("timeZone")}>
@@ -262,17 +287,14 @@ export function WeddingOnboarding({ draftAccountId, timeZones }: { draftAccountI
                   </dl>
                 </div>
                 <Field name="title" label="Wedding title" optional error={errorFor("title")}>
-                  <input {...input("title")} placeholder="e.g. Priya & Ashu’s Wedding" maxLength={weddingFieldLimits.title} />
+                  <input {...textInput("title", weddingFieldLimits.title)} placeholder="e.g. Priya & Ashu’s Wedding" />
                 </Field>
                 <Field name="description" label="Short description" optional error={errorFor("description")}>
                   <textarea
-                    {...input("description")}
+                    {...textInput("description", weddingFieldLimits.description)}
                     placeholder="Share a little about your celebration"
-                    autoCapitalize="none"
-                    maxLength={weddingFieldLimits.description}
                     rows={3}
                   />
-                  {capitalizationAction("description", "Capitalize first letter")}
                 </Field>
               </>}
             </fieldset>
