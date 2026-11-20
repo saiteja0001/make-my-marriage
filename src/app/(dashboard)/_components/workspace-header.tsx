@@ -11,11 +11,11 @@ export function WorkspaceHeader({ member, onRequestLeave, onNavigateAway }: {
 }) {
   return (
     <header className={styles.header}>
-      <Link href="/app" className={styles.wordmark} onNavigate={onRequestLeave && ((event) => {
+      <Link href="/" prefetch={false} className={styles.wordmark} onNavigate={onRequestLeave && ((event) => {
         event.preventDefault();
         onRequestLeave(() => {
           onNavigateAway?.();
-          window.location.replace("/app");
+          window.location.replace("/");
         });
       })}>
         Make My Marriage<span aria-hidden="true">.</span>

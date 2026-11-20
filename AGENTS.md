@@ -19,6 +19,11 @@ entry in the same change whenever a major feature is built or its status
 changes. Record what was delivered, the validation performed, and any mock
 data or pending integrations.
 
+## Git workflow
+
+Push commits to a remote only when the user explicitly asks to push the current
+changes. Treat a request to commit as authorization for a local commit.
+
 ## Code boundaries
 
 - Keep `src/app/` focused on routing, layouts, and thin UI and HTTP entry

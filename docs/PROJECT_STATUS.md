@@ -20,12 +20,18 @@ any pending integration work.
 - Built the public landing page using the Royal Heritage Stitch design. It
   shows a planning workspace preview, V1 feature highlights, and a sample
   wedding website. The previews share a fixture with the demo workspace.
+- The workspace wordmark links to the homepage. The homepage uses burgundy,
+  ivory, and blush, and signed-in organisers see links to their workspace.
+  The account links sit below the section links on narrow screens.
 - Kept the couples count, average rating, and uptime in a labelled
   **Sample metrics** section. Those values are placeholders for verified
   backend data.
 - Passed lint, TypeScript, and the production build. Browser checks covered
   layouts at 320, 390, 768, and 1440 pixels, along with photos, section links,
   and demo navigation.
+- Chrome header checks covered both session states at 16 widths from 320 to
+  1440 pixels. Focused checks covered the signed-out fallback when the session
+  lookup fails and the unsaved-edit guard on the workspace wordmark.
 
 ## Organiser accounts and sessions — complete
 

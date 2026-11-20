@@ -19,21 +19,24 @@
 }
 
 .page {
-  --ink: #252c23;
-  --muted: #56574e;
-  --green: #1e4b3e;
-  --dark: #143629;
-  --ochre: #80571e;
-  --paper: #fff8f3;
-  --soft: #faf1e8;
-  --line: #e3d9cb;
+  --ink: #292a2d;
+  --muted: #615757;
+  --burgundy: #702f45;
+  --burgundy-dark: #552037;
+  --gold: #c99a46;
+  --gold-ink: #80571e;
+  --ivory: #faf7f2;
+  --blush: #f5e7e6;
+  --soft: #fbf0ef;
+  --surface: #fffdfa;
+  --line: #e7ddd7;
   --serif: "Playfair Display", Georgia, serif;
-  background: var(--paper);
+  background: var(--ivory);
   color: var(--ink);
   font-family: Manrope, "Segoe UI", sans-serif;
 }
 
-.page :focus-visible { outline-color: var(--ochre); }
+.page :focus-visible { outline-color: var(--burgundy); }
 .page section[id], .weddingEvents { scroll-margin-top: 1rem; }
 
 .shell, .headerInner {
@@ -52,7 +55,7 @@
 }
 .skipLink:focus { transform: none; }
 
-.header { border-bottom: 1px solid var(--line); background: #fffdfa; }
+.header { border-bottom: 1px solid var(--line); background: var(--surface); }
 .headerInner {
   display: grid;
   min-height: 4.5rem;
@@ -67,7 +70,7 @@
   align-items: center;
   gap: 0.65rem;
   justify-self: start;
-  color: var(--dark);
+  color: var(--burgundy-dark);
   font: 700 1.23rem/1.2 var(--serif);
 }
 
@@ -78,7 +81,7 @@
   flex: 0 0 2.05rem;
   place-items: center;
   border-radius: 0.4rem;
-  background: var(--green);
+  background: var(--burgundy);
   color: #f1d18a;
   font: 700 1.32rem/1 Georgia, serif;
 }
@@ -111,18 +114,18 @@
   line-height: 1.35;
   text-align: center;
 }
-.primaryAction { background: var(--green); color: white; }
-.primaryAction:hover { background: var(--dark); }
-.outlinedAction { border-color: #cbbcaa; background: #fffdfa; color: var(--dark); }
-.outlinedAction:hover { border-color: var(--green); background: #f6f1e8; }
+.primaryAction { background: var(--burgundy); color: white; }
+.primaryAction:hover { background: var(--burgundy-dark); }
+.outlinedAction { border-color: #cdb9bd; background: var(--surface); color: var(--burgundy-dark); }
+.outlinedAction:hover { border-color: var(--burgundy); background: var(--blush); }
 
 .hero {
   padding-block: clamp(3.25rem, 6vw, 5.5rem) clamp(3.5rem, 7vw, 6.5rem);
-  background: radial-gradient(ellipse at 50% 0, #efe8d8 0, transparent 56%);
+  background: radial-gradient(ellipse at 50% 0, var(--blush) 0, transparent 60%);
   text-align: center;
 }
 .eyebrow {
-  color: var(--ochre);
+  color: var(--gold-ink);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.09em;
@@ -134,7 +137,7 @@
   letter-spacing: -0.055em;
   text-wrap: balance;
 }
-.hero h1 em { display: block; color: var(--green); font-weight: 500; }
+.hero h1 em { display: block; color: var(--burgundy); font-weight: 500; }
 .heroDescription, .sectionHeading > p, .previewHeading > p, .closing p {
   max-width: 43rem;
   margin: 1rem auto 0;
@@ -157,7 +160,7 @@
   border: 1px solid var(--line);
   border-radius: 1rem;
   background: #fff;
-  box-shadow: 0 1.4rem 3rem #2f22151a, 0 0.2rem 0.45rem #2f22150a;
+  box-shadow: 0 1.4rem 3rem #55203717, 0 0.2rem 0.45rem #5520370a;
   text-align: left;
 }
 .previewBar {
@@ -176,16 +179,16 @@
   width: 0.48rem;
   height: 0.48rem;
   border-radius: 50%;
-  background: #c59a45;
+  background: var(--gold);
 }
-.windowDots span:nth-child(2) { background: #d7cbbb; }
-.windowDots span:nth-child(3) { background: #467262; }
+.windowDots span:nth-child(2) { background: #d6aab1; }
+.windowDots span:nth-child(3) { background: var(--burgundy); }
 .previewLabel {
   margin-left: auto;
   padding: 0.15rem 0.56rem;
   border-radius: 1rem;
-  background: #ebece4;
-  color: var(--green);
+  background: var(--blush);
+  color: var(--burgundy-dark);
   white-space: nowrap;
 }
 .previewBody {
@@ -205,13 +208,13 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 0.75rem;
-  background: #f9f2eb;
+  background: var(--soft);
 }
 .previewIdentity {
   display: flex;
   align-items: center;
   gap: 0.45rem;
-  color: var(--dark);
+  color: var(--burgundy-dark);
   font-size: 0.88rem;
 }
 .previewIdentity div > span { display: block; color: var(--muted); font-size: 0.77rem; }
@@ -222,7 +225,7 @@
   flex: 0 0 2rem;
   place-items: center;
   border-radius: 50%;
-  background: var(--green);
+  background: var(--burgundy);
   color: white;
   font-size: 0.7rem;
   font-weight: 700;
@@ -239,27 +242,27 @@
   align-items: center;
   padding: 0.35rem 0.53rem;
   border-radius: 0.35rem;
-  color: var(--green);
+  color: var(--burgundy);
   font-size: 0.86rem;
   font-weight: 700;
 }
-.previewNav a:first-child, .previewNav a:hover { background: #e9e0d3; }
+.previewNav a:first-child, .previewNav a:hover { background: var(--blush); }
 .previewGuestLink {
   justify-content: center;
   margin-top: auto;
-  border: 1px solid #cbbcaa;
-  background: #fffdfa;
+  border: 1px solid #cdb9bd;
+  background: var(--surface);
   text-align: center;
 }
-.previewGuestLink:hover { border-color: var(--green); }
+.previewGuestLink:hover { border-color: var(--burgundy); }
 
 .previewContent, .previewTotals, .previewPanels { display: grid; gap: 0.55rem; }
 .previewTotals { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-.previewTotals > div { padding: 0.6rem 0.75rem 0.7rem; background: #fffaf4; }
+.previewTotals > div { padding: 0.6rem 0.75rem 0.7rem; background: var(--ivory); }
 .previewTotals dt { color: var(--muted); font-size: 0.82rem; }
 .previewTotals dd {
   margin-top: 0.13rem;
-  color: var(--dark);
+  color: var(--burgundy-dark);
   font: 600 1.37rem/1.2 var(--serif);
 }
 .previewPanels { grid-template-columns: minmax(0, 1.32fr) minmax(0, 1fr); }
@@ -268,9 +271,9 @@
 .timeline, .responseList { display: grid; gap: 0.37rem; font-size: 0.87rem; }
 .timeline li, .responseList li {
   padding: 0.42rem 0.48rem;
-  border: 1px solid #ebdfd2;
+  border: 1px solid var(--line);
   border-radius: 0.35rem;
-  background: #fcf7f1;
+  background: var(--ivory);
 }
 .timeline li {
   display: grid;
@@ -289,7 +292,7 @@
   font-size: 0.77rem;
   line-height: 1.12;
 }
-.timeline li:nth-child(even) time { background: #deebe2; color: var(--green); }
+.timeline li:nth-child(even) time { background: var(--blush); color: var(--burgundy-dark); }
 .timeline p, .responseList p > span { color: var(--muted); font-size: 0.79rem; }
 .responseList li {
   display: flex;
@@ -304,7 +307,7 @@
   font-size: 0.75rem;
   font-weight: 700;
 }
-.attending { background: #deebe2; color: var(--green); }
+.attending { background: var(--blush); color: var(--burgundy-dark); }
 .waiting { background: #f2e6ce; color: #674919; }
 
 .metricStrip {
@@ -323,7 +326,7 @@
 .metrics > div + div { border-left: 1px solid var(--line); }
 .metrics dt { color: var(--muted); font-size: 0.88rem; font-weight: 600; }
 .metrics dd {
-  color: var(--green);
+  color: var(--burgundy);
   font: 600 clamp(1.45rem, 3.1vw, 2.4rem)/1.1 var(--serif);
   font-variant-numeric: lining-nums tabular-nums;
 }
@@ -331,6 +334,7 @@
 .section, .tintedSection, .closing { padding-block: clamp(3.7rem, 7vw, 6.4rem); }
 .tintedSection { border-block: 1px solid var(--line); background: var(--soft); }
 .sectionHeading { margin-bottom: clamp(1.8rem, 4vw, 3.5rem); text-align: center; }
+.sectionHeading h2, .previewHeading h2 { color: var(--burgundy-dark); }
 .sectionHeading h2, .previewHeading h2, .closing h2 {
   font: 600 clamp(2rem, 3.4vw, 3.2rem)/1.13 var(--serif);
   letter-spacing: -0.04em;
@@ -339,7 +343,7 @@
 .featureGrid, .audienceGrid { display: grid; gap: clamp(0.85rem, 2vw, 1.55rem); }
 .featureGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .audienceGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.featureCard, .audienceCard { padding: clamp(1.1rem, 2vw, 1.6rem); background: #fffdfa; }
+.featureCard, .audienceCard { padding: clamp(1.1rem, 2vw, 1.6rem); background: var(--surface); }
 .featureCard { display: flex; min-height: 16rem; flex-direction: column; }
 .featureMark {
   display: grid;
@@ -347,8 +351,8 @@
   height: 2.35rem;
   place-items: center;
   border-radius: 0.45rem;
-  background: #eee5d7;
-  color: var(--green);
+  background: var(--blush);
+  color: var(--burgundy);
   font-size: 1.2rem;
   font-weight: 700;
 }
@@ -377,8 +381,8 @@
   gap: 0.25rem 0.75rem;
   padding-block: 0.14rem;
 }
-.exampleRows dd { color: var(--green); font-weight: 700; white-space: nowrap; }
-.exampleTask strong { color: var(--green); }
+.exampleRows dd { color: var(--burgundy); font-weight: 700; white-space: nowrap; }
+.exampleTask strong { color: var(--burgundy); }
 .exampleTask p { margin-top: 0.25rem; color: var(--muted); }
 .invitationCallout {
   display: flex;
@@ -390,7 +394,7 @@
   padding: 1.1rem 1.35rem;
   border: 1px solid var(--line);
   border-radius: 0.65rem;
-  background: #fffaf4;
+  background: var(--surface);
 }
 .invitationCallout h3 { margin-top: 0; }
 .invitationCallout p { margin-bottom: 0; }
@@ -409,7 +413,7 @@
   line-height: 1.6;
   list-style: disc;
 }
-.audienceCard li::marker { color: var(--ochre); }
+.audienceCard li::marker { color: var(--gold-ink); }
 
 .previewHeading { margin-bottom: 1.7rem; }
 .previewHeading > p { margin-left: 0; }
@@ -417,21 +421,21 @@
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 0.95rem;
-  background: #fffdfa;
-  box-shadow: 0 0.9rem 1.5rem #2f221513;
+  background: var(--surface);
+  box-shadow: 0 0.9rem 1.5rem #55203713;
 }
 .weddingCover {
   display: grid;
   min-height: 17rem;
   grid-template-columns: 1fr minmax(0, 0.9fr);
   border-bottom: 1px solid var(--line);
-  background: linear-gradient(125deg, #f3e8d9, #fffcf6);
+  background: linear-gradient(125deg, var(--blush), var(--ivory));
 }
 .weddingIntro { align-self: center; padding: clamp(1.3rem, 4vw, 3.3rem); }
-.weddingEyebrow { color: var(--ochre); font-size: 0.89rem; font-weight: 700; }
+.weddingEyebrow { color: var(--gold-ink); font-size: 0.89rem; font-weight: 700; }
 .weddingIntro h3 {
   margin-top: 0.35rem;
-  color: var(--dark);
+  color: var(--burgundy-dark);
   font: 600 clamp(2.15rem, 4.7vw, 4.35rem)/1.14 var(--serif);
   letter-spacing: -0.055em;
 }
@@ -450,7 +454,7 @@
 .weddingEvents { padding: clamp(1rem, 3vw, 2rem); }
 .weddingEvents h4 { margin-bottom: 0.8rem; font: 600 1.45rem/1.25 var(--serif); }
 .weddingEvents ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.8rem; }
-.eventCard { overflow: hidden; background: #fdf7ef; }
+.eventCard { overflow: hidden; background: var(--ivory); }
 .eventPhoto { aspect-ratio: 16 / 10; }
 .eventPhoto time {
   position: absolute;
@@ -458,8 +462,8 @@
   left: 0.55rem;
   padding: 0.24rem 0.45rem;
   border-radius: 0.25rem;
-  background: #fffdfa;
-  color: var(--dark);
+  background: var(--surface);
+  color: var(--burgundy-dark);
   font-size: 0.78rem;
   font-weight: 700;
 }
@@ -467,18 +471,18 @@
 .eventDetails p { margin-top: 0.14rem; color: var(--muted); font-size: 0.85rem; }
 
 .closing {
-  border-top: 1px solid #194234;
-  background: radial-gradient(ellipse at 50% 0, #245544, #15392c 72%);
+  border-top: 1px solid var(--burgundy-dark);
+  background: radial-gradient(ellipse at 50% 0, var(--burgundy), var(--burgundy-dark) 74%);
   color: #fffaf0;
   text-align: center;
 }
-.closing p { color: #e2e7de; }
+.closing p { color: var(--blush); }
 .closing :focus-visible, .footer :focus-visible { outline-color: #f5d382; }
-.goldAction { background: #e4bd6f; color: #213a2e; }
+.goldAction { background: #e4bd6f; color: #3c1b27; }
 .goldAction:hover { background: #f1cf8a; }
-.lightAction { border-color: #a2b4a6; color: #fffaf0; }
-.lightAction:hover { background: #2c5547; }
-.footer { background: #102e23; color: #e4e9e2; }
+.lightAction { border-color: #c393a4; color: #fffaf0; }
+.lightAction:hover { background: #77354b; }
+.footer { background: #411c2b; color: var(--blush); }
 .footer .shell {
   display: flex;
   flex-wrap: wrap;
@@ -513,11 +517,15 @@
   .weddingPhoto { aspect-ratio: 16 / 9; }
 }
 
-@media (max-width: 440px) {
+@media (max-width: 520px) {
   .headerInner { grid-template-columns: minmax(0, 1fr); }
+  .accountNav { justify-self: start; }
+}
+
+@media (max-width: 440px) {
   .brand { font-size: 1.01rem; }
   .brandMark { width: 1.77rem; height: 1.77rem; flex-basis: 1.77rem; }
-  .accountNav { justify-self: start; gap: 0.55rem; }
+  .accountNav { gap: 0.55rem; }
   .accountNav .primaryAction { padding-inline: 0.5rem; }
   .sectionNav { gap: 0.42rem 0.95rem; }
   .sectionNav a { padding-block: 0.4rem; }

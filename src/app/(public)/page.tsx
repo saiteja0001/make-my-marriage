@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { demoWedding } from "@/app/_data/demo-wedding";
+import { getSignedInUser } from "@/server/auth/session";
 import { WeddingPreview } from "./_components/wedding-preview";
 import { WorkspacePreview } from "./_components/workspace-preview";
 import { sampleExpenses, sampleMetrics } from "./_data/landing-content";
 import styles from "./homepage.module.css";
+
+export const dynamic = "force-dynamic";
 
 const sections = [
   { href: "#features", label: "Features" },
@@ -11,7 +14,11 @@ const sections = [
   { href: "#wedding-preview", label: "Wedding preview" },
 ];
 
-export default function HomePage() {
+export default async function HomePage() {
+  const user = await getSignedInUser().catch((error: unknown) => {
+    console.error("Homepage session lookup failed", error instanceof Error ? error.name : "UnknownError");
+    return null;
+  });
   const nextTask = demoWedding.tasks[0];
 
   return (
@@ -29,8 +36,14 @@ export default function HomePage() {
           </nav>
 
           <nav className={styles.accountNav} aria-label="Account">
-            <Link href="/login">Log in</Link>
-            <Link href="/signup" className={styles.primaryAction}>Sign up</Link>
+            {user ? (
+              <Link href="/app" className={styles.primaryAction}>Open workspace</Link>
+            ) : (
+              <>
+                <Link href="/login">Log in</Link>
+                <Link href="/signup" className={styles.primaryAction}>Sign up</Link>
+              </>
+            )}
           </nav>
         </div>
       </header>
@@ -148,8 +161,12 @@ export default function HomePage() {
             <h2 id="closing-title">Bring your families into one plan</h2>
             <p>Explore a sample wedding to see how the workspace fits together.</p>
             <div className={styles.actions}>
-              <Link href="/demo" className={styles.goldAction}>Explore the demo</Link>
-              <Link href="/signup" className={styles.lightAction}>Sign up</Link>
+              <Link href={user ? "/app" : "/demo"} className={styles.goldAction}>
+                {user ? "Open workspace" : "Explore the demo"}
+              </Link>
+              <Link href={user ? "/demo" : "/signup"} className={styles.lightAction}>
+                {user ? "Explore the demo" : "Sign up"}
+              </Link>
             </div>
           </div>
         </section>
@@ -161,7 +178,7 @@ export default function HomePage() {
           <nav aria-label="Footer">
             <a href="#features">Features</a>
             <a href="#wedding-preview">Wedding preview</a>
-            <Link href="/login">Log in</Link>
+            <Link href={user ? "/app" : "/login"}>{user ? "Workspace" : "Log in"}</Link>
           </nav>
         </div>
       </footer>
