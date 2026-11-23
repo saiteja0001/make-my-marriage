@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 
-export function LogoutButton({ className, onRequestLeave, onLoggedOut }: {
+export function LogoutButton({ className, onRequestLeave, onLoggedOut, label = "Log out", returnTo = "/login" }: {
   className: string;
   onRequestLeave?: (leave: () => void) => void;
   onLoggedOut?: () => void;
+  label?: string;
+  returnTo?: string;
 }) {
   const [pending, setPending] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -18,7 +20,7 @@ export function LogoutButton({ className, onRequestLeave, onLoggedOut }: {
       const response = await fetch("/api/auth/logout", { method: "POST" });
       if (!response.ok && response.status !== 401) throw new Error();
       onLoggedOut?.();
-      window.location.replace("/login");
+      window.location.replace(returnTo);
     } catch {
       setFailed(true);
       setPending(false);
@@ -33,7 +35,7 @@ export function LogoutButton({ className, onRequestLeave, onLoggedOut }: {
         disabled={pending}
         className={className}
       >
-        {pending ? "Logging out…" : "Log out"}
+        {pending ? "Logging out…" : label}
       </button>
       {failed && <p className="mt-2 text-sm text-clay" role="alert">We couldn’t log you out. Please try again.</p>}
     </div>

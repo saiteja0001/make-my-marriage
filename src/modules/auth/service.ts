@@ -3,7 +3,7 @@ import { argon2id, hash, verify } from "argon2";
 import type { Types } from "mongoose";
 import { connectAuthDatabase, Session, User } from "./models";
 import { delayFailedLogin } from "./rate-limit";
-import { hashAuthSecret, isSessionToken, issueSessionToken } from "./secrets";
+import { hashAuthSecret, isAuthToken, issueAuthToken } from "./secrets";
 import { normalizeEmail } from "./validation";
 
 const sessionLifetime = 7 * 24 * 60 * 60 * 1000;
@@ -26,7 +26,7 @@ function publicUser(user: UserIdentity) {
 }
 
 function newSession() {
-  const token = issueSessionToken();
+  const token = issueAuthToken();
   const expiresAt = new Date(Date.now() + sessionLifetime);
   return { token, expiresAt, tokenHash: hashAuthSecret("session", token) };
 }
@@ -84,7 +84,7 @@ function activeSession(token: string) {
 }
 
 export async function findSignedInUser(token: string | undefined) {
-  if (!isSessionToken(token)) return null;
+  if (!isAuthToken(token)) return null;
   await connectAuthDatabase();
 
   const session = await Session.findOne(activeSession(token)).select("userId").lean().exec();
@@ -95,7 +95,7 @@ export async function findSignedInUser(token: string | undefined) {
 }
 
 export async function logOut(token: string | undefined) {
-  if (!isSessionToken(token)) return false;
+  if (!isAuthToken(token)) return false;
   await connectAuthDatabase();
   const result = await Session.deleteOne(activeSession(token));
   return result.deletedCount === 1;

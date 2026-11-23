@@ -915,6 +915,12 @@ Create invitation record
 Send email immediately through Resend
 ```
 
+The email links to `/member-invitations/:token`. The token expires after seven
+days and is stored as an HMAC-SHA-256 hash. A failed send returns
+`DELIVERY_FAILED` and revokes the generated link so the Admin can retry.
+The server checks Admin membership inside the transaction that creates the
+invitation and sends the email after the transaction commits.
+
 ### Response
 
 ```json
@@ -954,6 +960,7 @@ REVOKED
 ```
 
 rather than necessarily deleting it.
+The server checks Admin membership in the same transaction as the revocation.
 
 ---
 
@@ -1052,6 +1059,10 @@ or:
 ```
 
 Backend must ensure Wedding never ends with zero Admins.
+
+Role changes, removals, and invitation writes run in transactions serialized
+per wedding.
+If a change would leave the wedding without an Admin, it returns `409 LAST_ADMIN`.
 
 ---
 

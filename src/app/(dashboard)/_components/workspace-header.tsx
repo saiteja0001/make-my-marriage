@@ -1,11 +1,10 @@
 import Link from "next/link";
+import { memberRoleLabels, type MemberRole } from "@/modules/wedding/member-roles";
 import styles from "../workspace.module.css";
 import { LogoutButton } from "./logout-button";
 
-const roleLabels = { ADMIN: "Admin", MANAGER: "Manager" };
-
 export function WorkspaceHeader({ member, onRequestLeave, onNavigateAway }: {
-  member?: { name: string; role: keyof typeof roleLabels };
+  member?: { name: string; role: MemberRole };
   onRequestLeave?: (leave: () => void) => void;
   onNavigateAway?: () => void;
 }) {
@@ -24,7 +23,7 @@ export function WorkspaceHeader({ member, onRequestLeave, onNavigateAway }: {
         {member && (
           <p className={styles.headerMember}>
             <strong>{member.name}</strong>{" "}
-            <span className={styles.membershipRole}>{roleLabels[member.role]}</span>
+            <span className={styles.membershipRole}>{memberRoleLabels[member.role]}</span>
           </p>
         )}
         <LogoutButton className={styles.logout} onRequestLeave={onRequestLeave} onLoggedOut={onNavigateAway} />

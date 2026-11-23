@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getWeddingForUser } from "@/modules/wedding/service";
 import { daysUntilWedding, formatWeddingDate } from "@/modules/wedding/wedding-date";
@@ -31,6 +32,7 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
                 <h1 id="wedding-heading">{wedding.title || couple}</h1>
                 {/* A full navigation lets browser Back use the edit page's beforeunload guard. */}
                 <a className={styles.editWedding} href="/app/edit">Edit wedding</a>
+                <Link className={styles.editWedding} href="/app/members">Wedding members</Link>
               </div>
               {wedding.title && <p>{couple}</p>}
             </div>

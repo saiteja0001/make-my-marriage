@@ -117,3 +117,40 @@ any pending integration work.
   warning, retry, reauthentication, and refreshed overview data. Isolated
   MongoDB checks covered Admin and Manager edits, concurrent partial updates,
   clearing optional fields, cross-wedding isolation, and link stability.
+
+## Wedding member invitations — complete
+
+- Built the Wedding Members roster and invitation acceptance screens from the
+  desktop and mobile Stitch designs. Admins can send and revoke invitations.
+  Managers can view active members.
+- Invitees can sign in or create an account from the invitation link, then
+  join with the assigned role. Invitations expire after seven days, are
+  stored as token hashes, and can be accepted once by the invited email.
+  A transaction enforces the one-wedding rule during acceptance.
+- Connected the Resend email adapter. Live delivery requires a verified
+  sender, API key, and application URL. Tests used a local provider mock.
+- Invitation creation, acceptance, and revocation share the per-wedding
+  transaction guard with role changes and removals. Admin checks run inside
+  the write transaction, and invitation emails are sent after commit.
+- Passed lint, TypeScript, and the production build. Chrome covered the
+  desktop and mobile roster, form validation, account switching, signup, and
+  acceptance. Isolated MongoDB checks covered permissions, cross-wedding
+  isolation, delivery retries, duplicate sends, revoke, expiry, and concurrent
+  acceptance across weddings.
+- Regression checks with simulated transactions covered Admin demotion during
+  invitation writes, delivery after commit, and revocation after a failed
+  send. Chrome verified that invitation POSTs keep their Origin header and
+  omit the token URL from the referrer.
+
+## Wedding member management — complete
+
+- Added Admin-only role changes and confirmed removal to the active member
+  roster. A removed member loses wedding access and returns to onboarding
+  when they open the workspace.
+- Role changes and removals check current membership and run in transactions
+  serialized per wedding. The last Admin is protected from both actions.
+- Chrome checked desktop and mobile layouts, promotion, and the choice to
+  confirm or cancel removal.
+  Isolated MongoDB checks covered Manager restrictions, cross-wedding access,
+  invalid input, and concurrent demotion and removal of the final two Admins.
+  Lint, TypeScript, and the production build passed.

@@ -19,10 +19,11 @@ type AccountFieldProps = {
   error?: string;
   minLength?: number;
   endControl?: ReactNode;
+  fixedValue?: string;
 };
 
 function AccountField({
-  name, label, type = "text", autoComplete, error, minLength, endControl,
+  name, label, type = "text", autoComplete, error, minLength, endControl, fixedValue,
 }: AccountFieldProps) {
   const inputId = "account-" + name;
   const errorId = inputId + "-error";
@@ -41,6 +42,8 @@ function AccountField({
           autoCapitalize={name === "password" ? "none" : undefined}
           spellCheck={name === "password" ? false : undefined}
           minLength={minLength}
+          defaultValue={fixedValue}
+          readOnly={fixedValue !== undefined}
           required
           aria-invalid={Boolean(error)}
           aria-describedby={describedBy || undefined}
@@ -53,8 +56,12 @@ function AccountField({
   );
 }
 
-export function AccountForm({ mode }: { mode: "login" | "signup" }) {
+export function AccountForm({ mode, invitation }: {
+  mode: "login" | "signup";
+  invitation?: { email: string; returnTo: string; switchMode: () => void };
+}) {
   const isSignup = mode === "signup";
+  const Heading = invitation ? "h2" : "h1";
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<FormError | null>(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -75,7 +82,7 @@ export function AccountForm({ mode }: { mode: "login" | "signup" }) {
         body: JSON.stringify(body),
       });
       if (result.ok) {
-        window.location.replace("/app");
+        window.location.replace(invitation?.returnTo ?? "/app");
         return;
       }
 
@@ -90,16 +97,16 @@ export function AccountForm({ mode }: { mode: "login" | "signup" }) {
 
   return (
     <div className="panel p-6 sm:p-9">
-      <h1 className="font-display text-4xl tracking-tight text-pine">
+      <Heading className="font-display text-4xl tracking-tight text-pine">
         {isSignup ? "Create an account" : "Log in"}
-      </h1>
+      </Heading>
       <form className="mt-6" method="post" onSubmit={submit} aria-busy={pending}>
         <fieldset disabled={pending} className="grid gap-4">
           <legend className="sr-only">Account details</legend>
           {isSignup && (
             <AccountField name="name" label="Name" autoComplete="name" error={error?.details?.name} />
           )}
-          <AccountField name="email" label="Email" type="email" autoComplete="email" error={error?.details?.email} />
+          <AccountField name="email" label="Email" type="email" autoComplete="email" error={error?.details?.email} fixedValue={invitation?.email} />
           <AccountField
             name="password"
             label="Password"
@@ -131,16 +138,18 @@ export function AccountForm({ mode }: { mode: "login" | "signup" }) {
       </form>
       <p className="mt-5 text-sm text-muted">
         {isSignup ? "Already have an account?" : "New to Make My Marriage?"}{" "}
-        <Link
+        {invitation ? <button type="button" disabled={pending} onClick={invitation.switchMode} className="rounded-sm font-semibold text-pine underline underline-offset-4 disabled:opacity-70">
+          {isSignup ? "Log in" : "Sign up"}
+        </button> : <Link
           href={isSignup ? "/login" : "/signup"}
           className="rounded-sm font-semibold text-pine underline underline-offset-4"
         >
           {isSignup ? "Log in" : "Sign up"}
-        </Link>
+        </Link>}
       </p>
-      <div className="mt-5 grid">
+      {!invitation && <div className="mt-5 grid">
         <ActionLink href="/demo" variant="secondary">Explore the demo</ActionLink>
-      </div>
+      </div>}
     </div>
   );
 }

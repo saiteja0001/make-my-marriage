@@ -26,12 +26,19 @@ creation transactions. When setting `NEXT_PUBLIC_APP_URL`,
 use the same origin that visitors use to open the app, including the port
 when applicable.
 
+For wedding member invitations, set `RESEND_API_KEY`, `RESEND_FROM_EMAIL`
+(a verified Resend sender), and `NEXT_PUBLIC_APP_URL` (the invitation link
+origin). Invitations expire after seven days. The member list is available
+without the email configuration.
+
 | Path | Purpose |
 | --- | --- |
 | `/` | Public landing page and demo entry |
 | `/login`, `/signup` | Organiser account forms |
 | `/app`, `/onboarding` | Private wedding overview with a local-date countdown and three-step wedding setup |
 | `/app/edit` | Edit the saved wedding details |
+| `/app/members` | View members. Admins can manage invitations, change roles, and remove members. |
+| `/member-invitations/[token]` | Sign in or create an account and accept a wedding invitation |
 | `POST /api/wedding` | Create a wedding and its first Admin membership |
 | `PATCH /api/wedding` | Update submitted wedding fields as an Admin or Manager |
 | `/demo` | Public sample wedding overview and countdown |

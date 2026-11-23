@@ -42,7 +42,7 @@ export function authUnavailable(error: unknown) {
   return authError(503, "INTERNAL_ERROR", "Account access is temporarily unavailable. Please try again.");
 }
 
-export async function readJson(request: Request, subject: "account" | "wedding") {
+export async function readJson(request: Request, subject: "account" | "wedding" | "invitation" | "member") {
   if (request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !== "application/json") {
     return { error: authError(415, "VALIDATION_ERROR", `Send the ${subject} details as JSON.`) };
   }
@@ -59,7 +59,7 @@ export async function readJson(request: Request, subject: "account" | "wedding")
       bytes += value.byteLength;
       if (bytes > maxBodyBytes) {
         await reader.cancel().catch(() => {});
-        const label = subject === "account" ? "Account" : "Wedding";
+        const label = subject[0].toUpperCase() + subject.slice(1);
         return { error: authError(413, "VALIDATION_ERROR", `${label} details are too large.`) };
       }
       body += decoder.decode(value, { stream: true });

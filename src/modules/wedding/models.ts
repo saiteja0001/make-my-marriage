@@ -1,6 +1,7 @@
 import "server-only";
 import { model, models, Schema, type Model, type Types } from "mongoose";
 import { connectDatabase } from "@/server/db/mongoose";
+import { memberRoles, type MemberRole } from "./member-roles";
 
 type WeddingRecord = {
   brideName: string;
@@ -12,12 +13,13 @@ type WeddingRecord = {
   location: { formattedAddress: string };
   website: { slug: string; isPublished: boolean };
   createdByUserId: Types.ObjectId;
+  membershipRevision?: number;
 };
 
 type MembershipRecord = {
   userId: Types.ObjectId;
   weddingId: Types.ObjectId;
-  role: "ADMIN" | "MANAGER";
+  role: MemberRole;
   joinedAt: Date;
 };
 
@@ -36,12 +38,13 @@ const weddingSchema = new Schema<WeddingRecord>({
     isPublished: { type: Boolean, default: false },
   },
   createdByUserId: { type: Schema.Types.ObjectId, required: true },
+  membershipRevision: Number,
 }, storageOptions);
 
 const membershipSchema = new Schema<MembershipRecord>({
   userId: { type: Schema.Types.ObjectId, required: true, unique: true },
   weddingId: { type: Schema.Types.ObjectId, required: true },
-  role: { type: String, enum: ["ADMIN", "MANAGER"], required: true },
+  role: { type: String, enum: memberRoles, required: true },
   joinedAt: { type: Date, required: true },
 }, storageOptions);
 membershipSchema.index({ weddingId: 1, userId: 1 }, { unique: true });
