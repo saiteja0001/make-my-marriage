@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getEventOverview } from "@/modules/events/service";
 import { getWeddingForUser } from "@/modules/wedding/service";
 import { daysUntilWedding, formatWeddingDate } from "@/modules/wedding/wedding-date";
 import { getSignedInUser } from "@/server/auth/session";
@@ -20,6 +21,7 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
   if (!current) redirect("/onboarding");
 
   const { membership, wedding } = current;
+  const events = await getEventOverview(wedding.id);
   const couple = `${wedding.brideName} & ${wedding.groomName}`;
   return (
     <WorkspaceShell currentPath="/app" member={{ name: user.name, role: membership.role }}>
@@ -62,7 +64,7 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
             <p className={styles.timeZone}>{wedding.timeZone}</p>
           </div>
         </section>
-        <PlanningPreview />
+        <PlanningPreview events={events} timeZone={wedding.timeZone} />
       </main>
     </WorkspaceShell>
   );

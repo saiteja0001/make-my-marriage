@@ -1115,6 +1115,10 @@ index(weddingId, startsAt)
 index(weddingId, archivedAt)
 ```
 
+The implementation also uses an optional per-wedding creation request key
+with a partial unique index to make retries safe. Mongoose's version field
+tracks revisions for concurrent edits.
+
 ---
 
 # 36. Tasks Collection

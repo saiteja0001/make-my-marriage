@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import styles from "./workspace-shell.module.css";
 
-export type WorkspacePath = "/app" | "/app/edit" | "/app/members";
+export type WorkspacePath = "/app" | "/app/edit" | "/app/members" | "/app/events";
 
 type Destination = {
   label: string;
@@ -20,7 +21,7 @@ const navigation: readonly { label: string; destinations: readonly Destination[]
   {
     label: "Planning",
     destinations: [
-      { label: "Events" },
+      { label: "Events", href: "/app/events" },
       { label: "Tasks" },
       { label: "Guests", items: ["Guest List", "Invitations", "RSVPs"] },
     ],
@@ -54,6 +55,8 @@ export function WorkspaceNavigation({ currentPath, onRequestLeave, onNavigateAwa
   onRequestLeave?: (leave: () => void) => void;
   onNavigateAway?: () => void;
 }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
 
@@ -111,6 +114,7 @@ export function WorkspaceNavigation({ currentPath, onRequestLeave, onNavigateAwa
                 );
 
                 const current = currentPath === href;
+                const samePage = current && pathname === href && !searchParams?.toString();
                 return (
                   <li key={label}>
                     {/* Enter the edit page with a full navigation so browser Back uses beforeunload. */}
@@ -120,9 +124,9 @@ export function WorkspaceNavigation({ currentPath, onRequestLeave, onNavigateAwa
                       <Link
                         href={href}
                         className={styles.navRow}
-                        aria-current={current ? "page" : undefined}
+                        aria-current={current ? (samePage ? "page" : "location") : undefined}
                         onNavigate={(event) => {
-                          if (current) {
+                          if (samePage) {
                             event.preventDefault();
                             closeMenuAndRestoreFocus();
                             return;

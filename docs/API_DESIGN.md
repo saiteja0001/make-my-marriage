@@ -1105,6 +1105,10 @@ from
 to
 ```
 
+The optional range filters constrain the event's start time inclusively. Pass
+ISO date-times with explicit offsets. Set `includeArchived=true` to include
+archived events alongside active events.
+
 ### Response
 
 ```json
@@ -1143,6 +1147,10 @@ Implementation notes (2026-09-16): Admins and Managers are allowed. `name` and
 Optional text fields can be cleared with an empty string, and `endsAt` with null.
 Timestamps must be ISO date-times with an explicit offset (including Z). If
 present, the end must be strictly after the start. Cover uploads are deferred.
+
+The workspace sends an optional UUID `Idempotency-Key` for creation. A retry
+with the same key in the same wedding returns the existing event with
+`200 OK`. Use a new key for a new creation.
 
 
 ### Request
@@ -1195,6 +1203,11 @@ Allows partial updates.
 The resulting start/end pair is validated after merging changes. Archived events
 are read-only. A concurrent modification detected during the update returns
 CONFLICT; reload the event before retrying. Client-supplied wedding IDs are rejected.
+Event responses include a numeric `revision`. The workspace sends it as a
+quoted `If-Match` value when editing to detect changes made since the form was
+opened. Workspace mutations can also send an optional `X-Event-Draft` context
+to detect a change of account, membership, or wedding timezone during editing.
+Wedding scope is always derived from the authenticated membership.
 
 
 ---
@@ -1212,6 +1225,8 @@ Instead:
 ```text
 archivedAt = now
 ```
+
+Archiving an already archived event succeeds without changing its archive date.
 
 ### Response
 

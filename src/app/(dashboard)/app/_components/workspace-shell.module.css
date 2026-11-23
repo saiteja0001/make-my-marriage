@@ -83,7 +83,7 @@
 
 a.navRow { color: var(--charcoal); font-weight: 700; }
 a.navRow:hover, .plannedGroup summary:hover { background: var(--ivory); }
-a.navRow[aria-current="page"] { background: var(--blush); color: var(--burgundy); }
+a.navRow[aria-current] { background: var(--blush); color: var(--burgundy); }
 
 .plannedGroup summary { list-style: none; cursor: pointer; }
 .plannedGroup summary::-webkit-details-marker { display: none; }

@@ -138,6 +138,7 @@
 .metric { min-width: 0; padding: clamp(0.7rem, 1.4vw, 1.1rem); border-radius: 0.65rem; }
 .metric dt { color: var(--muted); font-size: 0.875rem; font-weight: 600; }
 .metric dd { margin-top: 0.2rem; color: var(--burgundy); font: 600 clamp(1.35rem, 2vw, 1.9rem) / 1.25 var(--serif); }
+.metricSample { display: block; margin-top: 0.3rem; color: #6c4b18; font: 700 0.75rem / 1.25 Manrope, "Segoe UI", sans-serif; }
 
 .planningLists { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
 .planningCard { min-width: 0; padding: clamp(0.9rem, 1.85vw, 1.6rem); border-radius: 0.85rem; }
@@ -155,6 +156,11 @@
 .previewList > li.task { grid-template-columns: minmax(0, 1fr) auto; }
 .previewList h3 { font-weight: 700; }
 .previewList p { margin-top: 0.2rem; color: var(--muted); font-size: 0.875rem; }
+.previewList li > div { overflow-wrap: anywhere; }
+.previewList h3 a:hover, .previewLink { text-decoration: underline; }
+.previewLink { color: var(--burgundy); font-size: 0.875rem; font-weight: 700; }
+.emptyPreview { padding-block: 0.6rem; color: var(--muted); }
+.emptyPreview .previewLink { display: inline-block; margin-top: 0.5rem; }
 
 .eventDate {
   display: grid;

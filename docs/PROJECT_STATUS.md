@@ -183,3 +183,33 @@ any pending integration work.
 - Focused checks verified focus restoration and the unsaved-edit guard.
   Chrome selected the expected countdown image widths at eight viewport
   widths from 640 to 2560 pixels.
+
+## Wedding events — QA follow-up
+
+- Activated Events in the private workspace. Added a responsive schedule
+  grouped by day, event details, create and edit forms with optional ceremony
+  presets, and an archive confirmation with a read-only Archived view.
+- Admins and Managers can manage events in their wedding. The Events API
+  supports filtered lists and partial updates. It stores timestamps in UTC
+  and renders them in the wedding timezone, including overnight events.
+- The event form lets organisers choose an offset when a clock time repeats.
+  The schedule shows both offsets when an event crosses a clock change.
+- The Events sidebar link returns to the active schedule from Archived.
+- Saves show inline errors and keep entries after a failed request. Creation
+  retries reuse a request key, concurrent edits detect conflicts, and archives
+  retain event records for later references.
+- The dashboard shows a real count of active events and up to three
+  upcoming events. Tasks and the other planning metrics still use labelled
+  sample data. Event cover uploads are planned for a later V1 increment.
+- Passed lint, TypeScript, and the production build. Chrome checked desktop
+  creation and mobile editing and archiving, including an overnight event,
+  a lost create response, clearing an optional field, and dashboard updates.
+- Isolated database checks covered Admin and Manager access, cross-wedding
+  isolation, archived records, date filters, duplicate create retries, and
+  edit conflicts.
+- Focused checks covered saving across a repeated clock hour, skipped times,
+  preserving a saved timestamp when editing other fields, and returning to
+  the active schedule from Archived using the sidebar.
+- Unsaved-changes warnings are pending for event creation and editing.
+  Chrome QA reproduced draft loss when using Back to events, the workspace
+  sidebar, or browser reload.
