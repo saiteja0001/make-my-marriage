@@ -250,3 +250,6 @@ any pending integration work.
 - A browser check covered a lost create response, deletion before retry, and
   explicit creation with a fresh key. A browser fixture for the shared draft
   component verified the reload warning after browser Back restored a form.
+- After a draft's account or wedding settings change, the recovery link opens
+  a fresh create or edit form in a new tab. Browser checks changed the wedding
+  timezone and verified that both forms could save after reopening.

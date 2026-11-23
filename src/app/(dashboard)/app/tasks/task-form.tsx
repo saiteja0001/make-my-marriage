@@ -24,7 +24,7 @@ function initialDraft(timeZone: string, task?: TaskDetails) {
 type Draft = ReturnType<typeof initialDraft>;
 type Field = keyof Draft;
 type FieldErrors = Partial<Record<Field, string>>;
-type Problem = { message: string; action: "login" | "reload" | "retry" | "review" | "createNew" };
+type Problem = { message: string; action: "login" | "reload" | "reopen" | "retry" | "review" | "createNew" };
 
 export function TaskForm({ task, options, timeZone, context }: {
   task?: TaskDetails;
@@ -41,6 +41,7 @@ export function TaskForm({ task, options, timeZone, context }: {
   const dirty = Object.keys(initial).some((field) => initial[field as Field] !== draft[field as Field]);
   const { leaveFor, allowNavigation } = useWorkspaceDraft(dirty, saving);
   const returnUrl = task ? `/app/tasks/${task.id}` : "/app/tasks";
+  const formUrl = task ? `${returnUrl}/edit` : "/app/tasks/new";
   const availableAssignee = options.members.some(({ id }) => id === initial.assignedMembershipId);
   const availableEvent = options.events.some(({ id }) => id === initial.eventId);
 
@@ -105,6 +106,11 @@ export function TaskForm({ task, options, timeZone, context }: {
         setProblem({ message: "Your session expired. Sign in again to continue this draft.", action: "login" });
       } else if (result.status === 410) {
         setProblem({ message: response?.error?.message || "This task was created and has since been deleted.", action: "createNew" });
+      } else if (result.status === 409 && response?.error?.code === "DRAFT_CHANGED") {
+        setProblem({
+          message: "Your draft was opened with different account or wedding settings. Your entries are still here.",
+          action: "reopen",
+        });
       } else if (response?.error?.details && Object.keys(response.error.details).length) {
         focusErrors(response.error.details);
       } else if (result.status === 409 || result.status === 404) {
@@ -176,6 +182,7 @@ export function TaskForm({ task, options, timeZone, context }: {
         {problem && <div className={styles.problem} role="alert">
           <p>{problem.message}</p>
           {problem.action === "login" && <Link href="/login" target="_blank" rel="noopener">Open login in a new tab</Link>}
+          {problem.action === "reopen" && <Link href={formUrl} target="_blank" rel="noopener" prefetch={false}>Open a fresh {task ? "edit" : "task"} form in a new tab</Link>}
           {problem.action === "reload" && <Link href={returnUrl} target="_blank" rel="noopener">Open the current version in a new tab</Link>}
         </div>}
         <div className={styles.formActions}>
