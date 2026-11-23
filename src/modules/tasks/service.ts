@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { Types, type ClientSession, type QueryFilter } from "mongoose";
 import { User } from "@/modules/auth/models";
 import { WeddingEvent } from "@/modules/events/model";
+import { lockActiveEventReferences } from "@/modules/events/service";
 import { WeddingMembership } from "@/modules/wedding/models";
 import { connectDatabase } from "@/server/db/mongoose";
 import { prepareTaskStorage, TaskCreationRequest, WeddingTask, type TaskRecord } from "./model";
@@ -162,8 +163,7 @@ async function lockNewReferences(weddingId: string, input: TaskChanges, session:
     }
   }
   if (eventId && eventId !== existing?.eventId?.toString()) {
-    const event = await WeddingEvent.updateOne({ _id: eventId, weddingId, archivedAt: null }, revision, options);
-    if (!event.matchedCount) {
+    if (!await lockActiveEventReferences(weddingId, [eventId], session)) {
       throw new TaskReferenceUnavailable("eventId", "Choose an active event in your wedding.");
     }
   }

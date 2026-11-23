@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { demoWedding } from "@/app/_data/demo-wedding";
 import type { getEventOverview } from "@/modules/events/service";
 import { formatEventDay, formatEventTimeRange } from "@/modules/events/wedding-time";
+import type { getGuestOverview } from "@/modules/guests/service";
 import { taskDueDay } from "@/modules/tasks/due-date";
 import type { getTaskOverview } from "@/modules/tasks/service";
 import { taskStatuses } from "@/modules/tasks/validation";
@@ -9,17 +9,15 @@ import { formatWeddingDate } from "@/modules/wedding/wedding-date";
 import { WorkspaceFormLink } from "./_components/workspace-form-link";
 import styles from "./dashboard.module.css";
 
-const { guests } = demoWedding;
 const sampleMetrics = [
-  { label: "Guest groups", value: guests.totalGroups },
-  { label: "RSVP responses", value: guests.responseCount },
   { label: "Total expenses", value: "₹1,24,500" },
   { label: "Vendors", value: 8 },
 ];
 
-export function PlanningPreview({ events, tasks, timeZone }: {
+export function PlanningPreview({ events, tasks, guests, timeZone }: {
   events: Awaited<ReturnType<typeof getEventOverview>>;
   tasks: Awaited<ReturnType<typeof getTaskOverview>>;
+  guests: Awaited<ReturnType<typeof getGuestOverview>>;
   timeZone: string;
 }) {
   return (
@@ -36,6 +34,16 @@ export function PlanningPreview({ events, tasks, timeZone }: {
           <div className={styles.metric}>
             <dt>Tasks completed</dt>
             <dd>{tasks.completed} / {tasks.total}</dd>
+          </div>
+          <div className={styles.metric}>
+            <dt>Guest groups</dt>
+            <dd>{guests.groups.toLocaleString("en-IN")}
+              <Link href="/app/guests" className={styles.metricLink}>View guest list</Link>
+            </dd>
+          </div>
+          <div className={styles.metric}>
+            <dt>RSVP responses</dt>
+            <dd>{(guests.attending + guests.declined).toLocaleString("en-IN")}</dd>
           </div>
           {sampleMetrics.map(({ label, value }) => (
             <div className={styles.metric} key={label}>

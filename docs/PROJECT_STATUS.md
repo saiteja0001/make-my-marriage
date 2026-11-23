@@ -229,8 +229,7 @@ any pending integration work.
   organiser can choose to create a new task.
 - Task due dates follow the wedding's calendar. The workspace shows which
   incomplete tasks are due today or overdue. The dashboard shows saved
-  completion totals and up to three upcoming tasks. Guest, RSVP, expense,
-  and vendor metrics still use labelled sample data.
+  completion totals and up to three upcoming tasks.
 - Task and event forms share confirmation before discarding unsaved changes.
   The leave warning resumes when browser Back restores a form from cache.
   Failed task saves retain entries and allow the organiser to retry.
@@ -253,3 +252,45 @@ any pending integration work.
 - After a draft's account or wedding settings change, the recovery link opens
   a fresh create or edit form in a new tab. Browser checks changed the wedding
   timezone and verified that both forms could save after reopening.
+
+## Guest list — complete
+
+- Added the private Guest List, with a desktop table, mobile cards and
+  collapsible filters, a responsive drawer for creation and editing, and
+  confirmed deletion from group details. Admins and Managers can search by
+  name, email, or phone, and filter by event or read-only RSVP status.
+  Pagination shows the number of groups that match those filters.
+- Each group has a named guest, a party limit that includes that guest,
+  optional contact details and organiser notes, and dated event selections.
+  Previously selected archived events can be retained or removed.
+- Guest writes are scoped to the signed-in wedding. New event links require
+  active events. Organiser edits preserve existing attendance and stable
+  invitation secrets, and cannot lower capacity below recorded attendance.
+  Retrying an open draft reuses the original creation request and applies
+  corrections to the saved group. The organiser's latest correction advances
+  the revision even when its values match the saved group, if a previous
+  correction could still be in flight. A deleted group's edit form keeps the
+  draft visible and offers to open the Guest List in a new tab.
+- The Guest List displays saved group, capacity, and RSVP summaries. The
+  dashboard shows real guest and RSVP totals. Invitations and guest RSVP
+  submission will be built in the next increment. Expense and vendor metrics
+  still use labelled sample data.
+- Passed lint, TypeScript, and the production build. Chrome checked the list
+  from 320 to 1440 pixels and the drawer on desktop and mobile. Checks covered
+  draft warnings and retention, validation, lost-response recovery, event
+  filtering, and confirmed deletion.
+- Isolated database checks covered wedding isolation, shared email addresses,
+  literal search and pagination, archived links, capacity protection, and
+  concurrent edits and retries. A regression check verified that Tasks still
+  accepts active event links and rejects new links to archived events.
+- Follow-up browser checks verified that correcting a draft after a lost create
+  response updates one saved group, and that recovery after a concurrent
+  deletion opens the Guest List.
+- Browser and API checks verified that an earlier correction arriving late
+  cannot undo a reverted draft, and both pages of a filtered list show
+  the matching group total.
+- Fixed a false event validation error when the running app reused a cached
+  Mongoose event model. The event check uses the existing internal counter
+  so it can reach MongoDB even with a cached schema. An isolated database
+  check verified guest creation and editing with active events, and rejection
+  of archived and cross-wedding events.

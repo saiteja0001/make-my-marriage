@@ -128,6 +128,7 @@
 .metric dt { color: var(--muted); font-size: 0.875rem; font-weight: 600; }
 .metric dd { margin-top: 0.2rem; color: var(--burgundy); font: 600 clamp(1.35rem, 2vw, 1.9rem) / 1.25 var(--serif); }
 .metricSample { display: block; margin-top: 0.3rem; color: #6c4b18; font: 700 0.75rem / 1.25 Manrope, "Segoe UI", sans-serif; }
+.metricLink { display: block; width: fit-content; margin-top: 0.3rem; color: var(--burgundy); font: 700 0.8rem / 1.35 Manrope, "Segoe UI", sans-serif; text-decoration: underline; }
 
 .planningLists { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
 .planningCard { min-width: 0; padding: clamp(0.9rem, 1.85vw, 1.6rem); border-radius: 0.85rem; }

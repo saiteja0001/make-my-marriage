@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash } from "node:crypto";
-import type { QueryFilter } from "mongoose";
+import type { ClientSession, QueryFilter } from "mongoose";
 import { connectDatabase } from "@/server/db/mongoose";
 import { prepareEventStorage, WeddingEvent, type EventRecord } from "./model";
 import { endTimeMessage, validEventRange, type EventChanges, type EventValues } from "./validation";
@@ -35,6 +35,14 @@ export function eventDraftContext(accountId: string, weddingId: string, timeZone
 }
 
 const scheduleOrder = { startsAt: 1, _id: 1 } as const;
+
+export async function lockActiveEventReferences(weddingId: string, eventIds: string[], session: ClientSession) {
+  if (!eventIds.length) return true;
+  // Keep the fixed lock write compatible with event models cached before this field existed.
+  const result = await WeddingEvent.updateMany({ weddingId, _id: { $in: eventIds }, archivedAt: null },
+    { $inc: { taskReferenceRevision: 1 } }, { session, timestamps: false, strict: false });
+  return result.matchedCount === eventIds.length;
+}
 
 export async function listEvents(weddingId: string, options: { includeArchived?: boolean; from?: string; to?: string } = {}) {
   await connectDatabase();

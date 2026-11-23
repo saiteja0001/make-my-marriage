@@ -1497,6 +1497,15 @@ creates Guest
 
 Should not normally return raw invitation token except when specifically needed for a sharing action.
 
+Organiser creation accepts an optional UUID `Idempotency-Key`. Replaying it
+within the same wedding returns the existing group with `200 OK`. If that group
+was deleted, replay returns `410 Gone` and the organiser can explicitly start
+a new creation with a fresh key. The response excludes the invitation token.
+
+The workspace replays an unresolved create with its original payload and key.
+After the server identifies the group, the workspace applies any draft
+corrections with a revision-guarded `PATCH`.
+
 ---
 
 # 41. Get Guest
@@ -1546,6 +1555,11 @@ notes
 If `maxGuests` is reduced below an existing `attendingCount`, reject the request or require explicit correction.
 
 Do not silently create inconsistent RSVP state.
+
+Guest responses include the current numeric `revision`. The workspace uses an
+optional quoted `If-Match` revision for update and deletion. Mutations can also
+send `X-Guest-Draft` to detect membership changes since the form was opened.
+The authenticated membership always supplies wedding ownership.
 
 ---
 

@@ -1446,6 +1446,11 @@ Two invitations may legitimately use:
 - same family email
 - shared household email
 
+`guest_creation_requests` stores the wedding ID, request key, and guest ID in
+the same transaction as creation. A unique index covers the wedding and request
+key. Receipts outlive a deleted group so a retry cannot recreate it. The Guest
+version protects organiser edits and later RSVP writes.
+
 ---
 
 # 48. Guest Deletion
