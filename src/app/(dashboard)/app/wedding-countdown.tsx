@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { daysUntilWedding } from "@/modules/wedding/wedding-date";
-import styles from "../workspace.module.css";
+import styles from "./dashboard.module.css";
 
 function subscribe(refresh: () => void) {
   const interval = window.setInterval(refresh, 30_000);

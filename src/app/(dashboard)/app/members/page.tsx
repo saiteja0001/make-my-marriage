@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { listPendingInvitations, listWeddingMembers } from "@/modules/wedding/member-service";
 import { getWeddingForUser } from "@/modules/wedding/service";
 import { getSignedInUser } from "@/server/auth/session";
-import { WorkspaceHeader } from "../../_components/workspace-header";
+import { WorkspaceShell } from "../_components/workspace-shell";
 import { WeddingMembers } from "./wedding-members";
 
 export const metadata: Metadata = { title: "Wedding members" };
@@ -21,8 +21,7 @@ export default async function WeddingMembersPage() {
     isAdmin ? listPendingInvitations(user.id) : Promise.resolve([]),
   ]);
   return (
-    <>
-      <WorkspaceHeader member={{ name: user.name, role: membership.role }} />
+    <WorkspaceShell currentPath="/app/members" member={{ name: user.name, role: membership.role }}>
       <WeddingMembers
         key={wedding.id}
         weddingName={wedding.title || `${wedding.brideName} & ${wedding.groomName}`}
@@ -32,6 +31,6 @@ export default async function WeddingMembersPage() {
         members={members}
         invitations={invitations}
       />
-    </>
+    </WorkspaceShell>
   );
 }

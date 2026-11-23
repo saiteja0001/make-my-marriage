@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from "../workspace.module.css";
+import styles from "./dashboard.module.css";
 
 export function WeddingUpdated() {
   const [visible, setVisible] = useState(true);

@@ -41,6 +41,10 @@ any pending integration work.
   cookie backed by a hashed token in MongoDB.
 - Signup accepts passwords of six or more characters. Signup and login both
   have a Show/Hide password control.
+- New sessions use the configured `SESSION_TTL_DAYS` lifetime of 1 to 400
+  whole days. The default is 7 days. Session checks with simulated storage
+  covered the default, both limits, and rejection of invalid settings before
+  a session is written.
 - Moved the public sample workspace to `/demo`. The private `/app` entry
   requires a session and directs new accounts to `/onboarding`.
 - Login applies hard quotas to trusted clients and client/email pairs. Repeated
@@ -154,3 +158,28 @@ any pending integration work.
   Isolated MongoDB checks covered Manager restrictions, cross-wedding access,
   invalid input, and concurrent demotion and removal of the final two Admins.
   Lint, TypeScript, and the production build passed.
+
+## Wedding workspace layout — complete
+
+- Added a shared workspace layout to the private dashboard, Wedding Details,
+  and Wedding Members. Navigation uses a sidebar on desktop and a collapsible
+  menu on smaller screens. The current destination is marked in the menu.
+  Selecting it in the mobile menu closes the menu and returns focus to the
+  menu button.
+- The dashboard shows the saved wedding details, the timezone-aware countdown,
+  and the existing edit and member actions. The header shows the signed-in
+  organiser and their role.
+- The countdown image uses responsive sizes that account for the two-column
+  layout, desktop sidebar, and maximum dashboard width.
+- The navigation includes the PRD's V1 areas. Future destinations are marked
+  **Planned**, with expandable groups for guests, vendors, website themes,
+  and photos. Events and tasks previews, guest and RSVP counts, expenses, and
+  vendor counts are labelled **Sample data** while those features are pending.
+  Upcoming features will add their routes and replace the relevant samples.
+- Passed lint, TypeScript, and the production build.
+- Chrome checked the dashboard at 320, 390, 768, 1024, and 1440 pixels. Checks
+  covered mobile navigation and keyboard dismissal, membership redirects,
+  Admin and Manager access, edit discard and save, and logout.
+- Focused checks verified focus restoration and the unsaved-edit guard.
+  Chrome selected the expected countdown image widths at eight viewport
+  widths from 640 to 2560 pixels.

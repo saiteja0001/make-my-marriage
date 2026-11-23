@@ -1,0 +1,192 @@
+.overview {
+  width: min(88rem, calc(100% - 2 * clamp(1rem, 3.3vw, 3.25rem)));
+  margin-inline: auto;
+  padding-block: clamp(1.15rem, 3vw, 2.7rem) clamp(2.5rem, 6vw, 5rem);
+}
+
+.hero,
+.planningCard,
+.metric {
+  border: 1px solid var(--line);
+  background: white;
+  box-shadow: 0 0.45rem 1.25rem #702f4508;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: hidden;
+  border-radius: 1rem;
+  background: radial-gradient(ellipse at top left, #faece9, transparent 76%), white;
+}
+
+.heroDetails {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(1.15rem, 3.7vw, 3.25rem);
+  overflow-wrap: anywhere;
+}
+
+.hero h1 {
+  color: var(--burgundy);
+  font: 600 clamp(2rem, 4vw, 3.65rem) / 1.13 var(--serif);
+  letter-spacing: -0.04em;
+}
+
+.couple { margin-top: 0.6rem; color: var(--muted); font-weight: 600; }
+.description { margin-top: 1rem; white-space: pre-wrap; line-height: 1.65; }
+
+.details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem 1.6rem;
+  margin-top: 1.35rem;
+}
+
+.details > div { min-width: 0; }
+.details dt { color: var(--muted); font-size: 0.875rem; }
+.details dd { margin-top: 0.2rem; font-weight: 700; }
+
+.actions { display: flex; flex-wrap: wrap; gap: 0.55rem; margin-top: 1.4rem; }
+
+.primaryAction,
+.secondaryAction {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.primaryAction { background: var(--burgundy); color: white; }
+.primaryAction:hover { background: var(--burgundy-hover); }
+.secondaryAction { border-color: var(--line); background: white; color: var(--burgundy); }
+.secondaryAction:hover { background: var(--blush); }
+
+.countdownPanel {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  min-height: 15rem;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: clamp(1rem, 2.75vw, 2.2rem);
+  background: #573543;
+  color: white;
+}
+
+.countdownPanel::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(0deg, #29121cf5, #29121c70 42%, #29121c0d 75%);
+  content: "";
+}
+
+.heroImage { z-index: -2; object-fit: cover; object-position: center 29%; }
+.countdown { font: 600 clamp(1.5rem, 3.35vw, 2.6rem) / 1.15 var(--serif); }
+.countdown strong { font-size: 1.3em; font-weight: 700; }
+.timeZone { margin-top: 0.4rem; color: #f8ece7; font-size: 0.875rem; overflow-wrap: anywhere; }
+
+.updated {
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: var(--blush);
+  color: var(--burgundy);
+  font-weight: 700;
+}
+
+.summary { margin-block: clamp(1.35rem, 3vw, 2.25rem) clamp(1rem, 2.8vw, 1.75rem); }
+
+.sectionHeading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem 0.75rem;
+  margin-bottom: 0.8rem;
+}
+
+.sectionHeading h2 { color: var(--burgundy); font: 600 clamp(1.35rem, 2.3vw, 1.8rem) / 1.2 var(--serif); }
+
+.sampleLabel {
+  flex: none;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid #e7d5b6;
+  border-radius: 0.35rem;
+  background: #fbf1df;
+  color: #6c4b18;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.metric { min-width: 0; padding: clamp(0.7rem, 1.4vw, 1.1rem); border-radius: 0.65rem; }
+.metric dt { color: var(--muted); font-size: 0.875rem; font-weight: 600; }
+.metric dd { margin-top: 0.2rem; color: var(--burgundy); font: 600 clamp(1.35rem, 2vw, 1.9rem) / 1.25 var(--serif); }
+
+.planningLists { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
+.planningCard { min-width: 0; padding: clamp(0.9rem, 1.85vw, 1.6rem); border-radius: 0.85rem; }
+
+.previewList > li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  min-height: 4.25rem;
+  align-items: center;
+  gap: 0.45rem 0.7rem;
+  padding-block: 0.65rem;
+  border-top: 1px solid var(--line);
+}
+
+.previewList > li.task { grid-template-columns: minmax(0, 1fr) auto; }
+.previewList h3 { font-weight: 700; }
+.previewList p { margin-top: 0.2rem; color: var(--muted); font-size: 0.875rem; }
+
+.eventDate {
+  display: grid;
+  min-width: 2.8rem;
+  justify-items: center;
+  padding: 0.3rem 0.45rem;
+  border-radius: 0.45rem;
+  background: var(--blush);
+  color: var(--burgundy);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.eventDate strong { font: 700 1.2rem / 1.1 var(--serif); }
+
+.taskStatus {
+  padding: 0.2rem 0.45rem;
+  border-radius: 0.35rem;
+  background: #f4eee8;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+@container (min-width: 41rem) {
+  .hero { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+  .countdownPanel { min-height: 18rem; }
+  .metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .planningLists { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@container (min-width: 66rem) {
+  .metrics { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}

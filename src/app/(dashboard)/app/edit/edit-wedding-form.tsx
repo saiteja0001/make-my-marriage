@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { defaultWeddingTimeZone, weddingFieldLimits, weddingUpdateSchema } from "@/modules/wedding/validation";
-import { WorkspaceHeader } from "../../_components/workspace-header";
 import { useWeddingTextInput } from "../../_components/use-wedding-text-input";
+import { WorkspaceShell } from "../_components/workspace-shell";
 import styles from "./edit-wedding.module.css";
 
 type FieldName = "brideName" | "groomName" | "weddingDate" | "location" | "timeZone" | "title" | "description";
@@ -159,8 +159,12 @@ export function EditWeddingForm({ accountId, weddingId, initial, member, timeZon
   }
 
   return (
-    <>
-      <WorkspaceHeader member={member} onRequestLeave={requestLeave} onNavigateAway={() => { allowNavigation.current = true; }} />
+    <WorkspaceShell
+      currentPath="/app/edit"
+      member={member}
+      onRequestLeave={requestLeave}
+      onNavigateAway={() => { allowNavigation.current = true; }}
+    >
       <main className={styles.shell}>
         <button type="button" className={styles.back} onClick={() => requestLeave(leaveOverview)} disabled={saving}>
           <span aria-hidden="true">←</span> Back to wedding overview
@@ -224,6 +228,6 @@ export function EditWeddingForm({ accountId, weddingId, initial, member, timeZon
           }}>Discard changes</button>
         </div>
       </dialog>
-    </>
+    </WorkspaceShell>
   );
 }

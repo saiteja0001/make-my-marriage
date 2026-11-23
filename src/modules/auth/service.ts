@@ -6,7 +6,8 @@ import { delayFailedLogin } from "./rate-limit";
 import { hashAuthSecret, isAuthToken, issueAuthToken } from "./secrets";
 import { normalizeEmail } from "./validation";
 
-const sessionLifetime = 7 * 24 * 60 * 60 * 1000;
+const millisecondsPerDay = 24 * 60 * 60 * 1000;
+const maxSessionLifetimeDays = 400;
 const passwordCost = { type: argon2id, memoryCost: 19456, timeCost: 2, parallelism: 1 } as const;
 
 // A valid Argon2id digest keeps the verification cost similar for absent accounts.
@@ -26,8 +27,13 @@ function publicUser(user: UserIdentity) {
 }
 
 function newSession() {
+  const configuredDays = process.env.SESSION_TTL_DAYS?.trim() || "7";
+  const days = Number(configuredDays);
+  if (!/^\d+$/.test(configuredDays) || days < 1 || days > maxSessionLifetimeDays) {
+    throw new RangeError(`SESSION_TTL_DAYS must be a whole number from 1 to ${maxSessionLifetimeDays}.`);
+  }
+  const expiresAt = new Date(Date.now() + days * millisecondsPerDay);
   const token = issueAuthToken();
-  const expiresAt = new Date(Date.now() + sessionLifetime);
   return { token, expiresAt, tokenHash: hashAuthSecret("session", token) };
 }
 

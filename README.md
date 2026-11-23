@@ -18,8 +18,10 @@ npm run dev
 Open [localhost:3000](http://localhost:3000). The homepage, demo, and health
 route run without environment variables. For accounts, copy `.env.example`
 to the Git-ignored `.env.local` and set `MONGODB_URI` to a development
-database and `SESSION_SECRET` to a private, random value. Restart the
-development server after changing these settings.
+database and `SESSION_SECRET` to a private, random value. `SESSION_TTL_DAYS`
+sets the lifetime of new sessions in whole days from `1` to `400` and
+defaults to `7`. Restart the development server after changing these
+settings.
 
 Use a MongoDB replica set or Atlas cluster for account signup and wedding
 creation transactions. When setting `NEXT_PUBLIC_APP_URL`,
