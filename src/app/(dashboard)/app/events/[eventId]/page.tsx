@@ -5,6 +5,7 @@ import { eventTypes } from "@/modules/events/validation";
 import { formatEventDay, formatEventTimeRange, weddingTimeZoneLabel } from "@/modules/events/wedding-time";
 import { requireWorkspaceEvent } from "../_workspace";
 import { ArchiveEvent } from "./archive-event";
+import { WorkspaceFormLink } from "../../_components/workspace-form-link";
 import styles from "../events.module.css";
 
 export const metadata: Metadata = { title: "Event details" };
@@ -37,7 +38,7 @@ export default async function EventPage({ params, searchParams }: {
         {!event.archivedAt && (
           <div className={styles.actions}>
             <ArchiveEvent id={event.id} name={event.name} draft={eventDraftContext(user.id, wedding.id, timeZone)} />
-            <Link className={styles.primary} href={`/app/events/${event.id}/edit`}>Edit event</Link>
+            <WorkspaceFormLink className={styles.primary} href={`/app/events/${event.id}/edit`}>Edit event</WorkspaceFormLink>
           </div>
         )}
       </header>

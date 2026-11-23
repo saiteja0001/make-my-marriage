@@ -21,6 +21,7 @@ type MembershipRecord = {
   weddingId: Types.ObjectId;
   role: MemberRole;
   joinedAt: Date;
+  taskReferenceRevision?: number;
 };
 
 const storageOptions = { autoCreate: false, autoIndex: false, timestamps: true } as const;
@@ -46,6 +47,7 @@ const membershipSchema = new Schema<MembershipRecord>({
   weddingId: { type: Schema.Types.ObjectId, required: true },
   role: { type: String, enum: memberRoles, required: true },
   joinedAt: { type: Date, required: true },
+  taskReferenceRevision: Number,
 }, storageOptions);
 membershipSchema.index({ weddingId: 1, userId: 1 }, { unique: true });
 

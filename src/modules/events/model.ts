@@ -15,6 +15,7 @@ export type EventRecord = {
   description?: string;
   dressCode?: string;
   archivedAt?: Date;
+  taskReferenceRevision?: number;
   requestKey?: string;
   __v?: number;
 };
@@ -30,6 +31,7 @@ const schema = new Schema<EventRecord>({
   description: { type: String, maxlength: eventFieldLimits.description },
   dressCode: { type: String, maxlength: eventFieldLimits.dressCode },
   archivedAt: Date,
+  taskReferenceRevision: Number,
   requestKey: { type: String, select: false },
 }, { timestamps: true, autoCreate: false, autoIndex: false });
 

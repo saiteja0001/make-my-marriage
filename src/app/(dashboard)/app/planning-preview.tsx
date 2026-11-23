@@ -1,21 +1,25 @@
 import Link from "next/link";
-import { demoWedding, formatDemoDate } from "@/app/_data/demo-wedding";
+import { demoWedding } from "@/app/_data/demo-wedding";
 import type { getEventOverview } from "@/modules/events/service";
 import { formatEventDay, formatEventTimeRange } from "@/modules/events/wedding-time";
+import { taskDueDay } from "@/modules/tasks/due-date";
+import type { getTaskOverview } from "@/modules/tasks/service";
+import { taskStatuses } from "@/modules/tasks/validation";
+import { formatWeddingDate } from "@/modules/wedding/wedding-date";
+import { WorkspaceFormLink } from "./_components/workspace-form-link";
 import styles from "./dashboard.module.css";
 
-const { tasks, guests } = demoWedding;
-const completedTasks = tasks.filter(({ status }) => status === "Completed").length;
+const { guests } = demoWedding;
 const sampleMetrics = [
-  { label: "Tasks completed", value: `${completedTasks} / ${tasks.length}` },
   { label: "Guest groups", value: guests.totalGroups },
   { label: "RSVP responses", value: guests.responseCount },
   { label: "Total expenses", value: "₹1,24,500" },
   { label: "Vendors", value: 8 },
 ];
 
-export function PlanningPreview({ events, timeZone }: {
+export function PlanningPreview({ events, tasks, timeZone }: {
   events: Awaited<ReturnType<typeof getEventOverview>>;
+  tasks: Awaited<ReturnType<typeof getTaskOverview>>;
   timeZone: string;
 }) {
   return (
@@ -28,6 +32,10 @@ export function PlanningPreview({ events, timeZone }: {
           <div className={styles.metric}>
             <dt>Events</dt>
             <dd>{events.count}</dd>
+          </div>
+          <div className={styles.metric}>
+            <dt>Tasks completed</dt>
+            <dd>{tasks.completed} / {tasks.total}</dd>
           </div>
           {sampleMetrics.map(({ label, value }) => (
             <div className={styles.metric} key={label}>
@@ -61,26 +69,36 @@ export function PlanningPreview({ events, timeZone }: {
           ) : (
             <div className={styles.emptyPreview}>
               <p>No upcoming events.</p>
-              <Link href="/app/events/new" className={styles.previewLink}>{events.count ? "Add event" : "Add your first event"}</Link>
+              <WorkspaceFormLink href="/app/events/new" className={styles.previewLink}>{events.count ? "Add event" : "Add your first event"}</WorkspaceFormLink>
             </div>
           )}
         </section>
         <section className={styles.planningCard} aria-labelledby="upcoming-tasks">
           <div className={styles.sectionHeading}>
             <h2 id="upcoming-tasks">Upcoming tasks</h2>
-            <span className={styles.sampleLabel}>Sample data</span>
+            <Link href="/app/tasks" className={styles.previewLink}>View tasks</Link>
           </div>
-          <ul className={styles.previewList}>
-            {tasks.filter(({ status }) => status !== "Completed").slice(0, 3).map(({ id, dueDate, name, status }) => (
-              <li key={id} className={styles.task}>
-                <div>
-                  <h3>{name}</h3>
-                  <p>Due <time dateTime={dueDate}>{formatDemoDate(dueDate, { day: "numeric", month: "short" })}</time></p>
-                </div>
-                <span className={styles.taskStatus}>{status}</span>
-              </li>
-            ))}
-          </ul>
+          {tasks.upcoming.length ? (
+            <ul className={styles.previewList}>
+              {tasks.upcoming.map(({ id, dueDate, title, status }) => {
+                const date = taskDueDay(dueDate, timeZone);
+                return (
+                  <li key={id} className={styles.task}>
+                    <div>
+                      <h3><Link href={`/app/tasks/${id}`}>{title}</Link></h3>
+                      <p>Due <time dateTime={date}>{formatWeddingDate(date)}</time></p>
+                    </div>
+                    <span className={styles.taskStatus}>{taskStatuses[status]}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <div className={styles.emptyPreview}>
+              <p>No upcoming tasks.</p>
+              <WorkspaceFormLink href="/app/tasks/new" className={styles.previewLink}>{tasks.total ? "Add task" : "Add your first task"}</WorkspaceFormLink>
+            </div>
+          )}
         </section>
       </div>
     </>

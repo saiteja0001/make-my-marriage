@@ -6,7 +6,7 @@ export function formatWeddingDate(date: string) {
   return new Intl.DateTimeFormat("en-IN", { dateStyle: "long", timeZone: "UTC" }).format(day);
 }
 
-export function daysUntilWedding(weddingDate: string, timeZone: string, now = new Date()) {
+export function weddingLocalDate(instant: Date | number, timeZone: string) {
   const dateParts = new Intl.DateTimeFormat("en", {
     timeZone,
     calendar: "iso8601",
@@ -14,10 +14,12 @@ export function daysUntilWedding(weddingDate: string, timeZone: string, now = ne
     year: "numeric",
     month: "2-digit",
     day: "2-digit",
-  }).formatToParts(now);
+  }).formatToParts(instant);
   const { year, month, day } = Object.fromEntries(dateParts.map(({ type, value }) => [type, value]));
-  const localDate = `${year.padStart(4, "0")}-${month}-${day}`;
+  return `${year.padStart(4, "0")}-${month}-${day}`;
+}
 
+export function daysUntilWedding(weddingDate: string, timeZone: string, now = new Date()) {
   // Compare calendar dates on a uniform scale, including across daylight saving changes.
-  return (Date.parse(weddingDate) - Date.parse(localDate)) / millisecondsPerDay;
+  return (Date.parse(weddingDate) - Date.parse(weddingLocalDate(now, timeZone))) / millisecondsPerDay;
 }

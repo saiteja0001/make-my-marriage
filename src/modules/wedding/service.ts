@@ -37,7 +37,11 @@ export async function getWeddingForUser(userId: string) {
   if (!wedding) throw new Error("Wedding membership could not be resolved.");
 
   const { _id, ...details } = wedding;
-  return { membership: { role: membership.role }, wedding: { id: _id.toString(), ...details } };
+  return {
+    membership: { role: membership.role },
+    membershipId: membership._id.toString(),
+    wedding: { id: _id.toString(), ...details },
+  };
 }
 
 export async function updateWedding(userId: string, changes: WeddingUpdate, draftWeddingId?: string) {

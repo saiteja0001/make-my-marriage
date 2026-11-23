@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import styles from "./workspace-shell.module.css";
 
-export type WorkspacePath = "/app" | "/app/edit" | "/app/members" | "/app/events";
+export type WorkspacePath = "/app" | "/app/edit" | "/app/members" | "/app/events" | "/app/tasks";
 
 type Destination = {
   label: string;
@@ -22,7 +22,7 @@ const navigation: readonly { label: string; destinations: readonly Destination[]
     label: "Planning",
     destinations: [
       { label: "Events", href: "/app/events" },
-      { label: "Tasks" },
+      { label: "Tasks", href: "/app/tasks" },
       { label: "Guests", items: ["Guest List", "Invitations", "RSVPs"] },
     ],
   },
@@ -118,7 +118,7 @@ export function WorkspaceNavigation({ currentPath, onRequestLeave, onNavigateAwa
                 return (
                   <li key={label}>
                     {/* Enter the edit page with a full navigation so browser Back uses beforeunload. */}
-                    {href === "/app/edit" && !current ? (
+                    {href === "/app/edit" && !current && !onRequestLeave ? (
                       <a className={styles.navRow} href={href}>{label}</a>
                     ) : (
                       <Link

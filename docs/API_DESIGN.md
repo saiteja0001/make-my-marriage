@@ -1255,6 +1255,7 @@ priority
 eventId
 assignedMembershipId
 mine=true
+q
 ```
 
 Example:
@@ -1274,6 +1275,7 @@ GET /api/tasks?status=TODO&mine=true&page=1&limit=50
   Filters combine with AND. A conflicting explicit assignee and `mine=true`
   produce no matches. `eventId=none` selects general wedding tasks, and
   `assignedMembershipId=none` selects unassigned tasks.
+- `q` matches a literal part of the task title, ignoring case.
 - Responses include task fields and nullable `assignee` (membership ID, name,
   role) and `event` (ID, name, archivedAt) summaries. No user email is exposed.
 
@@ -1316,6 +1318,11 @@ Due dates use ISO instants in the API and MongoDB. The date-only UI converts
 midnight in the wedding timezone to UTC; overdue means an incomplete task whose
 wedding-local due date is before today. Unchanged timestamps retain precision.
 Creating an already completed task sets `completedAt` on the server.
+The workspace sends an optional UUID `Idempotency-Key` when creating a task.
+A retry with the same key in the same wedding returns the existing task with
+`200 OK`. If the task was deleted, the key remains reserved and the retry
+returns `410 Gone` with code `TASK_DELETED`. Creating another task requires a
+new key.
 
 
 ---
@@ -1356,6 +1363,11 @@ Metadata edits to an already completed task preserve its completion timestamp.
 The body must contain at least one supported field; wedding ownership and
 `completedAt` cannot be supplied by callers. An atomic version check returns
 `CONFLICT` if another write occurs between the service read and update.
+The task response includes a numeric `revision`. Editing and deleting can send
+this revision as a quoted `If-Match` value to detect changes since the page was
+opened. Workspace mutations may also send an optional `X-Task-Draft` context
+to detect membership or timezone changes. Authenticated membership supplies
+wedding ownership on every request.
 
 
 ---
@@ -1366,7 +1378,8 @@ The body must contain at least one supported field; wedding ownership and
 
 Authentication required.
 
-Hard deletion.
+Hard deletion of the task. The server retains any creation key to prevent a
+retry from recreating it.
 
 ---
 

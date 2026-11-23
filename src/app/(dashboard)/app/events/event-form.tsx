@@ -7,6 +7,7 @@ import type { EventDetails } from "@/modules/events/service";
 import { createEventSchema, eventFieldLimits, eventTypes, type EventType } from "@/modules/events/validation";
 import { eventLocalParts, eventTimeOptions, formatEventDay, formatEventTimeRange, weddingTimeZoneLabel } from "@/modules/events/wedding-time";
 import styles from "./events.module.css";
+import { useWorkspaceDraft } from "../_components/workspace-draft";
 
 type FieldErrors = Record<string, string>;
 type Problem = { message: string; action?: "login" | "reload" | "retry" };
@@ -54,6 +55,7 @@ export function EventForm({ event, timeZone, context }: { event?: EventDetails; 
   const [saving, setSaving] = useState(false);
   const request = useRef<{ body: string; key: string } | null>(null);
   const clean = Object.keys(initial).every((field) => draft[field as keyof Draft] === initial[field as keyof Draft]);
+  const { leaveFor, allowNavigation } = useWorkspaceDraft(!clean, saving);
   const eventUrl = event ? `/app/events/${event.id}` : "/app/events";
   const endDate = draft.endDate || draft.startDate;
   const startOptions = draft.startDate && draft.startTime
@@ -148,6 +150,7 @@ export function EventForm({ event, timeZone, context }: { event?: EventDetails; 
       });
       const result = await response.json().catch(() => null);
       if (response.ok && result?.data?.id) {
+        allowNavigation();
         window.location.replace(`/app/events/${result.data.id}?notice=${event ? "updated" : "created"}`);
       } else if (response.status === 401) {
         setProblem({ message: "Your session expired. Sign in again to keep working on this event.", action: "login" });
@@ -210,7 +213,7 @@ export function EventForm({ event, timeZone, context }: { event?: EventDetails; 
 
   return (
     <>
-      <Link href="/app/events" className={styles.back}>Back to events</Link>
+      <Link href="/app/events" className={styles.back} onNavigate={leaveFor("/app/events")}>Back to events</Link>
       <header className={styles.pageHeading}>
         <h1>{event ? "Edit wedding event" : "Create wedding event"}</h1>
         <p className={styles.timeZone}>{weddingTimeZoneLabel(timeZone)}</p>
@@ -250,7 +253,7 @@ export function EventForm({ event, timeZone, context }: { event?: EventDetails; 
               {problem.action === "reload" && <Link href={eventUrl} target="_blank" rel="noopener">Open the current schedule in a new tab</Link>}
             </div>}
             <div className={styles.formActions}>
-              <Link className={styles.secondary} href={eventUrl}>Cancel</Link>
+              <Link className={styles.secondary} href={eventUrl} onNavigate={leaveFor(eventUrl)}>Cancel</Link>
               <button type="submit" className={styles.primary} disabled={saving || Boolean(event && clean)}>
                 {saving ? "Saving…" : problem?.action === "retry" ? "Try again" : event ? "Save changes" : "Create event"}
               </button>

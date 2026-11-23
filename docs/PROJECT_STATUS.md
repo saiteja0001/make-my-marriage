@@ -184,7 +184,7 @@ any pending integration work.
   Chrome selected the expected countdown image widths at eight viewport
   widths from 640 to 2560 pixels.
 
-## Wedding events — QA follow-up
+## Wedding events — complete
 
 - Activated Events in the private workspace. Added a responsive schedule
   grouped by day, event details, create and edit forms with optional ceremony
@@ -199,8 +199,7 @@ any pending integration work.
   retries reuse a request key, concurrent edits detect conflicts, and archives
   retain event records for later references.
 - The dashboard shows a real count of active events and up to three
-  upcoming events. Tasks and the other planning metrics still use labelled
-  sample data. Event cover uploads are planned for a later V1 increment.
+  upcoming events. Event cover uploads are planned for a later V1 increment.
 - Passed lint, TypeScript, and the production build. Chrome checked desktop
   creation and mobile editing and archiving, including an overnight event,
   a lost create response, clearing an optional field, and dashboard updates.
@@ -210,6 +209,44 @@ any pending integration work.
 - Focused checks covered saving across a repeated clock hour, skipped times,
   preserving a saved timestamp when editing other fields, and returning to
   the active schedule from Archived using the sidebar.
-- Unsaved-changes warnings are pending for event creation and editing.
-  Chrome QA reproduced draft loss when using Back to events, the workspace
-  sidebar, or browser reload.
+- Event creation and editing now warn before discarding a draft. In-app
+  navigation uses a confirmation dialog, and document navigation uses the
+  browser's leave warning. Chrome verified cancelling and confirming
+  navigation from the event form and dismissing the reload warning.
+
+## Wedding tasks — complete
+
+- Added a private, responsive task list with All Tasks, My Tasks, and Completed
+  views, literal title search, filters, and pagination. Organisers can create,
+  assign, edit, complete, reopen, and delete tasks.
+- Task APIs scope reads and writes to the signed-in wedding. New assignments
+  require a current member, and new event links require an active event.
+  Existing links to former members and archived events can be kept or
+  cleared. Task saves coordinate with member removal and event archiving in
+  MongoDB transactions. Conflicting edits return a conflict response.
+- Creation keys remain reserved after hard deletion. A retry returns
+  `410 Gone` for the deleted task, and the form keeps the draft so the
+  organiser can choose to create a new task.
+- Task due dates follow the wedding's calendar. The workspace shows which
+  incomplete tasks are due today or overdue. The dashboard shows saved
+  completion totals and up to three upcoming tasks. Guest, RSVP, expense,
+  and vendor metrics still use labelled sample data.
+- Task and event forms share confirmation before discarding unsaved changes.
+  The leave warning resumes when browser Back restores a form from cache.
+  Failed task saves retain entries and allow the organiser to retry.
+- Passed lint, TypeScript, and the production build. Chrome checked creation,
+  assignment, completion, reopening, editing, and confirmed deletion.
+  Responsive checks covered widths from 320 to 1440 pixels. Chrome also
+  verified mobile filters, browser Back with a draft, and a lost create
+  response followed by retry.
+- Isolated database checks covered wedding isolation, assignment validation,
+  dated and undated tasks, pagination, literal search, stale edits, and
+  retry deduplication. Date checks covered a skipped midnight and a skipped
+  calendar day.
+- Follow-up checks on a local MongoDB replica set covered concurrent creates
+  with the same key, replay after hard deletion for new and older tasks,
+  rollback after failed validation, and overlapping member removal and event
+  archiving.
+- A browser check covered a lost create response, deletion before retry, and
+  explicit creation with a fresh key. A browser fixture for the shared draft
+  component verified the reload warning after browser Back restored a form.

@@ -22,6 +22,32 @@
 .content { min-width: 0; container-type: inline-size; }
 .content:focus { outline: none; }
 
+.draftDialog {
+  width: min(28rem, calc(100% - 2rem));
+  margin: auto;
+  padding: clamp(1rem, 4vw, 1.7rem);
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: white;
+  color: var(--charcoal);
+}
+
+.draftDialog::backdrop { background: #2b111d80; backdrop-filter: blur(2px); }
+.draftDialog h2 { color: var(--burgundy); font: 600 1.55rem / 1.25 var(--serif); }
+.draftDialog p { margin-block: 0.6rem 1rem; color: var(--muted); }
+.draftActions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.5rem; }
+.draftActions button {
+  min-height: 2.75rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--blush);
+  color: var(--burgundy);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.draftActions button:first-child { background: var(--burgundy); color: white; }
+.draftActions button:hover { filter: brightness(0.92); }
+
 .sidebar {
   min-width: 0;
   padding: 0.6rem clamp(1rem, 4vw, 2rem);

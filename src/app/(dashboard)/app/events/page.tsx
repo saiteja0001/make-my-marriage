@@ -5,6 +5,7 @@ import { eventTypes } from "@/modules/events/validation";
 import { eventLocalParts, formatEventDay, formatEventTimeRange, weddingTimeZoneLabel } from "@/modules/events/wedding-time";
 import { requireEventWorkspace } from "./_workspace";
 import { ArchiveEvent } from "./[eventId]/archive-event";
+import { WorkspaceFormLink } from "../_components/workspace-form-link";
 import styles from "./events.module.css";
 
 export const metadata: Metadata = { title: "Wedding events" };
@@ -33,7 +34,7 @@ export default async function EventsPage({ searchParams }: {
           <h1>Events</h1>
           <p>Plan the schedule for {wedding.title || `${wedding.brideName} & ${wedding.groomName}’s wedding`}.</p>
         </div>
-        <Link className={styles.primary} href="/app/events/new">Add event</Link>
+        <WorkspaceFormLink className={styles.primary} href="/app/events/new">Add event</WorkspaceFormLink>
       </header>
 
       {notice === "archived" && <p className={styles.notice} role="status">Event moved to Archived.</p>}
@@ -51,7 +52,7 @@ export default async function EventsPage({ searchParams }: {
           <div className={styles.empty}>
             <h2>{archived ? "No archived events" : "Your schedule is empty"}</h2>
             <p>{archived ? "Archived events will appear here." : "Add your first ceremony or celebration to start planning."}</p>
-            {!archived && <Link className={styles.primary} href="/app/events/new">Add your first event</Link>}
+            {!archived && <WorkspaceFormLink className={styles.primary} href="/app/events/new">Add your first event</WorkspaceFormLink>}
           </div>
         ) : (
           <div className={styles.schedule}>
@@ -79,7 +80,7 @@ export default async function EventsPage({ searchParams }: {
                         <Link className={styles.back} href={`/app/events/${event.id}`} aria-label={`View details for ${event.name}`}>View details</Link>
                         {!archived && (
                           <div className={styles.actions}>
-                            <Link className={styles.secondary} href={`/app/events/${event.id}/edit`} aria-label={`Edit ${event.name}`}>Edit</Link>
+                            <WorkspaceFormLink className={styles.secondary} href={`/app/events/${event.id}/edit`} aria-label={`Edit ${event.name}`}>Edit</WorkspaceFormLink>
                             <ArchiveEvent id={event.id} name={event.name} draft={draft} />
                           </div>
                         )}

@@ -1209,6 +1209,11 @@ Event.weddingId
 
 MongoDB does not enforce foreign keys, so application services must enforce these rules.
 
+Task saves check and update an internal revision on each newly linked member
+or active event in the same transaction as the task write. The revision
+update makes the save conflict with concurrent member removal or event
+archiving. Existing references can be retained or cleared after those changes.
+
 ---
 
 # 39. Task Indexes
@@ -1225,13 +1230,20 @@ index(weddingId, assignedMembershipId, status)
 index(weddingId, eventId)
 ```
 
+The task's Mongoose version field tracks edits. Older task documents can
+contain a creation request key with a partial unique index.
+
+Keyed creates insert a record in `task_creation_requests` in the same
+transaction as the task. The record contains `weddingId`, `requestKey`, and
+`taskId`, with a unique index on `(weddingId, requestKey)`.
+
 ---
 
 # 40. Task Deletion
 
-Tasks can be hard deleted.
-
-They are leaf-level operational data and are not required as a dependency by other V1 modules.
+Task documents can be hard deleted. Their creation records remain to reserve
+the keys for future retries. If an older task still holds its creation key,
+deletion moves the key to a creation record in the same transaction.
 
 ---
 
