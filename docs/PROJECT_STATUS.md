@@ -326,3 +326,31 @@ any pending integration work.
   reviewing a newer RSVP. API checks confirmed that stale revisions cannot
   overwrite a different response, identical retries keep the saved timestamp,
   and simultaneous submissions respect guest capacity and revision checks.
+
+## Private organiser photo gallery — complete
+
+- Added the responsive Wedding Gallery for Admins and Managers at
+  `/app/photos`. Photos can be filtered by wedding event or Wedding Memories,
+  browsed by page, viewed full size, downloaded, and deleted individually.
+- The upload drawer supports JPEG, PNG, and WebP up to 10 MiB per photo and 20
+  files per batch. It shows progress, validation, partial success, and retry
+  per file. In-progress drafts stay in the tab through session expiry.
+- Browsers upload directly to the private R2 bucket with signed PUT URLs.
+  The server checks stored length, MIME and the file signature, then publishes
+  the verified object under a separate key. MongoDB stores gallery metadata
+  and wedding ownership; ready photos use short-lived signed reading URLs.
+- Guest upload links, QR sharing, and thumbnail derivatives are planned for
+  later increments.
+- Passed lint, TypeScript, and the production build. The development R2 bucket
+  passed CORS, signed upload, verification, signed viewing and download, and
+  cleanup checks.
+- Chrome checked layouts from 320 to 1440 pixels, batch upload, partial
+  success, retry after a lost confirmation, event filtering, full-size
+  viewing, download, and confirmed deletion. An open upload draft survived
+  sign-out and re-login, and was cleared when the account changed.
+- API checks covered pagination, archived events, wedding isolation, image
+  format validation, and replay of a staging upload after publication.
+- Browser checks with mocked photo responses verified that expired previews
+  request a fresh URL and that a failed refresh or replacement stops after
+  one attempt. A route fixture verified the documented `data.success` response
+  for deletion and the existing `404` behavior for missing photos.

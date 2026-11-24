@@ -89,5 +89,5 @@ export function useWorkspaceDraft(dirty: boolean, saving: boolean) {
     };
   }
 
-  return { leaveFor, allowNavigation };
+  return { leaveFor, allowNavigation, requestLeave };
 }

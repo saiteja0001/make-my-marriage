@@ -3864,6 +3864,8 @@ settings and QR remain deferred.
   event filter. Response retains `{ data, pagination: { nextCursor } }`, adding
   `total` for the filtered count; each photo also includes mimeType and sizeBytes.
   All queries include weddingId and READY state; pending/deleted rows are hidden.
+- GET `/api/photos/:photoId` returns one ready photo in `{ data }` with a
+  refreshed signed viewing URL. Photo payloads include `urlExpiresAt`.
 - GET `/api/photos/:photoId/download` returns `{ data: { url } }`: a newly signed
   R2 GET with attachment Content-Disposition. The browser downloads directly
   from R2; the app does not proxy the photo binary.

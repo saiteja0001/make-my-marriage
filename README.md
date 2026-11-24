@@ -33,6 +33,12 @@ For wedding member invitations, set `RESEND_API_KEY`, `RESEND_FROM_EMAIL`
 origin). Invitations expire after seven days. The member list is available
 without the email configuration.
 
+For the private photo gallery, set `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`,
+`R2_SECRET_ACCESS_KEY`, and `R2_BUCKET_NAME` in `.env.local`. Use credentials
+scoped to the private development bucket. In the bucket's CORS settings, allow
+the exact app origin, including the local port, and allow `PUT`, `GET`, and
+`HEAD` with the `Content-Type` request header.
+
 | Path | Purpose |
 | --- | --- |
 | `/` | Public landing page and demo entry |
@@ -42,6 +48,7 @@ without the email configuration.
 | `/app/members` | View members. Admins can manage invitations, change roles, and remove members. |
 | `/app/guests` | Manage guest groups and open or copy their invitations from group details |
 | `/app/guests/rsvps` | View guest responses and attendance totals |
+| `/app/photos` | Upload, view, download, and delete private wedding photos |
 | `/invite/[token]` | Open a guest invitation and submit or edit an RSVP |
 | `/member-invitations/[token]` | Sign in or create an account and accept a wedding invitation |
 | `POST /api/wedding` | Create a wedding and its first Admin membership |

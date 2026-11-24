@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import styles from "./workspace-shell.module.css";
 
-export type WorkspacePath = "/app" | "/app/edit" | "/app/members" | "/app/events" | "/app/tasks" | "/app/guests" | "/app/guests/rsvps";
+export type WorkspacePath = "/app" | "/app/edit" | "/app/members" | "/app/events" | "/app/tasks" | "/app/guests" | "/app/guests/rsvps" | "/app/photos";
 
 type Destination = {
   label: string;
@@ -44,8 +44,15 @@ const navigation: readonly { label: string; destinations: readonly Destination[]
     label: "Wedding experience",
     destinations: [
       { label: "Wedding Website", items: ["Themes"] },
-      { label: "Photos", items: ["Gallery", "Guest Upload", "QR Code"] },
       { label: "Live Stream" },
+    ],
+  },
+  {
+    label: "Photos",
+    destinations: [
+      { label: "Gallery", href: "/app/photos" },
+      { label: "Guest Upload" },
+      { label: "QR Code" },
     ],
   },
   {

@@ -2681,7 +2681,6 @@ change discards that draft. Refreshing/closing the tab cannot restore File objec
 the existing unsaved-changes guard warns before navigation. No persistent file
 cache is stored in localStorage.
 
-Verification: `npm test` uses mocked persistence/storage and component tests.
-`RUN_R2_SMOKE=1 npm test -- src/server/storage/r2.integration.test.ts` explicitly
-loads `.env.local`, refuses any bucket other than make-my-marriage-dev, and
-uploads/reads/deletes only a unique test-fixtures prefix. It never uses MongoDB.
+Verify the direct R2 flow in the development bucket using disposable images
+under a unique test prefix. Exercise the gallery through Chrome with synthetic
+weddings in an isolated database.
