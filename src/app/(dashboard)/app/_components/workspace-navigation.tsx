@@ -51,8 +51,6 @@ const navigation: readonly { label: string; destinations: readonly Destination[]
     label: "Photos",
     destinations: [
       { label: "Gallery", href: "/app/photos" },
-      { label: "Guest Upload" },
-      { label: "QR Code" },
     ],
   },
   {

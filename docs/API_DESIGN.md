@@ -2746,35 +2746,13 @@ We do not need an independent Media Service API for V1.
 
 # 84. QR Code
 
-No database QR entity is required.
-
-## GET `/api/gallery/qr`
-
-Authentication required.
-
-Two acceptable approaches:
-
-### Option A
-
-Return gallery URL and let frontend generate the QR.
-
-Preferred.
-
-```json
-{
-  "data": {
-    "galleryUrl": "https://makemymarriage.com/gallery/..."
-  }
-}
-```
-
-### Option B
-
-Return generated SVG/PNG.
-
-For V1 I prefer **Option A**.
-
-It keeps backend simpler.
+The organiser's sharing panel generates the QR in the browser from
+`data.galleryUrl` returned by the authenticated gallery settings endpoint.
+The same URL is used for copying, downloading a PNG QR, and printing the A4
+venue sign. Guest upload permissions affect only the guidance beside the
+preview. While guest viewing is disabled, the settings response omits the
+usable URL and existing printed codes open the guest unavailable screen.
+Turning viewing back on restores the same URL. QR images are not persisted.
 
 ---
 

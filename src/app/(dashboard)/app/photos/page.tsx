@@ -22,7 +22,8 @@ export default async function PhotosPage() {
   return (
     <WorkspaceDraftShell currentPath="/app/photos" member={{ name: user.name, role: membership.role }}>
       <main className={styles.page}>
-        <Gallery events={events} context={photoDraftContext({ membershipId, weddingId: wedding.id })} timeZone={wedding.timeZone} />
+        <Gallery events={events} context={photoDraftContext({ membershipId, weddingId: wedding.id })}
+          timeZone={wedding.timeZone} coupleNames={`${wedding.brideName} & ${wedding.groomName}`} />
       </main>
     </WorkspaceDraftShell>
   );

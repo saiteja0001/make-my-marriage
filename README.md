@@ -49,6 +49,11 @@ node -p "require('node:crypto').randomBytes(32).toString('hex')"
 Keep the key with the environment's secrets. The sharing panel uses it to
 recover links that have already been issued.
 
+In **Photos → Gallery → Share gallery**, enable guest viewing to download
+the QR as a PNG or print the A4 venue sign. The QR uses the configured
+`NEXT_PUBLIC_APP_URL`. Use an address guests can reach on their phones for
+venue signs.
+
 | Path | Purpose |
 | --- | --- |
 | `/` | Public landing page and demo entry |

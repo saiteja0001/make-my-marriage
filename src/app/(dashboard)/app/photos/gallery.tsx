@@ -48,7 +48,9 @@ function TileImage({ photo, onRefresh }: { photo: GalleryPhoto; onRefresh: (id: 
     onLoad={() => { attemptedUrl.current = null; }} onError={() => void recoverPreview()} />;
 }
 
-export function Gallery({ events, context, timeZone }: { events: GalleryEvent[]; context: string; timeZone: string }) {
+export function Gallery({ events, context, timeZone, coupleNames }: {
+  events: GalleryEvent[]; context: string; timeZone: string; coupleNames: string;
+}) {
   const [filter, setFilter] = useState("all");
   const [gallery, setGallery] = useState<GalleryResult | null>(null);
   const [error, setError] = useState<{ message: string; status?: number; code?: string }>();
@@ -224,7 +226,7 @@ export function Gallery({ events, context, timeZone }: { events: GalleryEvent[];
           {loadingMore ? "Loading more…" : moreError ? "Retry loading photos" : "Load more photos"}
         </button>
       </div>}
-      {shareOpen && <ShareGallery context={context} onClose={() => setShareOpen(false)} />}
+      {shareOpen && <ShareGallery context={context} coupleNames={coupleNames} onClose={() => setShareOpen(false)} />}
       {uploadOpen && <UploadDrawer
         context={context} events={events} initialEvent={events.some(({ id, archived }) => id === filter && !archived) ? filter : ""}
         onClose={() => setUploadOpen(false)} onPublished={publish} />}

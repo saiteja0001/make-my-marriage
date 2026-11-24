@@ -3,9 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import type { GallerySettings } from "@/modules/photos/sharing";
 import { galleryRequest } from "@/modules/photos/client";
+import { GalleryQr } from "./gallery-qr";
 import styles from "./gallery.module.css";
 
-export function ShareGallery({ context, onClose }: { context: string; onClose: () => void }) {
+export function ShareGallery({ context, coupleNames, onClose }: {
+  context: string; coupleNames: string; onClose: () => void;
+}) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const linkRef = useRef<HTMLInputElement>(null);
   const [settings, setSettings] = useState<GallerySettings>();
@@ -101,7 +104,9 @@ export function ShareGallery({ context, onClose }: { context: string; onClose: (
             <a className={styles.secondary} href={settings.galleryUrl} target="_blank" rel="noopener noreferrer">Open guest gallery</a>
           </div>
           <p role="status">{copyStatus}</p>
-        </div> : <p>Only wedding members can view your photos. If you’ve shared a link before, turning guest viewing back on restores access to that link.</p>}
+        </div> : <p>Only wedding members can view your photos.</p>}
+        <GalleryQr key={settings.galleryUrl} url={settings.galleryUrl} coupleNames={coupleNames}
+          uploadsEnabled={settings.guestUploadsEnabled} pending={pending} />
         {pending && <p role="status">Saving sharing settings…</p>}
         {saved && <p role="status">Sharing settings saved.</p>}
       </div> : !problem && <p role="status">Loading sharing settings…</p>}

@@ -1,0 +1,96 @@
+.card {
+  display: grid;
+  gap: 0.75rem;
+  padding: clamp(0.8rem, 2.5vw, 1.2rem);
+  border-radius: 0.85rem;
+  background: var(--ivory);
+}
+.card h3 { color: var(--burgundy); font-weight: 700; }
+.card p { font-size: 0.9rem; }
+.code {
+  display: grid;
+  min-height: 9.25rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  background: white;
+  padding: 0.5rem;
+  text-align: center;
+}
+.code img, .sign img { image-rendering: pixelated; }
+.localNote { padding: 0.65rem; border-radius: 0.55rem; background: #fff2df; color: #563f25; }
+.printRoot { display: contents; }
+.printPreview {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  overflow: auto;
+  background: #eee8e1;
+  color: var(--charcoal);
+}
+.printPreview::backdrop { background: #2a151e91; }
+.printHeader {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.65rem 1rem;
+  padding: 0.9rem clamp(1rem, 4vw, 3rem);
+  border-bottom: 1px solid var(--line);
+  background: white;
+}
+.printHeader h2 { font: 600 1.6rem / 1.15 var(--serif); color: var(--burgundy); }
+.printHeader p { margin-top: 0.25rem; font-size: 0.9rem; color: var(--muted); }
+.previewPaper {
+  width: min(37rem, calc(100% - 2rem), max(19rem, calc((100dvh - 9rem) / 1.414)));
+  aspect-ratio: 210 / 297;
+  margin: clamp(1rem, 4vw, 2.5rem) auto;
+  display: grid;
+  padding: clamp(0.7rem, 3vw, 1.75rem);
+  background: var(--ivory);
+  box-shadow: 0 0.5rem 2rem #41263523;
+}
+.sign {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: clamp(0.6rem, 3vw, 1.45rem);
+  padding: clamp(0.75rem, 6vw, 3rem) clamp(0.5rem, 5vw, 2rem);
+  border: 1px solid #aa8054;
+  color: #292a2d;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.signTitle { font: 600 clamp(1.3rem, 4vw, 2.6rem) / 1.12 var(--serif); color: var(--burgundy); }
+.names { font: 600 clamp(1.2rem, 3.65vw, 2rem) / 1.15 var(--serif); }
+.sign img { display: block; width: min(62%, 17rem); height: auto; background: white; }
+.signInstruction { font-weight: 650; font-size: clamp(0.9rem, 2.7vw, 1.15rem); }
+.printPaper { display: none; }
+
+@page wedding-gallery-sign { size: A4 portrait; margin: 0; }
+@media print {
+  :global(body):has(> .printRoot) > :not(.printRoot), .printPreview { display: none !important; }
+  .printPaper {
+    page: wedding-gallery-sign;
+    box-sizing: border-box;
+    display: grid;
+    width: 210mm;
+    min-height: 296mm;
+    padding: 12mm;
+    color: #111;
+    background: white;
+    break-inside: avoid;
+  }
+  .printPaper .sign { gap: 8mm; padding: 8mm 5mm; border-color: #777; }
+  .printPaper .signTitle { color: #111; font-size: 30pt; }
+  .printPaper .names { font-size: 26pt; }
+  .printPaper img { width: 86mm; }
+  .printPaper .signInstruction { font-size: 14pt; }
+}

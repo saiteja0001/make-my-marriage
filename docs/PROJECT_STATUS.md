@@ -411,4 +411,22 @@ any pending integration work.
   rejection of pending confirmations and new reservations. A browser check
   with mocked storage verified that one batch retry finished the remaining
   uploads without duplicating a previously published photo.
-- Printable QR codes remain a separate increment.
+- Printable QR codes are tracked below.
+
+## Printable wedding gallery QR — complete
+
+- Added a QR preview and standalone PNG download to the gallery sharing
+  panel. The QR encodes the existing gallery link, with guidance for
+  viewing-only and upload-enabled galleries.
+- Added a responsive A4 sign preview and a print layout that contains only
+  the sign. The sign uses saved couple names and a scan instruction that
+  remains accurate when guest uploads are paused.
+- The browser generates the QR without a separate API or stored image.
+  The panel highlights loopback addresses before organisers print a sign
+  for guests.
+- Passed lint, TypeScript, and the production build. Chrome verified the
+  sharing states and preview widths at 320, 390, and 1440 pixels, including
+  keyboard return to sharing. Decoded the downloaded PNG and rasterised A4
+  PDF to the exact copied URL. The PDF contained only the sign on a single
+  page, including with long couple names. The code stayed the same after
+  changing a name, pausing viewing, and re-enabling sharing.
