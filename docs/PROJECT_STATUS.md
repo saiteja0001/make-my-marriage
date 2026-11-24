@@ -449,3 +449,33 @@ any pending integration work.
   across the tested desktop viewports, including 1920 × 720, and 4.57:1
   against a white test background. Signup and sign-in checks also passed
   against an isolated MongoDB instance.
+
+## Wedding Expense Tracker — complete
+
+- Added the Expenses workspace with a wedding-wide INR total, category
+  breakdown, and an expense ledger with category, event, and date filters.
+  Filtered results show a separate subtotal. The dashboard uses the saved
+  wedding total.
+- Admins and Managers can add, edit, and delete expenses. The responsive form
+  supports an optional event and notes, validation, retry, and discard
+  confirmation. Expense amounts are stored as integer paise.
+- Expense reads and writes are scoped to the current wedding. Create retries
+  reuse the saved expense, including protection against recreating a deleted
+  expense. Revisions protect edits and deletions from stale forms.
+- Closing a form after an unconfirmed save refreshes the ledger and totals.
+  List and summary requests use the same account and wedding context as the
+  form. If it changes, the ledger prompts the organiser to reopen Expenses.
+  Edge checks with isolated MongoDB verified that a committed expense
+  appears once after its response is lost and that reopening after an
+  account switch shows the newly signed-in wedding's rows and totals.
+- Passed lint, TypeScript, and the production build. Chrome checked expense
+  validation, draft discard, retry after a lost response, filtered results,
+  editing and deletion, the dashboard total, and widths from 320 to 1440
+  pixels. API checks covered exact paise totals, Admin and Manager access,
+  wedding isolation, archived events, pagination, and stale or repeated
+  requests.
+- Expense changes refresh the workspace navigation cache. Chrome and Edge
+  verified that browser Back shows the saved dashboard total after creating,
+  editing, or deleting an expense, including after a lost create response
+  was retried. Forward returns to the current ledger.
+- Vendor linking follows the My Vendors increment.

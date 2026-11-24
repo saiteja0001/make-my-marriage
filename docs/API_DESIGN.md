@@ -1991,15 +1991,24 @@ limit
 
 category
 eventId
-vendorId
 from
 to
 ```
 
+Dates use `YYYY-MM-DD` and both ends of the range are inclusive. Use
+`eventId=none` for expenses without an event. The response includes
+`data`, `pagination`, and `subtotalPaise` for all matching records across
+pages. Vendor links and filters follow My Vendors.
+
+Expense requests that supply `X-Expense-Draft` must match the signed-in
+membership and wedding. The organiser UI supplies it on reads and writes
+and prompts the organiser to reopen Expenses after a `409 DRAFT_CHANGED`
+response.
+
 Default ordering:
 
 ```text
-expenseDate DESC
+expenseDate DESC, id DESC
 ```
 
 ---
@@ -2018,7 +2027,6 @@ expenseDate DESC
   "expenseDate": "2026-09-01",
   "category": "PHOTOGRAPHY",
   "eventId": "...",
-  "vendorId": "...",
   "notes": "Advance payment"
 }
 ```
@@ -2030,6 +2038,11 @@ createdByMembershipId
 ```
 
 from current Membership.
+
+Amounts are positive integer paise in INR. Expense dates are date-only.
+When supplied, `Idempotency-Key` is a UUID scoped to the wedding and
+membership. An identical retry returns the saved expense. A changed repeat
+returns a conflict, and retrying a deleted expense returns 410.
 
 ---
 
@@ -2076,7 +2089,10 @@ Authentication required.
 
 Authentication required.
 
-Cross-Wedding Event/Vendor references must be validated.
+New event links must reference an active event in the same wedding. Existing
+links to archived events can be kept or cleared. Use null to clear optional
+event or notes fields. The organiser UI sends the saved revision in
+`If-Match` so a stale edit cannot overwrite another organiser’s change.
 
 ---
 
@@ -2086,7 +2102,8 @@ Cross-Wedding Event/Vendor references must be validated.
 
 Authentication required.
 
-Hard deletion.
+Hard deletion. The organiser UI sends the saved revision in `If-Match` to
+confirm the expense it reviewed. The response is `data.success: true`.
 
 ---
 

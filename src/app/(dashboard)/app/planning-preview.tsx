@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { getEventOverview } from "@/modules/events/service";
 import { formatEventDay, formatEventTimeRange } from "@/modules/events/wedding-time";
+import { formatExpenseAmount } from "@/modules/expenses/money";
 import type { getGuestOverview } from "@/modules/guests/service";
 import { taskDueDay } from "@/modules/tasks/due-date";
 import type { getTaskOverview } from "@/modules/tasks/service";
@@ -9,15 +10,11 @@ import { formatWeddingDate } from "@/modules/wedding/wedding-date";
 import { WorkspaceFormLink } from "./_components/workspace-form-link";
 import styles from "./dashboard.module.css";
 
-const sampleMetrics = [
-  { label: "Total expenses", value: "₹1,24,500" },
-  { label: "Vendors", value: 8 },
-];
-
-export function PlanningPreview({ events, tasks, guests, timeZone }: {
+export function PlanningPreview({ events, tasks, guests, expenseTotal, timeZone }: {
   events: Awaited<ReturnType<typeof getEventOverview>>;
   tasks: Awaited<ReturnType<typeof getTaskOverview>>;
   guests: Awaited<ReturnType<typeof getGuestOverview>>;
+  expenseTotal?: number;
   timeZone: string;
 }) {
   return (
@@ -47,12 +44,16 @@ export function PlanningPreview({ events, tasks, guests, timeZone }: {
               <Link href="/app/guests/rsvps" className={styles.metricLink}>{guests.peopleAttending.toLocaleString("en-IN")} people attending</Link>
             </dd>
           </div>
-          {sampleMetrics.map(({ label, value }) => (
-            <div className={styles.metric} key={label}>
-              <dt>{label}</dt>
-              <dd>{value}<span className={styles.metricSample}>Sample data</span></dd>
-            </div>
-          ))}
+          <div className={styles.metric}>
+            <dt>Total expenses</dt>
+            <dd>{expenseTotal === undefined ? "Unavailable" : formatExpenseAmount(expenseTotal)}
+              <Link href="/app/expenses" className={styles.metricLink}>View expenses</Link>
+            </dd>
+          </div>
+          <div className={styles.metric}>
+            <dt>Vendors</dt>
+            <dd>8<span className={styles.metricSample}>Sample data</span></dd>
+          </div>
         </dl>
       </section>
       <div className={styles.planningLists}>

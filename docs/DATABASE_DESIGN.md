@@ -1658,7 +1658,7 @@ Expense {
 
     currency: "INR",
 
-    expenseDate: Date,
+    expenseDate: String, // YYYY-MM-DD
 
     category: String,
 
@@ -1702,6 +1702,12 @@ A future version may support custom categories.
 ---
 
 # 57. Expense Integrity
+
+Expense dates are stored as date-only strings to match the organiser form
+and inclusive date filters across time zones. For keyed creates,
+`expense_creation_requests` stores the expense ID and a request fingerprint
+under a unique wedding, membership, and key. The claim survives hard
+deletion so a delayed create retry cannot recreate a deleted expense.
 
 If `eventId` exists:
 

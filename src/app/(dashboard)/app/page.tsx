@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getEventOverview } from "@/modules/events/service";
+import { expenseSummary } from "@/modules/expenses/service";
 import { getGuestOverview } from "@/modules/guests/service";
 import { taskDayStart } from "@/modules/tasks/due-date";
 import { getTaskOverview } from "@/modules/tasks/service";
@@ -26,10 +27,11 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
   const { membership, wedding } = current;
   const now = new Date();
   const dayStart = taskDayStart(weddingLocalDate(now, wedding.timeZone), wedding.timeZone);
-  const [events, tasks, guests] = await Promise.all([
+  const [events, tasks, guests, expenses] = await Promise.all([
     getEventOverview(wedding.id, now),
     getTaskOverview(wedding.id, dayStart ? new Date(dayStart) : now),
     getGuestOverview(wedding.id),
+    expenseSummary(wedding.id).catch(() => null),
   ]);
   const couple = `${wedding.brideName} & ${wedding.groomName}`;
   return (
@@ -73,7 +75,7 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
             <p className={styles.timeZone}>{wedding.timeZone}</p>
           </div>
         </section>
-        <PlanningPreview events={events} tasks={tasks} guests={guests} timeZone={wedding.timeZone} />
+        <PlanningPreview events={events} tasks={tasks} guests={guests} expenseTotal={expenses?.totalExpensePaise} timeZone={wedding.timeZone} />
       </main>
     </WorkspaceShell>
   );
