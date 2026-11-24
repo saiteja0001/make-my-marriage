@@ -2398,6 +2398,12 @@ No separate DELETE endpoint is necessary.
 
 Authentication required.
 
+The sharing increment accepts Admins and Managers for their current wedding.
+Its GET and PATCH responses return `data.isEnabled` and `data.galleryUrl`.
+The URL is null while sharing is disabled. Re-enabling returns the original
+URL. The PATCH body currently accepts only `isEnabled`. Guest upload and QR
+settings become available with their corresponding increments.
+
 ### Response
 
 ```json
@@ -2593,11 +2599,21 @@ limit
 
 Returns gallery-safe Photo objects.
 
+The guest response includes photo ID, optional event ID, and a signed read
+URL that expires after two minutes. Use
+`GET /api/public/galleries/:token/photos/:photoId` to refresh an individual
+photo URL. These endpoints require enabled sharing and return 404 for an
+invalid token, disabled sharing, or a photo outside the shared wedding.
+Previously issued image URLs expire independently of the sharing switch.
+
 ---
 
 # 80. Public Gallery Information
 
 ## GET `/api/public/galleries/:token`
+
+The event list includes events in the shared wedding referenced by at least
+one ready photo. This includes archived events with ready photos.
 
 Returns:
 

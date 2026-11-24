@@ -135,6 +135,10 @@ function decodeCursor(value: string, event: string | null) {
 }
 
 export async function listPhotos(weddingId: string, query: PhotoFilters) {
+  return photoPage(weddingId, query, signedPhoto);
+}
+
+export async function photoPage<T>(weddingId: string, query: PhotoFilters, project: (photo: PhotoRecord) => Promise<T>) {
   await connectDatabase();
   const filter: QueryFilter<PhotoRecord> = { weddingId, status: "READY" };
   if (query.eventId) filter.eventId = query.eventId === "other" ? null : query.eventId;
@@ -152,10 +156,10 @@ export async function listPhotos(weddingId: string, query: PhotoFilters) {
   const nextCursor = found.length > query.limit && last
     ? Buffer.from(JSON.stringify([last.createdAt.toISOString(), last._id.toString(), query.eventId ?? null])).toString("base64url")
     : null;
-  return { data: await Promise.all(page.map(signedPhoto)), pagination: { nextCursor }, total };
+  return { data: await Promise.all(page.map(project)), pagination: { nextCursor }, total };
 }
 
-async function readyPhoto(weddingId: string, photoId: string) {
+export async function readyPhoto(weddingId: string, photoId: string) {
   await connectDatabase();
   return WeddingPhoto.findOne({ weddingId, _id: photoId, status: "READY" }).lean();
 }

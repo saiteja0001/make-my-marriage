@@ -354,3 +354,27 @@ any pending integration work.
   request a fresh URL and that a failed refresh or replacement stops after
   one attempt. A route fixture verified the documented `data.success` response
   for deletion and the existing `404` behavior for missing photos.
+
+## Guest gallery sharing — complete
+
+- Added a desktop sharing drawer and mobile sheet for Admins and Managers.
+  Guest viewing starts off. When enabled, organisers can copy the link or
+  preview the guest gallery. Disabling and re-enabling preserves the link.
+- Added the account-free guest gallery with event filters, pagination, and a
+  full-size photo viewer. Event filters show categories with ready photos.
+  Renewed previews load immediately so their short-lived URLs work even when
+  a guest scrolls away while a refresh is in progress.
+- Guest routes require the share token and enabled sharing. They return only
+  the wedding names, date, event names, and guest photo fields. Photo URLs
+  are signed for two minutes. MongoDB stores a token hash and an encrypted
+  copy for authorised organisers to retrieve the link.
+- Passed lint, TypeScript, and the production build. Chrome verified copying
+  the link, account-free viewing of an actual R2 photo, layouts at 320, 390,
+  and 1440 pixels, and restoring the same link after disabling sharing.
+  API checks covered same-origin mutations, wedding isolation, guest response
+  fields and privacy headers, and link stability after a wedding detail edit.
+- Isolated API checks verified that guest filters include archived albums with
+  ready photos and exclude empty, pending, deleted, and cross-wedding entries.
+  A browser check with mocked storage verified that a renewed preview loads
+  while the tile is off-screen.
+- Guest uploads and printable QR codes are planned for future increments.

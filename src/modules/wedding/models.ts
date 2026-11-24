@@ -12,6 +12,7 @@ type WeddingRecord = {
   timeZone: string;
   location: { formattedAddress: string };
   website: { slug: string; isPublished: boolean };
+  gallery?: { tokenHash: string; encryptedToken: string; isEnabled: boolean };
   createdByUserId: Types.ObjectId;
   membershipRevision?: number;
 };
@@ -25,6 +26,11 @@ type MembershipRecord = {
 };
 
 const storageOptions = { autoCreate: false, autoIndex: false, timestamps: true } as const;
+const gallerySchema = new Schema<NonNullable<WeddingRecord["gallery"]>>({
+  tokenHash: { type: String, required: true },
+  encryptedToken: { type: String, required: true },
+  isEnabled: { type: Boolean, required: true },
+}, { _id: false });
 
 const weddingSchema = new Schema<WeddingRecord>({
   brideName: { type: String, required: true },
@@ -38,9 +44,11 @@ const weddingSchema = new Schema<WeddingRecord>({
     slug: { type: String, required: true, unique: true },
     isPublished: { type: Boolean, default: false },
   },
+  gallery: { type: gallerySchema, select: false },
   createdByUserId: { type: Schema.Types.ObjectId, required: true },
   membershipRevision: Number,
 }, storageOptions);
+weddingSchema.index({ "gallery.tokenHash": 1 }, { unique: true, sparse: true });
 
 const membershipSchema = new Schema<MembershipRecord>({
   userId: { type: Schema.Types.ObjectId, required: true, unique: true },

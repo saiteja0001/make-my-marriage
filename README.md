@@ -39,12 +39,23 @@ scoped to the private development bucket. In the bucket's CORS settings, allow
 the exact app origin, including the local port, and allow `PUT`, `GET`, and
 `HEAD` with the `Content-Type` request header.
 
+For guest gallery sharing, set `NEXT_PUBLIC_APP_URL` and a stable
+`GALLERY_TOKEN_KEY` in `.env.local`. Generate the key once per environment:
+
+```sh
+node -p "require('node:crypto').randomBytes(32).toString('hex')"
+```
+
+Keep the key with the environment's secrets. The sharing panel uses it to
+recover links that have already been issued.
+
 | Path | Purpose |
 | --- | --- |
 | `/` | Public landing page and demo entry |
 | `/login`, `/signup` | Organiser account forms |
 | `/app`, `/onboarding` | Private wedding overview with a local-date countdown and three-step wedding setup |
 | `/app/edit` | Edit the saved wedding details |
+| `/gallery/[token]` | View wedding photos through an enabled guest gallery link |
 | `/app/members` | View members. Admins can manage invitations, change roles, and remove members. |
 | `/app/guests` | Manage guest groups and open or copy their invitations from group details |
 | `/app/guests/rsvps` | View guest responses and attendance totals |

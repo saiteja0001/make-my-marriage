@@ -7,6 +7,7 @@ import { formatEventDay } from "@/modules/events/wedding-time";
 import type { GalleryPhoto } from "@/modules/photos/service";
 import { galleryRequest, GalleryRequestError, photoSize, type GalleryEvent, type GalleryResult } from "./gallery-http";
 import { PhotoViewer } from "./photo-viewer";
+import { ShareGallery } from "./share-gallery";
 import { UploadDrawer } from "./upload-drawer";
 import styles from "./gallery.module.css";
 
@@ -55,6 +56,7 @@ export function Gallery({ events, context, timeZone }: { events: GalleryEvent[];
   const [loadingMore, setLoadingMore] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [uploadOpen, setUploadOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
   const paging = useRef<AbortController | null>(null);
@@ -164,9 +166,12 @@ export function Gallery({ events, context, timeZone }: { events: GalleryEvent[];
       <header className={styles.heading}>
         <div>
           <h1>Wedding Gallery</h1>
-          <p>Visible to your wedding members.</p>
+          <p>Browse, upload, and share your wedding photos.</p>
         </div>
-        <button type="button" className={styles.primary} onClick={() => { setUploadOpen(true); setNotice(""); }}>Upload photos</button>
+        <div className={styles.headingActions}>
+          <button type="button" className={styles.secondary} onClick={() => setShareOpen(true)}>Share gallery</button>
+          <button type="button" className={styles.primary} onClick={() => { setUploadOpen(true); setNotice(""); }}>Upload photos</button>
+        </div>
       </header>
       {notice && <p className={styles.notice} role="status">{notice}</p>}
       <div className={styles.filterBar}>
@@ -218,6 +223,7 @@ export function Gallery({ events, context, timeZone }: { events: GalleryEvent[];
           {loadingMore ? "Loading more…" : moreError ? "Retry loading photos" : "Load more photos"}
         </button>
       </div>}
+      {shareOpen && <ShareGallery context={context} onClose={() => setShareOpen(false)} />}
       {uploadOpen && <UploadDrawer
         context={context} events={events} initialEvent={events.some(({ id, archived }) => id === filter && !archived) ? filter : ""}
         onClose={() => setUploadOpen(false)} onPublished={publish} />}

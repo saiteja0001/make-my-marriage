@@ -550,6 +550,7 @@ Wedding {
 
     gallery: {
         tokenHash: String,
+        encryptedToken: String,
 
         isEnabled: Boolean,
 
@@ -703,6 +704,7 @@ Therefore gallery configuration remains embedded:
 ```javascript
 gallery: {
     tokenHash,
+    encryptedToken,
     isEnabled,
     guestUploadsEnabled
 }
@@ -716,7 +718,12 @@ Example:
 /gallery/super-secret-random-token
 ```
 
-Only the hash is persisted.
+Public lookups use the unique hash. The wedding record also stores an
+AES-256-GCM-encrypted copy so an authenticated organiser can recover the same
+link from the sharing panel. The server-only `GALLERY_TOKEN_KEY` must be kept
+stable. A future key change requires re-encrypting existing token values with
+the new key to preserve existing links. Older weddings have no gallery
+settings until an organiser enables sharing.
 
 ---
 

@@ -50,10 +50,10 @@ export function signUpload(key: string, contentType: string, contentLength: numb
   }));
 }
 
-export function signRead(key: string, attachment?: string) {
+export function signRead(key: string, attachment?: string, expiresIn = 15 * 60) {
   return objectOperation(({ client, bucket }) => getSignedUrl(client, new GetObjectCommand({
     Bucket: bucket, Key: key, ...(attachment && { ResponseContentDisposition: attachment }),
-  }), { expiresIn: 15 * 60 }));
+  }), { expiresIn }));
 }
 
 export function inspectObject(key: string) {

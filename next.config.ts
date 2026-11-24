@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     incomingRequests: { ignore: [
       /^\/(?:api\/(?:public\/)?)?member-invitations\//,
       /^\/(?:invite|api\/public\/invitations)\//,
+      /^\/(?:gallery|api\/public\/galleries)\//,
     ] },
   },
   async headers() {
@@ -21,6 +22,8 @@ const nextConfig: NextConfig = {
       "/invite/:token",
       "/api/public/invitations/:token",
       "/api/public/invitations/:token/rsvp",
+      "/gallery/:token",
+      "/api/public/galleries/:token/:path*",
     ].map((source) => ({ source, headers: protectedInvitationHeaders }));
   },
   turbopack: {

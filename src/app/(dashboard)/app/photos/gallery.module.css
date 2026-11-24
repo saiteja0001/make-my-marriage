@@ -184,3 +184,29 @@
 @container (min-width: 62rem) {
   .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
+.headingActions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+.shareContent { display: grid; gap: 1rem; margin-top: 1.25rem; }
+.shareSwitch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1rem;
+  border: 1px solid #e9d6d7;
+  border-radius: 0.8rem;
+  background: #f5e7e6;
+  color: #702f45;
+  gap: 0.5rem;
+}
+.shareSwitch strong { margin-right: auto; }
+.shareSwitch span { min-width: 2.6rem; border-radius: 1rem; padding: 0.2rem 0.5rem; background: #fff; }
+.shareSwitch[aria-checked="true"] span { background: #702f45; color: white; }
+.shareSwitch i { display: flex; align-items: center; width: 2.5rem; height: 1.4rem; padding: 0.16rem; border-radius: 1rem; background: #dad0cd; }
+.shareSwitch i::before { content: ""; width: 1.08rem; height: 1.08rem; border-radius: 50%; background: white; }
+.shareSwitch[aria-checked="true"] i { justify-content: flex-end; background: #702f45; }
+.shareNotice { padding: 0.9rem 1rem; background: #fff2df; border-radius: 0.8rem; }
+.shareLink { display: grid; gap: 0.6rem; }
+.shareLink input { min-width: 0; width: 100%; border: 1px solid #e9d6d7; border-radius: 0.65rem; padding: 0.75rem; }
+@media (max-width: 39.9rem) {
+  .drawer.sharingDrawer { inset: auto 0 0; width: 100%; height: auto; max-height: 90dvh; border-radius: 1.2rem 1.2rem 0 0; }
+  .sharingDrawer::before { content: ""; display: block; width: 2.5rem; height: 0.25rem; margin: 0 auto 0.9rem; border-radius: 1rem; background: #dfd8d3; }
+}
