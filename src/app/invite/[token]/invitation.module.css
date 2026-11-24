@@ -1,0 +1,161 @@
+.invitation {
+  width: min(78rem, calc(100% - 2 * clamp(1rem, 4vw, 3.5rem)));
+  margin-inline: auto;
+}
+
+.hero {
+  display: grid;
+  justify-items: center;
+  gap: 0.72rem;
+  padding-block: clamp(2.25rem, 6vw, 5rem) clamp(1.75rem, 4vw, 3.5rem);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.monogram {
+  position: relative;
+  display: grid;
+  width: clamp(3.65rem, 7vw, 5rem);
+  margin-bottom: 0.45rem;
+  aspect-ratio: 1;
+  place-items: center;
+  border: 1px solid #e7d9be;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 25%, white, #f3e4e2);
+  color: var(--burgundy);
+  font: 600 clamp(1.55rem, 3vw, 2rem) / 1 var(--serif);
+  letter-spacing: 0.03em;
+}
+.monogram::before, .monogram::after {
+  position: absolute;
+  inset-block-start: 50%;
+  width: clamp(1.65rem, 8vw, 5.4rem);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c99a4690);
+  content: "";
+}
+.monogram::before { inset-inline-end: calc(100% + 0.7rem); }
+.monogram::after { inset-inline-start: calc(100% + 0.7rem); transform: scaleX(-1); }
+.hero h1, .noticeCard h1 {
+  color: var(--burgundy);
+  font: 600 clamp(2.45rem, 6.25vw, 4.7rem) / 1.1 var(--serif);
+  letter-spacing: -0.045em;
+}
+.intro { font-size: clamp(1rem, 2vw, 1.2rem); }
+.when { color: var(--muted); font-size: 0.9rem; }
+.welcome {
+  display: flex;
+  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 0.65rem;
+  margin-top: 0.6rem;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: 0.65rem;
+  background: white;
+  color: var(--burgundy);
+  font-size: 0.9rem;
+}
+.welcome span {
+  min-width: 0;
+  padding: 0.16rem 0.45rem;
+  border-radius: 0.4rem;
+  background: #f3ebe1;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.jump { display: inline-flex; min-height: 2.75rem; align-items: center; color: var(--burgundy); font-weight: 700; }
+.jump:hover { text-decoration: underline; }
+
+.content { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.15rem; align-items: start; }
+.sectionHeading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0.4rem 0.7rem; margin-bottom: 0.75rem; }
+.sectionHeading h2, .rsvp h2 { color: var(--burgundy); font: 600 clamp(1.45rem, 3vw, 2rem) / 1.2 var(--serif); }
+.sectionHeading p, .date { color: var(--muted); font-size: 0.875rem; font-weight: 700; }
+.events { display: grid; gap: 0.8rem; }
+.event, .rsvp, .noticeCard {
+  min-width: 0;
+  padding: clamp(1rem, 3vw, 1.65rem);
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: white;
+  box-shadow: 0 0.45rem 1.3rem #702f450b;
+  overflow-wrap: anywhere;
+}
+.event h3 { margin-top: 0.38rem; color: var(--burgundy); font: 600 clamp(1.35rem, 2.8vw, 1.9rem) / 1.2 var(--serif); }
+.description { margin-top: 0.6rem; color: var(--muted); line-height: 1.55; white-space: pre-wrap; }
+.eventInfo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 0.65rem 1rem;
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 0.5rem;
+  background: var(--ivory);
+}
+.eventInfo dt { color: var(--muted); font-size: 0.85rem; }
+.eventInfo dd { margin-top: 0.25rem; font-weight: 700; }
+.eventInfo dd span { display: block; color: var(--muted); font-size: 0.875rem; font-weight: 500; }
+
+.rsvp { scroll-margin-top: 1rem; }
+.rsvp h2 { margin-bottom: 1.15rem; }
+.fields, .party { min-inline-size: 0; }
+.options { display: grid; gap: 0.55rem; }
+.option {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 3.15rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  background: var(--ivory);
+  font-size: 0.925rem;
+  font-weight: 700;
+}
+.option[data-selected="true"] { border-color: var(--burgundy); background: var(--blush); color: var(--burgundy); }
+.option input { width: 1.12rem; height: 1.12rem; flex: none; accent-color: var(--burgundy); }
+.party { margin-top: 1rem; padding: 0.65rem 0.75rem 0.75rem; border: 1px solid var(--line); border-radius: 0.55rem; background: var(--ivory); }
+.party legend { padding-inline: 0.3rem; color: var(--burgundy); font-weight: 700; }
+.party > p { margin-bottom: 0.55rem; color: var(--muted); font-size: 0.875rem; }
+.sizes { display: grid; grid-template-columns: repeat(auto-fit, minmax(2.6rem, 1fr)); gap: 0.35rem; }
+.size {
+  display: grid;
+  min-height: 2.75rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  background: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+.size[data-selected="true"] { border-color: var(--burgundy); background: var(--burgundy); color: white; }
+.size:has(:focus-visible) { outline: 2px solid var(--burgundy); outline-offset: 2px; }
+.count { width: min(100%, 8rem); min-height: 2.75rem; padding: 0.45rem 0.6rem; border: 1px solid var(--line); border-radius: 0.42rem; background: white; color: var(--charcoal); }
+.actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.15rem; }
+.primary, .secondary {
+  min-height: 2.8rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+}
+.primary { flex: 1; background: var(--burgundy); color: white; }
+.primary:hover { background: var(--burgundy-hover); }
+.secondary { border-color: var(--line); background: white; color: var(--burgundy); }
+.secondary:hover { background: var(--blush); }
+.primary:disabled, .secondary:disabled { opacity: 0.6; }
+.error, .party .error { margin-top: 0.55rem; color: #8d273b; font-size: 0.875rem; font-weight: 700; }
+.confirmation { display: grid; justify-items: start; gap: 0.75rem; }
+.saved { padding: 0.24rem 0.58rem; border-radius: 0.42rem; background: #e7eee5; color: #375236; font-size: 0.85rem; font-weight: 700; }
+.footer { margin-top: 2rem; padding-block: 1.15rem 2rem; border-top: 1px solid var(--line); color: var(--muted); text-align: center; font-size: 0.85rem; }
+.unavailable { display: grid; min-height: 100dvh; place-items: center; padding: 1rem; text-align: center; }
+.noticeCard h1 { font-size: clamp(2rem, 5vw, 3rem); }
+.noticeCard h1 + p { margin-top: 0.65rem; color: var(--muted); }
+
+@media (min-width: 52rem) {
+  .content { grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr); gap: 1.15rem 1.5rem; }
+  .rsvp { position: sticky; top: 1rem; }
+}

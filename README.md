@@ -24,8 +24,8 @@ defaults to `7`. Restart the development server after changing these
 settings.
 
 Use a MongoDB replica set or Atlas cluster for account signup and wedding
-creation transactions. When setting `NEXT_PUBLIC_APP_URL`,
-use the same origin that visitors use to open the app, including the port
+creation transactions. Set `NEXT_PUBLIC_APP_URL` to enable guest invitation
+links. Use the origin that visitors use to open the app, including the port
 when applicable.
 
 For wedding member invitations, set `RESEND_API_KEY`, `RESEND_FROM_EMAIL`
@@ -40,6 +40,9 @@ without the email configuration.
 | `/app`, `/onboarding` | Private wedding overview with a local-date countdown and three-step wedding setup |
 | `/app/edit` | Edit the saved wedding details |
 | `/app/members` | View members. Admins can manage invitations, change roles, and remove members. |
+| `/app/guests` | Manage guest groups and open or copy their invitations from group details |
+| `/app/guests/rsvps` | View guest responses and attendance totals |
+| `/invite/[token]` | Open a guest invitation and submit or edit an RSVP |
 | `/member-invitations/[token]` | Sign in or create an account and accept a wedding invitation |
 | `POST /api/wedding` | Create a wedding and its first Admin membership |
 | `PATCH /api/wedding` | Update submitted wedding fields as an Admin or Manager |

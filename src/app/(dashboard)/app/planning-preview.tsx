@@ -43,7 +43,9 @@ export function PlanningPreview({ events, tasks, guests, timeZone }: {
           </div>
           <div className={styles.metric}>
             <dt>RSVP responses</dt>
-            <dd>{(guests.attending + guests.declined).toLocaleString("en-IN")}</dd>
+            <dd>{(guests.attending + guests.declined).toLocaleString("en-IN")}
+              <Link href="/app/guests/rsvps" className={styles.metricLink}>{guests.peopleAttending.toLocaleString("en-IN")} people attending</Link>
+            </dd>
           </div>
           {sampleMetrics.map(({ label, value }) => (
             <div className={styles.metric} key={label}>

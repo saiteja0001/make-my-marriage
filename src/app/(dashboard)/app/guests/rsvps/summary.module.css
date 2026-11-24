@@ -1,0 +1,69 @@
+.totals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.62rem;
+  margin-bottom: 1.25rem;
+}
+.total, .empty, .response {
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  background: white;
+}
+.total { min-width: 0; padding: clamp(0.8rem, 1.8vw, 1.4rem); }
+.total dt { color: var(--muted); font-size: 0.875rem; font-weight: 700; }
+.total a:hover { text-decoration: underline; }
+.total dd { margin-top: 0.4rem; color: var(--burgundy); font: 600 clamp(1.65rem, 3vw, 2.65rem) / 1.2 var(--serif); overflow-wrap: anywhere; }
+.total:last-child { grid-column: 1 / -1; background: var(--burgundy); color: white; }
+.total:last-child dt, .total:last-child dd { color: white; }
+.empty { margin-block: 0.75rem 1rem; padding: 1rem; color: var(--muted); }
+.controls, .tabs, .search, .pagination { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem 0.65rem; }
+.controls { justify-content: space-between; margin-bottom: 0.8rem; }
+.tabs { gap: 0.25rem; padding: 0.25rem; border-radius: 0.55rem; background: #efe8e1; }
+.tabs a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 0.4rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+.tabs a[aria-current] { background: white; color: var(--burgundy); }
+.tabs span { font-size: 0.78rem; }
+.search { flex: 1 1 16rem; max-width: 24rem; }
+.search input[type="search"] { flex: 1 1 9rem; width: auto; }
+.columns { display: none; }
+.responses { display: grid; gap: 0.55rem; }
+.response {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "name status" "party party" "date date" "events events";
+  align-items: center;
+  gap: 0.45rem 0.65rem;
+  padding: 0.85rem 0.95rem;
+  overflow-wrap: anywhere;
+}
+.name { display: grid; grid-area: name; gap: 0.2rem; }
+.name a { color: var(--burgundy); font-weight: 700; }
+.name a:hover { text-decoration: underline; }
+.name span, .date { color: var(--muted); font-size: 0.875rem; }
+.party { grid-area: party; font-size: 0.875rem; font-weight: 700; }
+.status { grid-area: status; }
+.date { grid-area: date; }
+.events { grid-area: events; min-width: 0; }
+.pagination { justify-content: flex-end; margin-top: 1rem; color: var(--muted); font-size: 0.875rem; }
+
+@container (min-width: 48rem) {
+  .totals { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .total:last-child { grid-column: auto; }
+  .columns, .response {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.63fr) minmax(0, 0.85fr) minmax(0, 0.8fr) minmax(0, 1.3fr);
+    gap: 0.7rem;
+  }
+  .columns { margin-bottom: 0.55rem; padding: 0.6rem 0.95rem; border-radius: 0.55rem; background: #efe8e1; color: var(--muted); font-size: 0.8rem; font-weight: 700; }
+  .response { grid-template-areas: "name party status date events"; }
+}

@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import styles from "./workspace-shell.module.css";
 
-export type WorkspacePath = "/app" | "/app/edit" | "/app/members" | "/app/events" | "/app/tasks" | "/app/guests";
+export type WorkspacePath = "/app" | "/app/edit" | "/app/members" | "/app/events" | "/app/tasks" | "/app/guests" | "/app/guests/rsvps";
 
 type Destination = {
   label: string;
@@ -29,8 +29,8 @@ const navigation: readonly { label: string; destinations: readonly Destination[]
     label: "Guests",
     destinations: [
       { label: "Guest List", href: "/app/guests" },
-      { label: "Invitations" },
-      { label: "RSVPs" },
+      { label: "RSVP Summary", href: "/app/guests/rsvps" },
+      { label: "Invitation delivery" },
     ],
   },
   {
@@ -66,6 +66,7 @@ export function WorkspaceNavigation({ currentPath, onRequestLeave, onNavigateAwa
   const searchParams = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);
+  const selectedPath = navigation.some(({ destinations }) => destinations.some(({ href }) => href === pathname)) ? pathname : currentPath;
 
   function closeMenuAndRestoreFocus() {
     setMenuOpen(false);
@@ -120,7 +121,7 @@ export function WorkspaceNavigation({ currentPath, onRequestLeave, onNavigateAwa
                   </li>
                 );
 
-                const current = currentPath === href;
+                const current = selectedPath === href;
                 const samePage = current && pathname === href && !searchParams?.toString();
                 return (
                   <li key={label}>

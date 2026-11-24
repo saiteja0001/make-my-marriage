@@ -1597,9 +1597,10 @@ endpoint, public invitation page, email delivery, or RSVP submission. Guest CRUD
 never returns the raw token. Later sharing retrieves the existing secret rather
 than rotating it on each request. Deleting its owner invalidates any future link.
 
-As of 2026-09-16, link retrieval, public invitation viewing, RSVP submission, and
-RSVP summaries (§45, §50–52) are implemented. Guest email delivery, bulk actions
-and reminders (§46–49) remain deferred. Copy/open actions do not mark emails sent.
+The sharing and RSVP increment adds link retrieval, public invitation viewing,
+RSVP submission, and RSVP summaries (§45, §50–52). Guest email delivery, bulk
+actions and reminders (§46–49) remain deferred. Copy/open actions do not mark
+emails sent.
 
 ---
 
@@ -1811,7 +1812,8 @@ Return invitation data
       "name": "Rajesh Sharma",
       "maxGuests": 4,
       "rsvpStatus": "PENDING",
-      "attendingCount": null
+      "attendingCount": null,
+      "revision": 0
     },
     "wedding": {
       "brideName": "Princi",
@@ -1848,7 +1850,7 @@ internal notes
 
 ---
 
-### Implemented public boundary (2026-09-16)
+### V1 public boundary
 
 `/invite/:token` is a standalone page with no login requirement. Both it and this
 API use generic unavailable states for malformed, missing, or deleted invitations;
@@ -1856,7 +1858,8 @@ a deleted wedding also makes the link unavailable. The API returns 404.
 Only the explicit fields above are exposed: no database IDs, contact details,
 internal notes, other guests, members, or unrelated sharing tokens. Events are
 filtered by owner wedding, invitation event IDs, and `archivedAt: null`.
-The approved floral artwork is a local decorative asset; cover uploads are deferred.
+The public invitation uses the Stitch monogram treatment and ceremony cards.
+Event cover uploads are deferred.
 Responses are no-store; public routes have no-referrer and noindex headers/metadata.
 Token-bearing routes are excluded from Next application incoming request logging.
 The UI retains unsaved RSVP choices after retryable failures and refreshes on focus
@@ -1880,6 +1883,9 @@ only attempts admitted by it consume the shared counter. Nonexistent/deleted lin
 and per-invitation rejections therefore cannot exhaust the shared quota. Identical
 repeat responses remain rate limited even though they do not rewrite the RSVP.
 Requests use the configured application origin and strict JSON/query validation.
+Send the invitation's revision as a quoted `If-Match` header, for example
+`If-Match: "0"`. Missing revisions return `428 REVISION_REQUIRED` and malformed
+revisions return `400 VALIDATION_ERROR`.
 
 ### Request — Attending
 
@@ -1916,17 +1922,20 @@ attendingCount = 0
   "data": {
     "status": "ATTENDING",
     "attendingCount": 3,
-    "updatedAt": "..."
+    "updatedAt": "...",
+    "revision": 1
   }
 }
 ```
 
 The same endpoint may be used later to modify RSVP. One response applies to the
-whole guest group. Repeating the current status/count is idempotent. Updates check
-the guest version and current capacity atomically, increment `__v`, and save
-`rsvpUpdatedAt`. A concurrent edit returns 409; reduced capacity returns a friendly
-`PARTY_SIZE_CHANGED` validation error. The UI refreshes the invitation while
-retaining the draft so the guest can review and retry.
+whole guest group. Repeating the current status and count returns the saved
+response and its revision without writing again. Other updates check the
+submitted revision and current capacity atomically, increment `__v`, and save
+`rsvpUpdatedAt`. A stale draft returns `409 CONFLICT`. A party size over the
+current limit returns `PARTY_SIZE_CHANGED`. The UI refreshes the invitation,
+keeps the draft, and asks the guest to review the saved response before using
+its newer revision.
 
 ---
 

@@ -819,16 +819,18 @@ Update RSVP
 
 Guest may return to the same link later and modify their RSVP.
 
-Implemented 2026-09-16: Admin/Manager guest details retrieve the stable sharing URL;
-public `/invite/:token` and invitation APIs require no account. Guest invitation
+Admin and Manager guest details retrieve the stable sharing URL. Public
+`/invite/:token` and invitation APIs require no account. Guest invitation
 services own token resolution, minimal public projections, capacity validation,
-repeat-response idempotency, and wedding-scoped summaries. The events repository
-loads only active invited events in that wedding. Atomic guest version/capacity
-checks prevent lost updates across organiser edits and RSVP submissions.
+repeat-response idempotency, and wedding-scoped summaries. The invitation
+loads only active invited events in that wedding. RSVP drafts pin the guest
+revision at the start of editing and submit it with `If-Match`. The write
+checks that revision and current capacity atomically. A conflict preserves
+the draft and shows the latest saved response before the guest resubmits.
 
-The public page follows the approved Stitch floral hero, overlapping RSVP status
-card, dated itinerary, and formal response form. It retains input on failure and
-refreshes permitted details on focus. Generic unavailable states hide deleted or
+The public page follows the Stitch monogram header, dated itinerary, and
+response form. It retains input on failure and refreshes permitted details
+on focus. Generic unavailable states hide deleted or
 invalid links. Application logging excludes token-bearing request paths, and
 no-store/no-referrer/noindex protections apply. RSVP writes reuse the MongoDB
 rate-limit mechanism (300/minute globally; 20 per invitation/15 minutes) with HMAC

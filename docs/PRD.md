@@ -714,6 +714,10 @@ Guest cannot choose 5.
 
 The RSVP may be edited later using the same invitation link.
 
+If another response is saved while a guest is editing, show the saved response
+and keep the guest's choices. The guest can review the saved response and
+confirm their choices before submitting again.
+
 No account should be required.
 
 ---

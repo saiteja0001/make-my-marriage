@@ -5,7 +5,9 @@ import { rsvpStatuses } from "@/modules/guests/validation";
 import { WorkspaceFormLink } from "../../_components/workspace-form-link";
 import { requireWorkspaceGuest } from "../_workspace";
 import { GuestEvents } from "../guest-events";
+import { RsvpRefresh } from "../rsvp-refresh";
 import { DeleteGuest } from "./delete-guest";
+import { GuestInvitationLink } from "./invitation-link";
 import styles from "../guests.module.css";
 
 export const metadata: Metadata = { title: "Guest group details" };
@@ -33,17 +35,21 @@ export default async function GuestPage({ params, searchParams }: {
         </div>
       </header>
 
-      <dl className={styles.details}>
-        <div><dt>Party limit</dt><dd>{guest.maxGuests.toLocaleString("en-IN")} {guest.maxGuests === 1 ? "guest" : "guests"}, including the named guest</dd></div>
-        {guest.email && <div><dt>Email</dt><dd>{guest.email}</dd></div>}
-        {guest.phone && <div><dt>Phone</dt><dd>{guest.phone}</dd></div>}
-        <div><dt>Selected events</dt><dd><GuestEvents guest={guest} timeZone={wedding.timeZone} /></dd></div>
-        <div>
-          <dt>RSVP status</dt>
-          <dd>{rsvpStatuses[guest.rsvpStatus]}{guest.attendingCount !== null && ` · ${guest.attendingCount.toLocaleString("en-IN")} attending`}</dd>
-        </div>
-        {guest.notes && <div><dt>Organiser notes</dt><dd>{guest.notes}</dd></div>}
-      </dl>
+      <RsvpRefresh />
+      <div className={styles.shareLayout}>
+        <GuestInvitationLink key={guest.id} guestId={guest.id} guestName={guest.name} />
+        <dl className={styles.details}>
+          <div><dt>Party limit</dt><dd>{guest.maxGuests.toLocaleString("en-IN")} {guest.maxGuests === 1 ? "guest" : "guests"}, including the named guest</dd></div>
+          {guest.email && <div><dt>Email</dt><dd>{guest.email}</dd></div>}
+          {guest.phone && <div><dt>Phone</dt><dd>{guest.phone}</dd></div>}
+          <div><dt>Selected events</dt><dd><GuestEvents guest={guest} timeZone={wedding.timeZone} /></dd></div>
+          <div>
+            <dt>RSVP status</dt>
+            <dd>{rsvpStatuses[guest.rsvpStatus]}{guest.attendingCount !== null && ` · ${guest.attendingCount.toLocaleString("en-IN")} attending`}</dd>
+          </div>
+          {guest.notes && <div><dt>Organiser notes</dt><dd>{guest.notes}</dd></div>}
+        </dl>
+      </div>
     </>
   );
 }

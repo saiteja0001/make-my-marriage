@@ -147,6 +147,23 @@
 .details dt { color: var(--muted); font-size: 0.875rem; }
 .details dd { margin-top: 0.28rem; font-weight: 600; white-space: pre-wrap; overflow-wrap: anywhere; }
 
+.shareLayout { display: grid; align-items: start; gap: 0.9rem; }
+.shareCard {
+  display: grid;
+  gap: 0.8rem;
+  min-width: 0;
+  padding: clamp(1rem, 2.2vw, 1.7rem);
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  background: white;
+  box-shadow: 0 0.35rem 1.2rem #702f450a;
+  overflow-wrap: anywhere;
+}
+.shareCard h2 { color: var(--burgundy); font: 600 clamp(1.35rem, 3vw, 1.75rem) / 1.25 var(--serif); }
+.shareCard p { color: var(--muted); }
+.shareCard .field > span { font-size: 0.875rem; font-weight: 700; }
+.shareCard .linkFeedback { color: var(--burgundy); font-size: 0.875rem; font-weight: 700; }
+
 .drawer {
   position: fixed;
   inset: 0 0 0 auto;
@@ -189,6 +206,7 @@
 
 @container (min-width: 45rem) {
   .listHeading { align-items: flex-end; }
+  .shareLayout { grid-template-columns: minmax(0, 1.18fr) minmax(0, 1fr); }
   .summary { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .summaryCard:last-child { grid-column: auto; }
   .filterToggle { display: none; }

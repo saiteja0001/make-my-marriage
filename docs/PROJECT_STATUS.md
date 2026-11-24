@@ -272,9 +272,8 @@ any pending integration work.
   correction could still be in flight. A deleted group's edit form keeps the
   draft visible and offers to open the Guest List in a new tab.
 - The Guest List displays saved group, capacity, and RSVP summaries. The
-  dashboard shows real guest and RSVP totals. Invitations and guest RSVP
-  submission will be built in the next increment. Expense and vendor metrics
-  still use labelled sample data.
+  dashboard shows real guest and RSVP totals. Expense and vendor metrics still
+  use labelled sample data.
 - Passed lint, TypeScript, and the production build. Chrome checked the list
   from 320 to 1440 pixels and the drawer on desktop and mobile. Checks covered
   draft warnings and retention, validation, lost-response recovery, event
@@ -294,3 +293,36 @@ any pending integration work.
   so it can reach MongoDB even with a cached schema. An isolated database
   check verified guest creation and editing with active events, and rejection
   of archived and cross-wedding events.
+
+## Guest invitation links and RSVP — complete
+
+- Added a sharing card to guest group details. Admins and Managers can copy
+  the stable invitation link, select it manually if the clipboard is
+  unavailable, or open it in a new tab. Links use the configured app origin.
+- Built the standalone Stitch invitation with the couple's monogram, the
+  group's active ceremonies, and an account-free RSVP form. Guests can
+  accept, decline, or update their response using the same link. Failed saves
+  retain choices, and a changed party limit is shown before the guest retries.
+- RSVP drafts keep the revision they started from. When the invitation changes
+  during editing, guests see the saved response and can keep their choices
+  after reviewing it.
+- Added the RSVP Summary with saved group totals, actual headcount, searchable
+  response rows, and status filters. The dashboard shows the number of groups
+  that responded and the number of people attending.
+- Public responses expose only the invitation fields, use no-store,
+  no-referrer, and noindex protections, and exclude token-bearing request
+  paths from incoming request logs. RSVP updates enforce capacity and version
+  checks and reuse the existing MongoDB counters for per-link and shared
+  limits. Guest email delivery, WhatsApp shortcuts, and reminders are planned.
+- Passed lint, TypeScript, and the production build. Chrome checked copy,
+  clipboard fallback, opening a new tab, accepting and declining, editing a
+  response, retrying after a failed submission, and a changed party limit.
+  The public invitation fit widths from 320 to 1440 pixels.
+- Isolated API checks covered wedding isolation, allowed event projections,
+  invalid and deleted links, no-referrer and no-store responses, repeat
+  submission, and both rate limits. Chrome verified that the dashboard and
+  RSVP Summary show the current headcount.
+- A two-session browser check verified that guests keep their choices while
+  reviewing a newer RSVP. API checks confirmed that stale revisions cannot
+  overwrite a different response, identical retries keep the saved timestamp,
+  and simultaneous submissions respect guest capacity and revision checks.

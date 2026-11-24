@@ -97,16 +97,21 @@ export async function listGuests(weddingId: string, filters: GuestFilters) {
 
 export async function getGuestOverview(weddingId: string) {
   await connectDatabase();
-  const [summary] = await WeddingGuest.aggregate<{ groups: number; capacity: number; attending: number; declined: number }>([
+  const [summary] = await WeddingGuest.aggregate<{
+    groups: number; capacity: number; attending: number; declined: number; peopleAttending: number;
+  }>([
     { $match: { weddingId: new Types.ObjectId(weddingId) } },
     { $group: {
       _id: null, groups: { $sum: 1 }, capacity: { $sum: "$maxGuests" },
       attending: { $sum: { $cond: [{ $eq: ["$rsvpStatus", "ATTENDING"] }, 1, 0] } },
       declined: { $sum: { $cond: [{ $eq: ["$rsvpStatus", "NOT_ATTENDING"] }, 1, 0] } },
+      peopleAttending: { $sum: { $cond: [{ $eq: ["$rsvpStatus", "ATTENDING"] }, "$attendingCount", 0] } },
     } },
   ]);
-  const { groups, capacity, attending, declined } = summary ?? { groups: 0, capacity: 0, attending: 0, declined: 0 };
-  return { groups, capacity, attending, declined, pending: groups - attending - declined };
+  const { groups, capacity, attending, declined, peopleAttending } = summary ?? {
+    groups: 0, capacity: 0, attending: 0, declined: 0, peopleAttending: 0,
+  };
+  return { groups, capacity, attending, declined, pending: groups - attending - declined, peopleAttending };
 }
 
 export async function getGuest(weddingId: string, guestId: string) {

@@ -3,7 +3,10 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   agentRules: false,
   logging: {
-    incomingRequests: { ignore: [/^\/(?:api\/(?:public\/)?)?member-invitations\//] },
+    incomingRequests: { ignore: [
+      /^\/(?:api\/(?:public\/)?)?member-invitations\//,
+      /^\/(?:invite|api\/public\/invitations)\//,
+    ] },
   },
   async headers() {
     const protectedInvitationHeaders = [
@@ -15,6 +18,9 @@ const nextConfig: NextConfig = {
       "/member-invitations/:token",
       "/api/public/member-invitations/:token",
       "/api/member-invitations/:token/accept",
+      "/invite/:token",
+      "/api/public/invitations/:token",
+      "/api/public/invitations/:token/rsvp",
     ].map((source) => ({ source, headers: protectedInvitationHeaders }));
   },
   turbopack: {

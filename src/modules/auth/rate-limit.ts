@@ -12,10 +12,16 @@ const failedLoginDelayThreshold = 8;
 const failedLoginDelayStepMs = 250;
 const maxFailedLoginDelayMs = 2000;
 
-function rateLimitWindow() {
+function rateLimitWindow(durationMs = windowMs) {
   const now = Date.now();
-  const expiresAt = new Date(now - (now % windowMs) + windowMs);
+  const expiresAt = new Date(now - (now % durationMs) + durationMs);
   return { expiresAt, retryAfter: Math.ceil((expiresAt.getTime() - now) / 1000) };
+}
+
+export async function fixedWindowRetryAfter(bucket: string[], limit: number, durationMs: number) {
+  await connectAuthDatabase();
+  const { expiresAt, retryAfter } = rateLimitWindow(durationMs);
+  return await countAttempt(bucket, expiresAt) > limit ? retryAfter : null;
 }
 
 async function countAttempt(bucket: string[], expiresAt: Date) {
