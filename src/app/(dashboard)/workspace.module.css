@@ -50,13 +50,14 @@
 }
 
 .wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
   flex-shrink: 0;
   color: var(--burgundy);
   font: 700 clamp(1.2rem, 2.2vw, 1.65rem) / 1.25 var(--serif);
   letter-spacing: -0.048em;
 }
-
-.wordmark span { color: var(--gold); }
 
 .headerActions {
   display: flex;

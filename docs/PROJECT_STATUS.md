@@ -430,3 +430,22 @@ any pending integration work.
   PDF to the exact copied URL. The PDF contained only the sign on a single
   page, including with long couple names. The code stayed the same after
   changing a name, pausing viewing, and re-enabling sharing.
+
+## Sign-in, sign-up, and app branding — complete
+
+- Updated the organiser sign-in and sign-up pages with the Stitch sign-in
+  layout, adapting it for account creation and smaller screens.
+- Added a burgundy monogram to the account, homepage, demo, and workspace
+  navigation, with a matching browser icon.
+- Kept the existing email and password flows, including the six-character
+  signup minimum and password visibility controls. The layout reuses the
+  existing wedding photo.
+- Passed lint, TypeScript, and the production build. Chrome verified signup,
+  logout, sign-in, invalid email and credentials, password visibility, and
+  layouts from 320 to 1440 pixels. The homepage and workspace monograms link
+  to the homepage, and the browser icon loads.
+- Anchored the photo gradient to the caption so it stays readable as the
+  photo crops and the text wraps. Edge measured at least 5.29:1 contrast
+  across the tested desktop viewports, including 1920 × 720, and 4.57:1
+  against a white test background. Signup and sign-in checks also passed
+  against an isolated MongoDB instance.

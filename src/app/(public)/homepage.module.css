@@ -74,18 +74,6 @@
   font: 700 1.23rem/1.2 var(--serif);
 }
 
-.brandMark {
-  display: grid;
-  width: 2.05rem;
-  height: 2.05rem;
-  flex: 0 0 2.05rem;
-  place-items: center;
-  border-radius: 0.4rem;
-  background: var(--burgundy);
-  color: #f1d18a;
-  font: 700 1.32rem/1 Georgia, serif;
-}
-
 .sectionNav, .accountNav, .footer nav {
   display: flex;
   flex-wrap: wrap;
@@ -524,7 +512,6 @@
 
 @media (max-width: 440px) {
   .brand { font-size: 1.01rem; }
-  .brandMark { width: 1.77rem; height: 1.77rem; flex-basis: 1.77rem; }
   .accountNav { gap: 0.55rem; }
   .accountNav .primaryAction { padding-inline: 0.5rem; }
   .sectionNav { gap: 0.42rem 0.95rem; }

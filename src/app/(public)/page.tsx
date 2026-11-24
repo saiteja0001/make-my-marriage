@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { demoWedding } from "@/app/_data/demo-wedding";
+import { BrandMark } from "@/components/ui/wordmark";
 import { getSignedInUser } from "@/server/auth/session";
 import { WeddingPreview } from "./_components/wedding-preview";
 import { WorkspacePreview } from "./_components/workspace-preview";
@@ -27,7 +28,7 @@ export default async function HomePage() {
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <Link href="/" className={styles.brand}>
-            <span className={styles.brandMark} aria-hidden="true">♡</span>
+            <BrandMark />
             <span>Make My Marriage</span>
           </Link>
 

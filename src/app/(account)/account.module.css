@@ -1,0 +1,140 @@
+@font-face {
+  font-family: Manrope;
+  src: url("../(public)/_fonts/manrope.woff2") format("woff2");
+  font-weight: 400 700;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Playfair Display";
+  src: url("../(public)/_fonts/playfair-display.woff2") format("woff2");
+  font-weight: 500 700;
+  font-display: swap;
+}
+
+.layout {
+  --account-burgundy: #702f45;
+  --account-ivory: #faf7f2;
+  --account-text: #292a2d;
+  --account-muted: #60595b;
+  --account-line: #ded5d3;
+  --account-serif: "Playfair Display", Georgia, serif;
+  display: grid;
+  grid-template-columns: minmax(0, 52fr) minmax(0, 48fr);
+  min-height: 100svh;
+  background: var(--account-ivory);
+  color: var(--account-text);
+  font-family: Manrope, "Segoe UI", sans-serif;
+}
+
+.visual {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  align-content: end;
+  min-height: 26rem;
+  overflow: hidden;
+  background: #593e33;
+}
+.visual img { z-index: -2; object-fit: cover; object-position: center 38%; }
+.visual::before {
+  content: "";
+  grid-area: 1 / 1;
+  z-index: -1;
+  margin-top: -3rem;
+  background: linear-gradient(180deg, transparent, #2415228f 3rem, #241522b8);
+}
+.visual p {
+  grid-area: 1 / 1;
+  max-width: 35rem;
+  padding: clamp(1.5rem, 5.5vw, 5.25rem);
+  color: white;
+  font: 600 clamp(2rem, 4.2vw, 4.25rem) / 1.12 var(--account-serif);
+  letter-spacing: -0.035em;
+}
+
+.content {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  width: min(100%, 40rem);
+  margin-inline: auto;
+  padding: clamp(1.3rem, 5vw, 4.5rem);
+}
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.65rem 1rem;
+}
+.header > a { color: var(--account-text); }
+.header > a > span:last-child {
+  font: 600 clamp(1rem, 2vw, 1.35rem) / 1.2 var(--account-serif);
+  letter-spacing: -0.035em;
+}
+.homeLink, .demoLink {
+  color: var(--account-burgundy);
+  font-size: 0.875rem;
+  font-weight: 650;
+  text-underline-offset: 0.23em;
+}
+.homeLink:hover, .demoLink:hover { text-decoration: underline; }
+.main { display: grid; align-content: center; padding-block: clamp(2rem, 7vh, 5rem); }
+.formPanel h1 {
+  color: var(--account-text);
+  font: 600 clamp(2.1rem, 4.5vw, 3.25rem) / 1.15 var(--account-serif);
+  letter-spacing: -0.045em;
+}
+.intro { margin-top: 0.6rem; color: var(--account-muted); }
+.formPanel label { font-weight: 700; }
+.formPanel input {
+  min-height: 3rem;
+  border-radius: 0.66rem;
+  border-color: var(--account-line);
+  background: #fff;
+}
+.formPanel input::placeholder { color: #756d70; }
+.formPanel input[aria-invalid="true"] { border-color: #952e48; }
+.formPanel input + button { border-radius: 0.6rem; color: var(--account-burgundy); }
+.formPanel input + button:hover { background: #f5e7e6; }
+.layout :focus-visible { outline-color: var(--account-burgundy); }
+.submit {
+  width: 100%;
+  min-height: 3rem;
+  margin-top: 1.4rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.66rem;
+  background: var(--account-burgundy);
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.submit:hover { background: #552037; }
+.submit:disabled { opacity: 0.7; cursor: wait; }
+.switchMode {
+  margin-top: 1.45rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--account-line);
+  color: var(--account-muted);
+  font-size: 0.9rem;
+}
+.switchMode a { color: var(--account-burgundy); }
+.demoLink { display: inline-block; margin-top: 0.7rem; }
+
+@media (max-width: 47.99rem) {
+  .layout { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto 1fr; }
+  .content { display: contents; }
+  .header { grid-row: 1; padding: 1rem max(1rem, calc((100% - 31rem) / 2)); }
+  .visual { grid-row: 2; min-height: clamp(8rem, 34vw, 13rem); }
+  .visual::before {
+    position: absolute;
+    inset: 0;
+    grid-area: auto;
+    margin: 0;
+    background: linear-gradient(180deg, transparent 42%, #241522b8 100%);
+  }
+  .visual img { object-position: center 15%; }
+  .visual p { display: none; }
+  .main { grid-row: 3; align-content: start; padding: 1.65rem max(1rem, calc((100% - 31rem) / 2)) 2.5rem; }
+}

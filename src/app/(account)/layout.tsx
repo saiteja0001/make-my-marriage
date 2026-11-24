@@ -1,13 +1,23 @@
+import Image from "next/image";
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { Wordmark } from "@/components/ui/wordmark";
+import styles from "./account.module.css";
 
 export default function AccountLayout({ children }: { children: ReactNode }) {
   return (
-    <>
-      <header className="border-b border-line px-5 py-5 sm:px-10">
-        <div className="mx-auto max-w-7xl"><Wordmark /></div>
-      </header>
-      <main className="mx-auto max-w-lg px-5 py-10 sm:py-16">{children}</main>
-    </>
+    <div className={styles.layout}>
+      <div className={styles.visual}>
+        <Image src="/wedding-hero.jpg" alt="" fill sizes="(max-width: 47.99rem) 100vw, 52vw" preload />
+        <p>Plan the celebration<br />together.</p>
+      </div>
+      <div className={styles.content}>
+        <header className={styles.header}>
+          <Wordmark />
+          <nav aria-label="Account navigation"><Link href="/" className={styles.homeLink}>Back to home</Link></nav>
+        </header>
+        <main className={styles.main}>{children}</main>
+      </div>
+    </div>
   );
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandMark } from "@/components/ui/wordmark";
 import { memberRoleLabels, type MemberRole } from "@/modules/wedding/member-roles";
 import styles from "../workspace.module.css";
 import { LogoutButton } from "./logout-button";
@@ -17,7 +18,8 @@ export function WorkspaceHeader({ member, onRequestLeave, onNavigateAway }: {
           window.location.replace("/");
         });
       })}>
-        Make My Marriage<span aria-hidden="true">.</span>
+        <BrandMark />
+        <span>Make My Marriage</span>
       </Link>
       <div className={styles.headerActions}>
         {member && (

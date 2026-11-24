@@ -34,19 +34,15 @@
   }
 
   .brand-mark {
-    @apply relative inline-block size-8 shrink-0 rounded-full bg-pine;
-  }
-
-  .brand-mark::before,
-  .brand-mark::after {
-    @apply absolute top-[0.58rem] size-[0.66rem] rounded-full border border-white content-[''];
-  }
-
-  .brand-mark::before {
-    @apply left-[0.47rem];
-  }
-
-  .brand-mark::after {
-    @apply right-[0.47rem];
+    display: inline-grid;
+    width: 1.95rem;
+    height: 1.95rem;
+    flex-shrink: 0;
+    place-items: center;
+    border-radius: 0.55rem;
+    background: #702f45;
+    color: #faf7f2;
+    font: 600 1.12rem / 1 "Playfair Display", Georgia, serif;
+    letter-spacing: normal;
   }
 }

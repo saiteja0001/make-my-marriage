@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState, type FormEvent, type ReactNode } from "react";
-import { ActionLink } from "@/components/ui/action-link";
 import { signupPasswordMinLength } from "@/modules/auth/password-policy";
+import styles from "../account.module.css";
 
 type FieldName = "name" | "email" | "password";
 type FormError = { message: string; details?: Partial<Record<FieldName, string>> };
@@ -20,10 +20,11 @@ type AccountFieldProps = {
   minLength?: number;
   endControl?: ReactNode;
   fixedValue?: string;
+  placeholder?: string;
 };
 
 function AccountField({
-  name, label, type = "text", autoComplete, error, minLength, endControl, fixedValue,
+  name, label, type = "text", autoComplete, error, minLength, endControl, fixedValue, placeholder,
 }: AccountFieldProps) {
   const inputId = "account-" + name;
   const errorId = inputId + "-error";
@@ -42,6 +43,7 @@ function AccountField({
           autoCapitalize={name === "password" ? "none" : undefined}
           spellCheck={name === "password" ? false : undefined}
           minLength={minLength}
+          placeholder={placeholder}
           defaultValue={fixedValue}
           readOnly={fixedValue !== undefined}
           required
@@ -96,23 +98,29 @@ export function AccountForm({ mode, invitation }: {
   }
 
   return (
-    <div className="panel p-6 sm:p-9">
+    <div className={invitation ? "panel p-6 sm:p-9" : styles.formPanel}>
       <Heading className="font-display text-4xl tracking-tight text-pine">
-        {isSignup ? "Create an account" : "Log in"}
+        {isSignup ? "Create an account" : invitation ? "Log in" : "Welcome back"}
       </Heading>
+      {!invitation && <p className={styles.intro}>
+        {isSignup ? "Start planning your wedding in one shared workspace." : "Sign in to plan and coordinate your celebration."}
+      </p>}
       <form className="mt-6" method="post" onSubmit={submit} aria-busy={pending}>
         <fieldset disabled={pending} className="grid gap-4">
           <legend className="sr-only">Account details</legend>
           {isSignup && (
-            <AccountField name="name" label="Name" autoComplete="name" error={error?.details?.name} />
+            <AccountField name="name" label="Name" autoComplete="name" error={error?.details?.name}
+              placeholder={invitation ? undefined : "Your full name"} />
           )}
-          <AccountField name="email" label="Email" type="email" autoComplete="email" error={error?.details?.email} fixedValue={invitation?.email} />
+          <AccountField name="email" label={invitation ? "Email" : "Email address"} type="email" autoComplete="email"
+            error={error?.details?.email} fixedValue={invitation?.email} placeholder={invitation ? undefined : "name@example.com"} />
           <AccountField
             name="password"
             label="Password"
             type={passwordVisible ? "text" : "password"}
             autoComplete={isSignup ? "new-password" : "current-password"}
             minLength={isSignup ? signupPasswordMinLength : undefined}
+            placeholder={invitation ? undefined : "Enter your password"}
             error={error?.details?.password}
             endControl={
               <button
@@ -131,12 +139,14 @@ export function AccountForm({ mode, invitation }: {
         <button
           type="submit"
           disabled={pending}
-          className="mt-6 min-h-11 w-full rounded-lg bg-pine px-4 py-2.5 text-sm font-semibold text-white hover:bg-pine-hover disabled:opacity-70"
+          className={invitation
+            ? "mt-6 min-h-11 w-full rounded-lg bg-pine px-4 py-2.5 text-sm font-semibold text-white hover:bg-pine-hover disabled:opacity-70"
+            : styles.submit}
         >
-          {pending ? (isSignup ? "Creating your account…" : "Logging in…") : (isSignup ? "Create account" : "Log in")}
+          {pending ? (isSignup ? "Creating your account…" : "Signing in…") : (isSignup ? "Create account" : invitation ? "Log in" : "Sign in")}
         </button>
       </form>
-      <p className="mt-5 text-sm text-muted">
+      <p className={invitation ? "mt-5 text-sm text-muted" : styles.switchMode}>
         {isSignup ? "Already have an account?" : "New to Make My Marriage?"}{" "}
         {invitation ? <button type="button" disabled={pending} onClick={invitation.switchMode} className="rounded-sm font-semibold text-pine underline underline-offset-4 disabled:opacity-70">
           {isSignup ? "Log in" : "Sign up"}
@@ -144,12 +154,10 @@ export function AccountForm({ mode, invitation }: {
           href={isSignup ? "/login" : "/signup"}
           className="rounded-sm font-semibold text-pine underline underline-offset-4"
         >
-          {isSignup ? "Log in" : "Sign up"}
+          {isSignup ? "Sign in" : "Sign up"}
         </Link>}
       </p>
-      {!invitation && <div className="mt-5 grid">
-        <ActionLink href="/demo" variant="secondary">Explore the demo</ActionLink>
-      </div>}
+      {!invitation && <Link href="/demo" className={styles.demoLink}>Explore the demo</Link>}
     </div>
   );
 }
