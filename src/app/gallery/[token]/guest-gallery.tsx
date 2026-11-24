@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { sharedGallery, SharedPhoto } from "@/modules/photos/sharing";
+import { GuestUpload } from "./guest-upload";
 import styles from "./guest-gallery.module.css";
 
 type Details = NonNullable<Awaited<ReturnType<typeof sharedGallery>>>;
@@ -89,6 +90,7 @@ export function GuestGallery({ token }: { token: string }) {
   const [moreProblem, setMoreProblem] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [active, setActive] = useState<number>();
+  const [uploadOpen, setUploadOpen] = useState(false);
   const paging = useRef<AbortController | null>(null);
   const filterQuery = filter === "all" ? "" : `?eventId=${encodeURIComponent(filter)}`;
 
@@ -179,6 +181,7 @@ export function GuestGallery({ token }: { token: string }) {
       {monogram && <span className={styles.monogram} aria-hidden="true">{monogram}</span>}
       <h1>{names ?? "Wedding photos"}</h1>
       {date && <p>{date}</p>}
+      {details?.guestUploadsEnabled && <button type="button" className={styles.uploadPrimary} onClick={() => setUploadOpen(true)}>Upload photos</button>}
     </header>
     <div className={styles.content}>
       {details && <div className={styles.filters} role="group" aria-label="Filter by event">
@@ -199,6 +202,8 @@ export function GuestGallery({ token }: { token: string }) {
         </ul> : <section className={styles.empty}>
           <h2>{filter === "all" ? "No wedding photos yet" : "No photos in this category"}</h2>
           <p>{filter === "all" ? "Check back for photos from the celebration." : "Choose another event or browse all photos."}</p>
+          {filter === "all" && details.guestUploadsEnabled && <button type="button" className={styles.uploadPrimary}
+            onClick={() => setUploadOpen(true)}>Upload the first photos</button>}
         </section>}
       {!problem && photos?.pagination.nextCursor && <div className={styles.more}>
         {moreProblem && <p role="alert">We couldn’t load more photos.</p>}
@@ -208,6 +213,12 @@ export function GuestGallery({ token }: { token: string }) {
         <p>Showing {photos.data.length} of {photos.total} photos</p>
       </div>}
     </div>
+    {uploadOpen && details && names && <GuestUpload path={base} names={names} events={details.uploadEvents}
+      initialEvent={details.uploadEvents.some(({ id }) => id === filter) ? filter : ""}
+      onClose={(refresh) => {
+        setUploadOpen(false);
+        if (refresh) { reset(); setAttempt((current) => current + 1); }
+      }} />}
     {selected && active !== undefined && photos && <Viewer photo={selected} eventName={eventName(selected.eventId)}
       position={active + 1} total={photos.data.length}
       close={() => setActive(undefined)} step={(amount) => {

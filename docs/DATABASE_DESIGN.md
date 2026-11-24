@@ -1820,7 +1820,7 @@ Guest upload:
 
 ```text
 uploaderType = GUEST
-uploadedByMembershipId = null
+uploadedByMembershipId is absent
 ```
 
 Because the gallery link is shared across guests, we do not know which specific invited Guest uploaded the image.

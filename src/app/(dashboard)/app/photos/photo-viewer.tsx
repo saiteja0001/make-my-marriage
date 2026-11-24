@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { GalleryPhoto } from "@/modules/photos/service";
-import { galleryRequest, photoSize } from "./gallery-http";
+import { galleryRequest, photoSize } from "@/modules/photos/client";
 import styles from "./gallery.module.css";
 
 export function PhotoViewer({ photo, eventName, position, total, context, onStep, onClose, onDeleted, onRefresh }: {
@@ -93,7 +93,7 @@ export function PhotoViewer({ photo, eventName, position, total, context, onStep
       <header className={styles.viewerHeader}>
         <div>
           <h2 id="viewer-photo-title">{photo.originalFilename}</h2>
-          <p>{eventName} · {photoSize(photo.sizeBytes)}</p>
+          <p>{eventName} · {photoSize(photo.sizeBytes)}{photo.uploaderType === "GUEST" && " · Guest upload"}</p>
         </div>
         <button type="button" className={styles.viewerAction} onClick={onClose} disabled={Boolean(busy)}>Close</button>
       </header>

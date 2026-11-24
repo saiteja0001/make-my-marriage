@@ -1,10 +1,11 @@
 import "server-only";
 import { createHash, randomUUID } from "node:crypto";
-import type { QueryFilter } from "mongoose";
+import type { ClientSession, QueryFilter } from "mongoose";
 import { z } from "zod";
 import { fixedWindowRetryAfter } from "@/modules/auth/rate-limit";
 import { WeddingEvent } from "@/modules/events/model";
 import { lockActiveEventReferences } from "@/modules/events/service";
+import { Wedding } from "@/modules/wedding/models";
 import { connectDatabase } from "@/server/db/mongoose";
 import {
   copyVerifiedObject, inspectObject, R2ObjectChanged, R2ObjectMissing, readObjectPrefix, removeObject, signRead, signUpload,
@@ -16,6 +17,8 @@ const minute = 60_000;
 const confirmationGrace = 24 * 60 * minute;
 const cursorSchema = z.tuple([z.iso.datetime(), photoIdSchema, z.string().nullable()]);
 export type PhotoScope = { weddingId: string; membershipId: string };
+export type GuestPhotoScope = { weddingId: string; galleryHash: string; client: string | null; guestUploadsEnabled: boolean };
+type UploadScope = PhotoScope | GuestPhotoScope;
 
 export class PhotoProblem extends Error {
   constructor(public status: number, public code: string, message: string, public retryAfter?: number) {
@@ -31,23 +34,53 @@ function unavailableEvent() {
   return new PhotoProblem(404, "EVENT_UNAVAILABLE", "Choose an active event from your wedding.");
 }
 
-export async function reservePhoto(scope: PhotoScope, input: PhotoUpload) {
+function guestUploadsPaused() {
+  return new PhotoProblem(409, "UPLOADS_PAUSED", "Guest uploads are paused. You can still view the gallery.");
+}
+
+async function lockGuestUploads(scope: GuestPhotoScope, session: ClientSession) {
+  const result = await Wedding.updateOne({
+    _id: scope.weddingId, "gallery.tokenHash": scope.galleryHash,
+    "gallery.isEnabled": true, "gallery.guestUploadsEnabled": true,
+  }, { $inc: { "gallery.uploadRevision": 1 } }, { session, timestamps: false });
+  if (!result.matchedCount) throw guestUploadsPaused();
+}
+
+function uploader(scope: UploadScope) {
+  return "galleryHash" in scope ? { uploaderType: "GUEST" as const }
+    : { uploadedByMembershipId: scope.membershipId };
+}
+
+async function limitGuestUpload(scope: GuestPhotoScope, action: "reserve" | "confirm") {
+  const key = "guest-photo-" + action;
+  const perClient = action === "reserve" ? 60 : 120;
+  const retryAfter = (scope.client && await fixedWindowRetryAfter([key, "client", scope.client], perClient, 15 * minute))
+    || await fixedWindowRetryAfter([key, "gallery", scope.weddingId], perClient * 5, 15 * minute);
+  if (retryAfter !== null) throw new PhotoProblem(429, "RATE_LIMITED", "Upload limit reached. Wait before trying again.", retryAfter);
+}
+
+export async function reservePhoto(scope: UploadScope, input: PhotoUpload) {
+  if ("galleryHash" in scope && !scope.guestUploadsEnabled) throw guestUploadsPaused();
   const database = await connectDatabase();
-  const { weddingId, membershipId } = scope;
+  const { weddingId } = scope;
   const { eventId, filename, mimeType, sizeBytes } = input;
   if (eventId && !await WeddingEvent.exists({ _id: eventId, weddingId, archivedAt: null })) throw unavailableEvent();
-  const retryAfter = await fixedWindowRetryAfter(["photo-upload", "member", membershipId], 120, 15 * minute)
-    ?? await fixedWindowRetryAfter(["photo-upload", "wedding", weddingId], 600, 15 * minute);
-  if (retryAfter !== null) throw new PhotoProblem(429, "RATE_LIMITED", "Upload limit reached. Wait before trying again.", retryAfter);
+  if ("galleryHash" in scope) await limitGuestUpload(scope, "reserve");
+  else {
+    const retryAfter = await fixedWindowRetryAfter(["photo-upload", "member", scope.membershipId], 120, 15 * minute)
+      ?? await fixedWindowRetryAfter(["photo-upload", "wedding", weddingId], 600, 15 * minute);
+    if (retryAfter !== null) throw new PhotoProblem(429, "RATE_LIMITED", "Upload limit reached. Wait before trying again.", retryAfter);
+  }
 
   await preparePhotoStorage();
   const objectKey = `weddings/${weddingId}/gallery/staging/${randomUUID()}.${photoExtensions[mimeType]}`;
   const expiresAt = new Date(Date.now() + 10 * minute);
   const uploadUrl = await signUpload(objectKey, mimeType, sizeBytes, expiresAt);
   await database.transaction(async (session) => {
+    if ("galleryHash" in scope) await lockGuestUploads(scope, session);
     if (eventId && !await lockActiveEventReferences(weddingId, [eventId], session)) throw unavailableEvent();
     await new WeddingPhoto({
-      weddingId, uploadedByMembershipId: membershipId, originalFilename: filename, mimeType, sizeBytes, eventId,
+      weddingId, ...uploader(scope), originalFilename: filename, mimeType, sizeBytes, eventId,
       uploadKey: objectKey, objectKey, status: "PENDING", expiresAt,
     }).save({ session });
   });
@@ -81,16 +114,29 @@ async function removeUnusedObject(key: string) {
   await removeObject(key).catch(() => {});
 }
 
-export async function confirmPhoto({ weddingId, membershipId }: PhotoScope, input: PhotoConfirm) {
-  await connectDatabase();
-  const scope = { weddingId, uploadedByMembershipId: membershipId, uploadKey: input.objectKey };
+export async function confirmPhoto(scope: PhotoScope, input: PhotoConfirm) {
+  const photo = await publishPhoto(scope, input);
+  return photo ? signedPhoto(photo) : null;
+}
+
+export async function confirmGuestPhoto(scope: GuestPhotoScope, input: PhotoConfirm) {
+  await limitGuestUpload(scope, "confirm");
+  const photo = await publishPhoto(scope, input);
+  return photo ? { id: photo._id.toString() } : null;
+}
+
+async function publishPhoto(access: UploadScope, input: PhotoConfirm) {
+  const database = await connectDatabase();
+  const { weddingId } = access;
+  const scope = { weddingId, ...uploader(access), uploadKey: input.objectKey };
   const pending = await WeddingPhoto.findOne(scope).lean();
+  if ("galleryHash" in access && !access.guestUploadsEnabled && pending?.status !== "READY") throw guestUploadsPaused();
   if (!pending) return null;
   if (pending.originalFilename !== input.filename || pending.mimeType !== input.mimeType
     || pending.sizeBytes !== input.sizeBytes || pending.eventId?.toString() !== input.eventId) throw invalidUpload();
   const gone = new PhotoProblem(410, "UPLOAD_GONE", "This photo was deleted or its upload expired. Start a new upload.");
   if (pending.status === "DELETED") throw gone;
-  if (pending.status === "READY") return signedPhoto(pending);
+  if (pending.status === "READY") return pending;
   if (Date.now() > pending.expiresAt.getTime() + confirmationGrace) throw gone;
 
   const finalKey = `weddings/${weddingId}/gallery/${randomUUID()}.${photoExtensions[pending.mimeType]}`;
@@ -102,24 +148,34 @@ export async function confirmPhoto({ weddingId, membershipId }: PhotoScope, inpu
   } catch (error) {
     if (error instanceof R2ObjectMissing || error instanceof R2ObjectChanged) {
       const current = await WeddingPhoto.findOne(scope).lean();
-      if (current?.status === "READY") return signedPhoto(current);
+      if (current?.status === "READY") return current;
       if (current?.status === "DELETED") throw gone;
       throw new PhotoProblem(409, "UPLOAD_INCOMPLETE", "The photo could not be verified. Try the upload again.");
     }
     throw error;
   }
 
-  // Leave a verified copy in place after an ambiguous database failure. A committed row may already reference it.
-  const published = await WeddingPhoto.findOneAndUpdate({ ...scope, status: "PENDING" },
-    { $set: { objectKey: finalKey, status: "READY" } }, { returnDocument: "after" }).lean();
+  const publish = (session?: ClientSession) => WeddingPhoto.findOneAndUpdate({ ...scope, status: "PENDING" },
+    { $set: { objectKey: finalKey, status: "READY" } }, { returnDocument: "after", session }).lean();
+  const published = await ("galleryHash" in access ? database.transaction(async (session) => {
+    await lockGuestUploads(access, session);
+    // Check the event only when this transaction is publishing the photo.
+    const photo = await publish(session);
+    if (photo && input.eventId && !await lockActiveEventReferences(weddingId, [input.eventId], session)) throw unavailableEvent();
+    return photo;
+  }) : publish()).catch(async (error: unknown) => {
+    // A committed row may reference the copy after an ambiguous database error.
+    if (error instanceof PhotoProblem) await removeUnusedObject(finalKey);
+    throw error;
+  });
   if (published) {
     await removeUnusedObject(pending.uploadKey);
-    return signedPhoto(published);
+    return published;
   }
 
   await removeUnusedObject(finalKey);
   const winner = await WeddingPhoto.findOne(scope).lean();
-  if (winner?.status === "READY") return signedPhoto(winner);
+  if (winner?.status === "READY") return winner;
   throw gone;
 }
 

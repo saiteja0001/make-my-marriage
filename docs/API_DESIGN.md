@@ -2398,11 +2398,8 @@ No separate DELETE endpoint is necessary.
 
 Authentication required.
 
-The sharing increment accepts Admins and Managers for their current wedding.
-Its GET and PATCH responses return `data.isEnabled` and `data.galleryUrl`.
-The URL is null while sharing is disabled. Re-enabling returns the original
-URL. The PATCH body currently accepts only `isEnabled`. Guest upload and QR
-settings become available with their corresponding increments.
+Admins and Managers manage settings for their current wedding. The URL is
+null while guest viewing is disabled. Re-enabling returns the original URL.
 
 ### Response
 
@@ -2411,19 +2408,21 @@ settings become available with their corresponding increments.
   "data": {
     "isEnabled": true,
     "guestUploadsEnabled": true,
-    "galleryUrl": "https://makemymarriage.com/gallery/...",
-    "qrUrl": "https://makemymarriage.com/gallery/..."
+    "galleryUrl": "https://makemymarriage.com/gallery/..."
   }
 }
 ```
-
-The frontend can generate/display QR using `galleryUrl`.
 
 ---
 
 # 74. Update Gallery Settings
 
 ## PATCH `/api/gallery/settings`
+
+Accepts either setting or both and returns the same shape as GET. Guest
+uploads start disabled and require guest viewing. Turning off guest viewing
+also turns off uploads. An organiser can pause uploads while keeping viewing
+enabled.
 
 ### Request
 
@@ -2614,6 +2613,8 @@ Previously issued image URLs expire independently of the sharing switch.
 
 The event list includes events in the shared wedding referenced by at least
 one ready photo. This includes archived events with ready photos.
+The separate `uploadEvents` list includes active events in that wedding,
+even when they have no photos. It is empty when guest uploads are off.
 
 Returns:
 
@@ -2631,6 +2632,12 @@ Returns:
         "id": "...",
         "name": "Mehendi"
       }
+    ],
+    "uploadEvents": [
+      {
+        "id": "...",
+        "name": "Sangeet"
+      }
     ]
   }
 }
@@ -2644,7 +2651,11 @@ Returns:
 
 No login.
 
-Rate limited.
+Uses the app origin and separate reservation and confirmation quotas across
+the wedding, with additional client limits when the deployment provides a
+trusted address. Returns 201 with `data.uploadUrl`, `data.objectKey`, and
+`data.expiresAt`. When viewing is enabled but uploads are paused, returns
+409 with `UPLOADS_PAUSED`.
 
 ### Request
 
@@ -2699,7 +2710,11 @@ Creates:
 uploaderType = GUEST
 ```
 
-No moderation stage.
+Confirmation rechecks guest permissions and event ownership as part of
+publishing the verified object. Returns 200 with `data.id`. Repeating a
+successful confirmation returns the same ID while guest viewing is enabled,
+even if guest uploads are paused. Paused uploads prevent pending photos from
+being published. Guests' verified photos are visible immediately.
 
 ---
 

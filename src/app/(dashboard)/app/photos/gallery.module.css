@@ -186,6 +186,10 @@
 }
 .headingActions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
 .shareContent { display: grid; gap: 1rem; margin-top: 1.25rem; }
+.uploadSetting { display: grid; gap: 0.55rem; padding: 0.75rem; background: #faf7f2; border-radius: 0.8rem; }
+.uploadSetting p { padding-inline: 0.25rem; font-size: 0.9rem; }
+.shareSwitch:disabled { opacity: 0.56; }
+.guestBadge { color: #702f45; font-weight: 700; }
 .shareSwitch {
   display: flex;
   align-items: center;

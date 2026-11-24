@@ -377,4 +377,38 @@ any pending integration work.
   ready photos and exclude empty, pending, deleted, and cross-wedding entries.
   A browser check with mocked storage verified that a renewed preview loads
   while the tile is off-screen.
-- Guest uploads and printable QR codes are planned for future increments.
+- Guest uploads are tracked below. Printable QR codes remain planned.
+
+## Guest photo uploads — complete
+
+- Added a separate **Allow guest uploads** setting in the gallery sharing
+  drawer. Organisers can pause contributions while keeping guest viewing
+  on. Guest uploads start off and turn off when guest viewing is disabled.
+- Built the mobile-first upload sheet with optional event tagging, file
+  validation, progress, partial completion, and individual retries. Guests
+  can upload JPEG, PNG, and WebP photos, up to 10 MiB each and 20 per batch.
+- Reused the R2 staging and verification workflow. Guest reservations and
+  confirmations are rate limited and scoped to the wedding. Publication
+  checks that uploads are enabled in the same transaction that marks the
+  photo ready. Guest photos appear immediately and are labelled for
+  organisers, who can remove them.
+- Passed lint, TypeScript, and the production build. Chrome verified uploads
+  to the development R2 bucket, unsupported files, partial success, retry
+  after a lost confirmation, event filtering, and returning to a view-only
+  gallery after uploads were paused. API checks covered size limits, origin
+  checks, wedding and event isolation, pause after storage transfer,
+  confirmation idempotency, stable sharing links, and organiser deletion.
+- Verified the rate limit and its `Retry-After` header, upload drawer widths
+  of 320, 390, and 1440 pixels, and the existing organiser upload flow.
+- Fixed the guest upload switch after a development reload. Cached Mongoose
+  models now pick up the guest upload fields and photo ownership rules.
+  An isolated MongoDB check reproduced the stale update and verified that
+  both switch states persist with the refreshed models.
+- While guest viewing is enabled, a confirmation retry returns the original
+  photo ID after contributions are paused. Batch retries resolve earlier
+  confirmations before creating reservations under a replacement event.
+  An isolated MongoDB check verified the same photo ID after a pause and
+  rejection of pending confirmations and new reservations. A browser check
+  with mocked storage verified that one batch retry finished the remaining
+  uploads without duplicating a previously published photo.
+- Printable QR codes remain a separate increment.

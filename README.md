@@ -55,7 +55,7 @@ recover links that have already been issued.
 | `/login`, `/signup` | Organiser account forms |
 | `/app`, `/onboarding` | Private wedding overview with a local-date countdown and three-step wedding setup |
 | `/app/edit` | Edit the saved wedding details |
-| `/gallery/[token]` | View wedding photos through an enabled guest gallery link |
+| `/gallery/[token]` | View wedding photos and upload when the organiser allows it |
 | `/app/members` | View members. Admins can manage invitations, change roles, and remove members. |
 | `/app/guests` | Manage guest groups and open or copy their invitations from group details |
 | `/app/guests/rsvps` | View guest responses and attendance totals |

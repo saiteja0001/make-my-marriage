@@ -49,8 +49,43 @@
 .fullPhoto { position: relative; min-width: 0; }
 .fullPhoto img { object-fit: contain; }
 .imageFeedback { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 0.5rem; padding: 0.25rem; }
+.uploadPrimary, .uploadSecondary {
+  min-height: 2.75rem; padding: .55rem .9rem; border-radius: .65rem; font-weight: 650; cursor: pointer;
+}
+.uploadPrimary, .empty .uploadPrimary { background: #702f45; border: 1px solid #702f45; color: #fff; }
+.uploadSecondary { background: #fff; border: 1px solid #dfccd1; color: #702f45; }
+.hero .uploadPrimary { margin-top: 1rem; }
+.uploadSheet {
+  position: fixed; inset: 0 0 0 auto; width: min(100%, 33rem); height: 100dvh;
+  max-width: none; max-height: none; margin: 0; overflow: auto; overscroll-behavior: contain;
+  padding: clamp(1rem, 3vw, 1.75rem); background: #faf7f2; color: #292a2d; border: 0;
+}
+.uploadSheet::backdrop { background: #2a151e91; backdrop-filter: blur(3px); }
+.uploadHeading { display: flex; align-items: flex-start; justify-content: space-between; gap: .65rem; }
+.uploadHeading h2 { font-family: var(--font-serif, Georgia), serif; color: #702f45; font-size: 1.65rem; line-height: 1.16; }
+.uploadHeading p { margin-top: .25rem; overflow-wrap: anywhere; }
+.eventField, .pickPhotos { display: grid; gap: .5rem; padding-block: .65rem; }
+.eventField { font-weight: 650; margin-top: .55rem; }
+.eventField select { min-height: 2.65rem; min-width: 0; border: 1px solid #dfccd1; border-radius: .65rem; background: #fff; padding: .45rem; }
+.pickPhotos p, .uploadMeta p { font-size: .85rem; }
+.pickPhotos button { justify-self: start; }
+.uploadSummary { display: grid; gap: .4rem; padding: .8rem; border-radius: .7rem; background: #f5e7e6; }
+.uploadSheet progress { width: 100%; accent-color: #702f45; }
+.uploadQueue { display: grid; gap: .55rem; list-style: none; margin: .7rem 0; padding: 0; }
+.uploadItem { display: grid; grid-template-columns: 3rem minmax(0, 1fr); gap: .35rem .65rem; padding: .65rem; background: white; border-radius: .75rem; }
+.uploadThumb { position: relative; width: 3rem; height: 3rem; border-radius: .45rem; overflow: hidden; background: #f5e7e6; }
+.uploadThumb img { object-fit: cover; }
+.uploadMeta { min-width: 0; overflow-wrap: anywhere; }
+.uploadMeta [data-stage="ready"] { color: #386036; font-weight: 650; }
+.fileProblem, .uploadProblem { color: #89263a; font-weight: 650; }
+.uploadProblem { margin-block: .65rem; }
+.fileActions { grid-column: 2; display: flex; flex-wrap: wrap; gap: .4rem; }
+.uploadFooter { margin-top: .65rem; display: grid; gap: .45rem; }
+.uploadSheet button:disabled { opacity: .55; cursor: default; }
 @media (min-width: 44rem) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (min-width: 66rem) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @media (max-width: 43.99rem) {
   .hero { margin: 1rem 1rem 0; border: 1px solid #eadbd1; border-radius: 1rem; padding: 1.5rem 1rem; }
+  .uploadSheet { inset: auto 0 0; height: auto; max-height: 90dvh; border-radius: 1.2rem 1.2rem 0 0; }
+  .uploadSheet::before { content: ""; display: block; width: 2.5rem; height: .25rem; margin: 0 auto .8rem; border-radius: 1rem; background: #ddcbd1; }
 }

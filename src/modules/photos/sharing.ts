@@ -4,10 +4,10 @@ import { WeddingEvent } from "@/modules/events/model";
 import { connectWeddingStorage, Wedding } from "@/modules/wedding/models";
 import { signRead } from "@/server/storage/r2";
 import { WeddingPhoto, type PhotoRecord } from "./model";
-import { photoPage, readyPhoto } from "./service";
+import { PhotoProblem, photoPage, readyPhoto, type GuestPhotoScope } from "./service";
 import type { PhotoFilters } from "./validation";
 
-export type GallerySettings = { isEnabled: boolean; galleryUrl: string | null };
+export type GallerySettings = { isEnabled: boolean; galleryUrl: string | null; guestUploadsEnabled: boolean };
 const tokenPattern = /^[A-Za-z0-9_-]{43}$/;
 
 function key() {
@@ -47,12 +47,15 @@ function settingsOrigin() {
 export async function gallerySettings(weddingId: string): Promise<GallerySettings> {
   await connectWeddingStorage();
   const wedding = await Wedding.findById(weddingId).select("+gallery").lean();
-  if (!wedding?.gallery?.isEnabled) return { isEnabled: false, galleryUrl: null };
+  if (!wedding?.gallery?.isEnabled) return { isEnabled: false, galleryUrl: null, guestUploadsEnabled: false };
   const token = decrypt(wedding.gallery.encryptedToken, weddingId);
-  return { isEnabled: true, galleryUrl: new URL(`/gallery/${token}`, settingsOrigin()).href };
+  return { isEnabled: true, galleryUrl: new URL(`/gallery/${token}`, settingsOrigin()).href,
+    guestUploadsEnabled: wedding.gallery.guestUploadsEnabled === true };
 }
 
-export async function setGallerySharing(weddingId: string, isEnabled: boolean) {
+export async function setGallerySharing(weddingId: string, { isEnabled, guestUploadsEnabled }: {
+  isEnabled?: boolean; guestUploadsEnabled?: boolean;
+}) {
   await connectWeddingStorage();
   if (isEnabled) {
     settingsOrigin();
@@ -66,21 +69,49 @@ export async function setGallerySharing(weddingId: string, isEnabled: boolean) {
       });
     }
   }
-  await Wedding.updateOne({ _id: weddingId, "gallery.tokenHash": { $exists: true } }, {
-    $set: { "gallery.isEnabled": isEnabled },
-  });
+  const changes = {
+    ...(isEnabled !== undefined && { "gallery.isEnabled": isEnabled }),
+    ...(isEnabled === false ? { "gallery.guestUploadsEnabled": false }
+      : guestUploadsEnabled !== undefined && { "gallery.guestUploadsEnabled": guestUploadsEnabled }),
+  };
+  const result = await Wedding.updateOne({
+    _id: weddingId, "gallery.tokenHash": { $exists: true },
+    ...(guestUploadsEnabled === true && isEnabled !== true && { "gallery.isEnabled": true }),
+  }, { $set: changes });
+  if (!result.matchedCount && guestUploadsEnabled === true) {
+    throw new PhotoProblem(409, "GALLERY_CLOSED", "Turn on guest viewing to allow uploads.");
+  }
   return gallerySettings(weddingId);
+}
+
+function sharedWeddingQuery(token: string) {
+  return { "gallery.tokenHash": hash(token), "gallery.isEnabled": true };
 }
 
 export async function sharedWedding(token: string) {
   if (!tokenPattern.test(token)) return null;
   await connectWeddingStorage();
-  return Wedding.findOne({ "gallery.tokenHash": hash(token), "gallery.isEnabled": true })
+  return Wedding.findOne(sharedWeddingQuery(token))
     .select("brideName groomName weddingDate").lean();
 }
 
+export async function guestPhotoScope(token: string, client: string | null): Promise<GuestPhotoScope | null> {
+  if (!tokenPattern.test(token)) return null;
+  await connectWeddingStorage();
+  const query = sharedWeddingQuery(token);
+  const wedding = await Wedding.findOne(query).select("+gallery").lean();
+  if (!wedding) return null;
+  return {
+    weddingId: wedding._id.toString(), galleryHash: query["gallery.tokenHash"], client,
+    guestUploadsEnabled: wedding.gallery?.guestUploadsEnabled === true,
+  };
+}
+
 export async function sharedGallery(token: string) {
-  const wedding = await sharedWedding(token);
+  if (!tokenPattern.test(token)) return null;
+  await connectWeddingStorage();
+  const wedding = await Wedding.findOne(sharedWeddingQuery(token))
+    .select("brideName groomName weddingDate +gallery").lean();
   if (!wedding) return null;
   const { brideName, groomName, weddingDate } = wedding;
   const weddingId = wedding._id;
@@ -90,7 +121,12 @@ export async function sharedGallery(token: string) {
       .select("name").sort({ startsAt: 1, _id: 1 }).lean())
       .map(({ _id, name }) => ({ id: _id.toString(), name }))
     : [];
-  return { wedding: { brideName, groomName, weddingDate }, events, guestUploadsEnabled: false };
+  const guestUploadsEnabled = wedding.gallery?.guestUploadsEnabled === true;
+  const uploadEvents = guestUploadsEnabled
+    ? (await WeddingEvent.find({ weddingId, archivedAt: null }).select("name").sort({ startsAt: 1, _id: 1 }).lean())
+      .map(({ _id, name }) => ({ id: _id.toString(), name }))
+    : [];
+  return { wedding: { brideName, groomName, weddingDate }, events, guestUploadsEnabled, uploadEvents };
 }
 
 async function sharedPhotoFields({ _id, objectKey, eventId }: PhotoRecord) {

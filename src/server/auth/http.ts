@@ -82,7 +82,7 @@ export function validationError(error: z.ZodError) {
   return authError(400, "VALIDATION_ERROR", "Check the highlighted fields.", details);
 }
 
-function rateLimitClient(request: Request) {
+export function rateLimitClient(request: Request) {
   // Only accept the forwarding header when it comes from the deployment platform.
   const address = process.env.VERCEL === "1" && request.headers.get("x-vercel-forwarded-for");
   return address && isIP(address) ? address : null;

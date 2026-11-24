@@ -1,5 +1,5 @@
 import "server-only";
-import { model, models, Schema, type Model, type Types } from "mongoose";
+import { deleteModel, model, models, Schema, type Model, type Types } from "mongoose";
 import { connectDatabase } from "@/server/db/mongoose";
 import { memberRoles, type MemberRole } from "./member-roles";
 
@@ -12,7 +12,7 @@ type WeddingRecord = {
   timeZone: string;
   location: { formattedAddress: string };
   website: { slug: string; isPublished: boolean };
-  gallery?: { tokenHash: string; encryptedToken: string; isEnabled: boolean };
+  gallery?: { tokenHash: string; encryptedToken: string; isEnabled: boolean; guestUploadsEnabled?: boolean; uploadRevision?: number };
   createdByUserId: Types.ObjectId;
   membershipRevision?: number;
 };
@@ -30,6 +30,8 @@ const gallerySchema = new Schema<NonNullable<WeddingRecord["gallery"]>>({
   tokenHash: { type: String, required: true },
   encryptedToken: { type: String, required: true },
   isEnabled: { type: Boolean, required: true },
+  guestUploadsEnabled: Boolean,
+  uploadRevision: Number,
 }, { _id: false });
 
 const weddingSchema = new Schema<WeddingRecord>({
@@ -59,6 +61,11 @@ const membershipSchema = new Schema<MembershipRecord>({
 }, storageOptions);
 membershipSchema.index({ weddingId: 1, userId: 1 }, { unique: true });
 
+// A dev reload can keep the pre-upload schema, which strips the new settings from updates.
+if (process.env.NODE_ENV === "development" && models.Wedding
+  && (!models.Wedding.schema.path("gallery.guestUploadsEnabled") || !models.Wedding.schema.path("gallery.uploadRevision"))) {
+  deleteModel("Wedding");
+}
 export const Wedding: Model<WeddingRecord> = models.Wedding ?? model("Wedding", weddingSchema, "weddings");
 export const WeddingMembership: Model<MembershipRecord> = models.WeddingMembership
   ?? model("WeddingMembership", membershipSchema, "wedding_memberships");

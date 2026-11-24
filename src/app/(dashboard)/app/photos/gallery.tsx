@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { formatEventDay } from "@/modules/events/wedding-time";
 import type { GalleryPhoto } from "@/modules/photos/service";
-import { galleryRequest, GalleryRequestError, photoSize, type GalleryEvent, type GalleryResult } from "./gallery-http";
+import { galleryRequest, GalleryRequestError, photoSize, type GalleryEvent, type GalleryResult } from "@/modules/photos/client";
 import { PhotoViewer } from "./photo-viewer";
 import { ShareGallery } from "./share-gallery";
 import { UploadDrawer } from "./upload-drawer";
@@ -195,7 +195,7 @@ export function Gallery({ events, context, timeZone }: { events: GalleryEvent[];
                 <button type="button" className={styles.tileButton} aria-label={`View ${photo.originalFilename}`} onClick={() => openPhoto(photo)}>
                   <span className={styles.cover}>
                     <TileImage photo={photo} onRefresh={refreshPhoto} />
-                    <span className={styles.mobileLabel}>{eventName(photo.eventId)}</span>
+                    <span className={styles.mobileLabel}>{eventName(photo.eventId)}{photo.uploaderType === "GUEST" && " · Guest upload"}</span>
                   </span>
                   <span className={styles.tileMeta}>
                     <strong>{photo.originalFilename}</strong>
@@ -203,6 +203,7 @@ export function Gallery({ events, context, timeZone }: { events: GalleryEvent[];
                       <span>{eventName(photo.eventId)}</span>
                       <time dateTime={photo.createdAt}>{formatEventDay(photo.createdAt, timeZone)}</time>
                       <span>{photoSize(photo.sizeBytes)}</span>
+                      {photo.uploaderType === "GUEST" && <span className={styles.guestBadge}>Guest upload</span>}
                     </span>
                   </span>
                 </button>
