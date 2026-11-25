@@ -2184,29 +2184,22 @@ Authentication required.
 
 ```json
 {
-  "googlePlaceId": "..."
+  "googlePlaceId": "...",
+  "name": "Wedding photographer",
+  "category": "PHOTOGRAPHER",
+  "notes": "Ask about the Sangeet"
 }
 ```
 
-Backend should fetch trusted Place information itself rather than blindly trusting client-provided vendor metadata.
+The server verifies the Place ID with Google Places and saves it with the
+organiser’s label, category, and optional notes. The provider record uses
+`source = GOOGLE_PLACES`. Repeated saves for the same place return the
+existing vendor, including archived vendors. Sample mode accepts
+`samplePlaceId` and marks those records as `DISCOVERY_SAMPLE`.
 
-### Behaviour
-
-```text
-Google Place ID
-↓
-Google Places Details
-↓
-Map supported fields
-↓
-Create Vendor
-```
-
-Set:
-
-```text
-source = GOOGLE_PLACES
-```
+`GET /api/vendors/:vendorId/place` reads the current listing on demand for
+a saved vendor in the organiser’s wedding. It returns `data.mode` and
+`data.place`.
 
 ---
 
@@ -2254,35 +2247,20 @@ Authentication required.
 
 ```text
 category
-query
-latitude
-longitude
+location
 ```
 
-The backend may default coordinates from Wedding if not provided.
+Location defaults to the wedding’s saved address.
 
 Example:
 
 ```text
-/api/vendor-discovery/search?category=PHOTOGRAPHER
+/api/vendor-discovery/search?category=PHOTOGRAPHER&location=Pune
 ```
 
-Backend:
-
-```text
-Current Wedding Location
-↓
-Google Places
-↓
-Results
-```
-
-Or custom:
-
-```text
-latitude=28.6139
-longitude=77.2090
-```
+Live searches include vendors that travel to customers, so results may
+omit a business address. Searches are rate limited and retrieve the fields
+used by the results list. Search and listing responses use no-store caching.
 
 ---
 
@@ -2290,21 +2268,23 @@ longitude=77.2090
 
 ```json
 {
-  "data": [
-    {
-      "googlePlaceId": "...",
+  "data": {
+    "mode": "google",
+    "results": [{
+      "id": "...",
       "name": "ABC Photography",
       "rating": 4.7,
-      "ratingCount": 120,
       "address": "...",
-      "latitude": 30.31,
-      "longitude": 78.03
-    }
-  ]
+      "mapsUrl": "https://maps.google.com/...",
+      "attributions": [],
+      "saved": null
+    }]
+  }
 }
 ```
 
-Return only fields actually needed by our UI.
+For a listing already in My Vendors, `saved` contains the internal vendor
+ID and an `archived` boolean. Optional provider fields can be absent.
 
 ---
 

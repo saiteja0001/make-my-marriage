@@ -15,18 +15,20 @@ const columns = ["Vendor", "Category", "Contact", "Related events", "Agreed cost
 type Status = "active" | "archived";
 type Panel = { type: "create" } | { type: "details" | "edit" | "archive"; vendor: Vendor };
 
-export function VendorDirectory({ events, timeZone, context }: { events: VendorEvent[]; timeZone: string; context: string }) {
+export function VendorDirectory({ events, timeZone, context, initialVendor }: {
+  events: VendorEvent[]; timeZone: string; context: string; initialVendor?: Vendor;
+}) {
   const router = useRouter();
   const [filters, setFilters] = useState(emptyFilters);
   const [applied, setApplied] = useState(emptyFilters);
-  const [status, setStatus] = useState<Status>("active");
+  const [status, setStatus] = useState<Status>(initialVendor?.archivedAt ? "archived" : "active");
   const [page, setPage] = useState(1);
   const [version, setVersion] = useState(0);
   const [list, setList] = useState<VendorPage>();
   const [stats, setStats] = useState<VendorPage["directory"]>();
   const [problem, setProblem] = useState<VendorRequestError>();
   const [notice, setNotice] = useState("");
-  const [panel, setPanel] = useState<Panel>();
+  const [panel, setPanel] = useState<Panel | undefined>(() => initialVendor ? { type: "details", vendor: initialVendor } : undefined);
   const isFiltered = Boolean(applied.search || applied.category);
 
   useEffect(() => {
@@ -203,7 +205,7 @@ export function VendorDirectory({ events, timeZone, context }: { events: VendorE
         if (panel.type === "create") showNewVendors();
         refreshAfterChange(message);
       }} />}
-    {panel?.type === "details" && <VendorDetails vendor={panel.vendor} eventName={eventName} timeZone={timeZone} onClose={() => close()}
+    {panel?.type === "details" && <VendorDetails vendor={panel.vendor} eventName={eventName} timeZone={timeZone} context={context} onClose={() => close()}
       onEdit={() => setPanel({ type: "edit", vendor: panel.vendor })} onArchive={() => setPanel({ type: "archive", vendor: panel.vendor })} />}
     {panel?.type === "archive" && <ArchiveVendor vendor={panel.vendor} context={context} onClose={close}
       onArchived={() => {

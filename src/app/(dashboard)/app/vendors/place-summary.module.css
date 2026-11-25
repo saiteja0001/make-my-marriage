@@ -1,0 +1,9 @@
+.summary { min-width: 0; overflow-wrap: anywhere; }
+.heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.4rem 1rem; align-items: baseline; }
+.heading strong { color: var(--burgundy); font-size: 1.05rem; }
+.summary p { font-size: 0.875rem; color: var(--muted); margin-top: 0.25rem; }
+.summary > a { display: inline-flex; align-items: center; min-height: 2.75rem; color: var(--burgundy); text-decoration: underline; text-underline-offset: 0.2em; font-size: 0.875rem; }
+.rating { border-radius: 1rem; padding: 0.15rem 0.5rem; background: #ffe5b6; color: #563b19; font-size: 0.8rem; white-space: nowrap; }
+.attribution { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.7rem; margin-top: 0.15rem; color: #5e5e5e; font-size: 0.78rem; }
+.attribution img { width: 98px; height: 18px; box-sizing: content-box; padding: 10px 10px 5px; }
+.attribution a { color: inherit; text-decoration: underline; }

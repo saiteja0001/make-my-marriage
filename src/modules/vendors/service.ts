@@ -7,7 +7,8 @@ import { prepareVendorStorage, WeddingVendor, type VendorRecord } from "./model"
 import type { VendorChanges, VendorFilters, VendorValues } from "./validation";
 
 export class VendorProblem extends Error {
-  constructor(public status: number, public code: string, message: string, public details?: Record<string, string>) {
+  constructor(public status: number, public code: string, message: string, public details?: Record<string, string>,
+    public retryAfter?: number) {
     super(message);
   }
 }
@@ -16,7 +17,7 @@ export function vendorDraftContext(weddingId: string, membershipId: string) {
   return createHash("sha256").update(JSON.stringify([weddingId, membershipId])).digest("hex");
 }
 
-function vendorView(vendor: VendorRecord) {
+export function vendorView(vendor: VendorRecord) {
   return {
     id: vendor._id.toString(), name: vendor.name, category: vendor.category,
     contactPerson: vendor.contactPerson ?? null, phone: vendor.phone ?? null, email: vendor.email ?? null,

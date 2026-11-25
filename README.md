@@ -54,6 +54,20 @@ the QR as a PNG or print the A4 venue sign. The QR uses the configured
 `NEXT_PUBLIC_APP_URL`. Use an address guests can reach on their phones for
 venue signs.
 
+### Vendor discovery
+
+Discover Vendors uses labelled fictional listings in development when
+`VENDOR_DISCOVERY_MODE` is empty. Use `sample` to test an isolated
+production build, or `disabled` to hide search. Sample vendors remain
+labelled separately from Google Maps listings.
+
+For live search, enable Places API (New) on a billing-enabled Google Cloud
+project and set `VENDOR_DISCOVERY_MODE=google` with
+`GOOGLE_PLACES_API_KEY` as a server secret. Publish the app’s public Terms of
+Use and Privacy Policy under Google Maps’ requirements before activating
+live discovery. The app saves the Place ID and organiser-entered details.
+[Google Places policies](https://developers.google.com/maps/documentation/places/web-service/policies)
+
 | Path | Purpose |
 | --- | --- |
 | `/` | Public landing page and demo entry |

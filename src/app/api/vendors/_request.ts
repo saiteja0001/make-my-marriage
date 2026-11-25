@@ -15,7 +15,7 @@ export function vendorRevision(request: Request) {
   return revision;
 }
 
-export async function withVendorAccess(request: Request, action: (weddingId: string) => Promise<Response>) {
+export async function withVendorAccess(request: Request, action: (weddingId: string, weddingLocation: string) => Promise<Response>) {
   const mutation = request.method !== "GET" && request.method !== "HEAD";
   if (mutation && !sameOrigin(request)) return forbiddenOrigin();
   try {
@@ -29,9 +29,13 @@ export async function withVendorAccess(request: Request, action: (weddingId: str
     if (!current) return authError(404, "NOT_FOUND", "Wedding not found.");
     const { wedding, membership } = current;
     if (!["ADMIN", "MANAGER"].includes(membership.role)) return authError(403, "FORBIDDEN", "You do not have access to wedding vendors.");
-    return await action(wedding.id);
+    return await action(wedding.id, wedding.location.formattedAddress);
   } catch (error) {
-    if (error instanceof VendorProblem) return authError(error.status, error.code, error.message, error.details);
+    if (error instanceof VendorProblem) {
+      const response = authError(error.status, error.code, error.message, error.details);
+      if (error.retryAfter) response.headers.set("Retry-After", String(error.retryAfter));
+      return response;
+    }
     console.error("Vendor operation failed", error instanceof Error ? error.name : "UnknownError");
     return authError(503, "VENDORS_UNAVAILABLE", "Vendors are temporarily unavailable. Try again.");
   }

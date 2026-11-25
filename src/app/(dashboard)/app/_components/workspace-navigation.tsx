@@ -5,7 +5,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useRef, useState } from "react";
 import styles from "./workspace-shell.module.css";
 
-export type WorkspacePath = "/app" | "/app/edit" | "/app/members" | "/app/events" | "/app/tasks" | "/app/guests" | "/app/guests/rsvps" | "/app/photos" | "/app/expenses" | "/app/vendors";
+export type WorkspacePath = "/app" | "/app/edit" | "/app/members" | "/app/events" | "/app/tasks" | "/app/guests" | "/app/guests/rsvps" | "/app/photos" | "/app/expenses" | "/app/vendors" | "/app/vendors/discover";
 
 type Destination = {
   label: string;
@@ -13,7 +13,7 @@ type Destination = {
   items?: readonly string[];
 };
 
-const documentNavigationPaths: readonly WorkspacePath[] = ["/app/edit", "/app/expenses", "/app/vendors"];
+const documentNavigationPaths: readonly WorkspacePath[] = ["/app/edit", "/app/expenses", "/app/vendors", "/app/vendors/discover"];
 
 const navigation: readonly { label: string; destinations: readonly Destination[] }[] = [
   {
@@ -40,7 +40,7 @@ const navigation: readonly { label: string; destinations: readonly Destination[]
     destinations: [
       { label: "Expenses", href: "/app/expenses" },
       { label: "My Vendors", href: "/app/vendors" },
-      { label: "Discover Vendors" },
+      { label: "Discover Vendors", href: "/app/vendors/discover" },
     ],
   },
   {
@@ -131,11 +131,13 @@ export function WorkspaceNavigation({ currentPath, onRequestLeave, onNavigateAwa
 
                 const current = selectedPath === href;
                 const samePage = current && pathname === href && !searchParams?.toString();
+                const needsDocumentNavigation = documentNavigationPaths.includes(href)
+                  && (!current || (href === "/app/vendors" && !samePage));
                 return (
                   <li key={label}>
                     {/* Enter these forms with a full navigation so browser Back uses beforeunload. */}
-                    {documentNavigationPaths.includes(href) && !current && !onRequestLeave ? (
-                      <a className={styles.navRow} href={href}>{label}</a>
+                    {needsDocumentNavigation && !onRequestLeave ? (
+                      <a className={styles.navRow} href={href} aria-current={current ? "location" : undefined}>{label}</a>
                     ) : (
                       <Link
                         href={href}

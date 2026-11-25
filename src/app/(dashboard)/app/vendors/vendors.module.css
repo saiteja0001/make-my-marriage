@@ -119,6 +119,7 @@
 .details div + div { border-top: 1px solid var(--line); }
 .details dt { font-size: 0.875rem; font-weight: 700; }
 .details dd { white-space: pre-wrap; font-size: 0.875rem; }
+.vendorListing { margin-top: 0.85rem; padding: 0.75rem; border: 1px solid var(--line); border-radius: 0.7rem; background: #f5f1ec; }
 
 @container (max-width: 50rem) {
   .ledger { background: transparent; border: 0; }

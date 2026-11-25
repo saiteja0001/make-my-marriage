@@ -1,5 +1,5 @@
 import "server-only";
-import { model, models, Schema, type Model, type Types } from "mongoose";
+import { deleteModel, model, models, Schema, type Model, type Types } from "mongoose";
 import { vendorCategories, vendorLimits, type VendorCategory } from "./validation";
 
 export type VendorRecord = {
@@ -15,7 +15,8 @@ export type VendorRecord = {
   totalAgreedCostPaise?: number;
   eventIds: Types.ObjectId[];
   notes?: string;
-  source: "MANUAL";
+  source: "MANUAL" | "GOOGLE_PLACES" | "DISCOVERY_SAMPLE";
+  providerPlaceId?: string;
   archivedAt?: Date;
   expenseReferenceRevision?: number;
   requestKey?: string;
@@ -35,7 +36,8 @@ const schema = new Schema<VendorRecord>({
   totalAgreedCostPaise: { type: Number, min: 0, max: vendorLimits.costPaise, validate: Number.isSafeInteger },
   eventIds: [{ type: Schema.Types.ObjectId }],
   notes: { type: String, maxlength: vendorLimits.notes },
-  source: { type: String, enum: ["MANUAL"], required: true },
+  source: { type: String, enum: ["MANUAL", "GOOGLE_PLACES", "DISCOVERY_SAMPLE"], required: true },
+  providerPlaceId: { type: String, select: false },
   archivedAt: Date,
   expenseReferenceRevision: Number,
   requestKey: { type: String, select: false },
@@ -45,6 +47,13 @@ const schema = new Schema<VendorRecord>({
 schema.index({ weddingId: 1, archivedAt: 1, name: 1, _id: 1 });
 schema.index({ weddingId: 1, category: 1, archivedAt: 1, name: 1 });
 schema.index({ weddingId: 1, requestKey: 1 }, { unique: true, partialFilterExpression: { requestKey: { $type: "string" } } });
+schema.index({ weddingId: 1, source: 1, providerPlaceId: 1 }, {
+  unique: true, partialFilterExpression: { providerPlaceId: { $type: "string" } },
+});
+
+if (process.env.NODE_ENV === "development" && models.WeddingVendor && !models.WeddingVendor.schema.path("providerPlaceId")) {
+  deleteModel("WeddingVendor");
+}
 
 export const WeddingVendor: Model<VendorRecord> = models.WeddingVendor ?? model("WeddingVendor", schema, "vendors");
 

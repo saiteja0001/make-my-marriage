@@ -1,0 +1,63 @@
+.page {
+  width: min(72rem, calc(100% - 2 * clamp(0.8rem, 3vw, 2.75rem)));
+  margin-inline: auto; padding-block: clamp(1rem, 3.5vw, 2.75rem) 4rem;
+}
+.page > header h1 { color: var(--burgundy); font: 600 clamp(2rem, 4.4vw, 3.3rem) / 1.12 var(--serif); letter-spacing: -0.04em; }
+.page > header p { margin-block: 0.5rem 1rem; color: var(--muted); }
+.note, .problem { margin-block: 0.7rem; padding: 0.65rem 0.8rem; border-radius: 0.65rem; background: var(--blush); color: var(--burgundy); }
+.search, .empty, .result, .preview {
+  min-width: 0; border: 1px solid var(--line); border-radius: 0.8rem; background: white;
+}
+.search {
+  display: grid; grid-template-columns: minmax(9rem, 1fr) minmax(10rem, 1.5fr) auto; gap: 0.65rem;
+  align-items: end; padding: 0.9rem; margin-top: 0.85rem;
+}
+.search > div { display: grid; gap: 0.35rem; min-width: 0; }
+.search label, .saveFields label, .saveFields legend { font-size: 0.875rem; font-weight: 700; }
+.search :is(input, select), .saveFields :is(input, textarea) {
+  width: 100%; min-width: 0; min-height: 2.75rem; padding: 0.55rem 0.7rem; color: var(--charcoal);
+  background: #f5f1ec; border: 1px solid var(--line); border-radius: 0.65rem;
+}
+.saveFields textarea { resize: vertical; }
+.saveFields [aria-invalid="true"] { border-color: #a73350; }
+.primary, .secondary {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 2.75rem;
+  padding: 0.5rem 0.8rem; border: 1px solid transparent; border-radius: 0.55rem;
+  text-align: center; font-size: 0.875rem; font-weight: 700; cursor: pointer;
+}
+.primary { color: white; background: var(--burgundy); }
+.primary:hover { background: var(--burgundy-hover); }
+.secondary { color: var(--burgundy); background: white; border-color: var(--line); }
+.secondary:hover { background: var(--blush); }
+.primary:disabled, .secondary:disabled { opacity: 0.55; cursor: default; }
+.empty { padding: 1.25rem; text-align: center; margin-top: 1rem; }
+.empty h2 { font: 600 1.4rem / 1.2 var(--serif); color: var(--burgundy); }
+.empty p, .empty button, .empty a { margin-top: 0.55rem; }
+.resultCount { margin-block: 1rem 0.55rem; font-size: 0.9rem; font-weight: 700; overflow-wrap: anywhere; }
+.results { display: grid; gap: 0.65rem; }
+.result { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 0.55rem 1rem; padding: 0.85rem 1rem; }
+.resultActions, .actions, .row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+.resultActions span { border-radius: 1rem; padding: 0.25rem 0.55rem; color: var(--burgundy); background: var(--blush); font-size: 0.8rem; font-weight: 700; }
+.row { justify-content: space-between; }
+.row h2 { color: var(--burgundy); font: 600 clamp(1.4rem, 3vw, 1.9rem) / 1.18 var(--serif); }
+.drawer {
+  position: fixed; inset: 0 0 0 auto; width: min(100%, 34rem); max-width: none; max-height: none; height: 100dvh;
+  margin: 0; padding: clamp(0.9rem, 3vw, 1.6rem); background: var(--ivory); color: var(--charcoal);
+  overflow: auto; overscroll-behavior: contain;
+}
+.drawer::backdrop { background: #2a151e91; backdrop-filter: blur(2px); }
+.preview { margin-block: 0.85rem; padding: 0.8rem; background: #f5f1ec; }
+.saveFields { display: grid; min-width: 0; gap: 0.48rem; }
+.saveFields legend { margin-bottom: 0.6rem; color: var(--burgundy); }
+.saveFields label:not(:first-of-type) { margin-top: 0.45rem; }
+.saveFields .problem { margin: 0; font-size: 0.85rem; }
+.actions { justify-content: flex-end; margin-top: 0.9rem; }
+.saved { display: grid; justify-items: start; gap: 0.65rem; padding-block: 0.5rem; }
+.saved p { overflow-wrap: anywhere; }
+@media (max-width: 47rem) {
+  .search, .result { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 38rem) {
+  .resultActions > :is(button, a) { flex: 1; }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; }
+}

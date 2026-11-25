@@ -543,3 +543,38 @@ any pending integration work.
   Chrome verified that choosing a replacement or No vendor allows saving.
   The expense vendor regression suite, lint, TypeScript, and the production
   build passed.
+
+## Discover Vendors — live search verified locally
+
+- Added a responsive discovery page with category and location search,
+  retry states, and labelled sample results for development.
+- Added the save drawer and links to the saved or archived vendor. Each
+  wedding can save one vendor per provider listing. Saved discovery records
+  use the provider ID and organiser-entered fields. The directory can fetch
+  the current listing on demand.
+- Added the server-side Google Places adapter with field masks, attribution,
+  rate limits, and no-store responses. Live activation requires a configured
+  Google Places key and the public Terms of Use and Privacy Policy specified
+  in the README.
+- Passed lint, TypeScript, and the production build. Chrome checked search
+  and save retries, blank-label validation, empty results, opening saved
+  records, and archived status at mobile and desktop widths. Fixture-backed
+  API checks verified Places request fields, attribution, the rate limit,
+  one saved vendor per place under concurrent requests, wedding isolation,
+  and storage of organiser-entered data.
+- Verified the configured key through a live Chrome flow in an isolated
+  local wedding. Google returned 12 Pune photographer listings with
+  attribution, and Place Details verified the selected listing before save.
+- Links from discovery to My Vendors use full navigation so browser Back
+  warns about a draft. Edge verified that staying preserves edits opened
+  from the result list and save drawer, and drafts opened after clearing a
+  vendor deep link through the workspace menu.
+- Google Places search requests service-area vendors. A mocked Places
+  request verified the setting and returned a listing without a business
+  address.
+- Chrome also verified opening the live listing on demand from My Vendors
+  and using the My Vendors fallback when discovery is disabled.
+- Discovery links open My Vendors with a full navigation so browser Back
+  can prompt before discarding an edit. Chrome verified this from both a
+  saved result and the save confirmation drawer. Staying kept the notes,
+  and confirming navigation discarded the unsaved edit.

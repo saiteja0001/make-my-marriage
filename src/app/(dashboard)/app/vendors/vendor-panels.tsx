@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { formatInr, inrInput, parseInr } from "@/lib/inr";
 import type { Vendor } from "@/modules/vendors/service";
+import type { DiscoveryMode, DiscoveryPlace } from "@/modules/vendors/discovery-validation";
 import { createVendorSchema, vendorCategories, vendorLimits } from "@/modules/vendors/validation";
 import { formatEventDay } from "@/modules/events/wedding-time";
 import { useWorkspaceDraft } from "../_components/workspace-draft";
 import { vendorEmail, vendorRequest, VendorRequestError, vendorTelephone, type VendorEvent } from "./vendor-http";
+import { PlaceSummary } from "./place-summary";
 import styles from "./vendors.module.css";
 
 function VendorDialog({ heading, children, onClose, busy = false, confirm = false }: {
@@ -171,10 +173,28 @@ export function VendorForm({ vendor, events, context, onClose, onSaved }: {
   </VendorDialog>;
 }
 
-export function VendorDetails({ vendor, eventName, timeZone, onClose, onEdit, onArchive }: {
-  vendor: Vendor; eventName: (id: string) => string; timeZone: string; onClose: () => void;
+export function VendorDetails({ vendor, eventName, timeZone, context, onClose, onEdit, onArchive }: {
+  vendor: Vendor; eventName: (id: string) => string; timeZone: string; context: string; onClose: () => void;
   onEdit: () => void; onArchive: () => void;
 }) {
+  const [listing, setListing] = useState<{ mode: Exclude<DiscoveryMode, "disabled">; place: DiscoveryPlace }>();
+  const [listingError, setListingError] = useState("");
+  const [loadingListing, setLoadingListing] = useState(false);
+  async function openListing() {
+    setLoadingListing(true);
+    setListingError("");
+    try {
+      const { data } = await vendorRequest<{ data: NonNullable<typeof listing> }>("/api/vendors/" + vendor.id + "/place", {
+        headers: { "X-Vendor-Draft": context },
+      });
+      setListing(data);
+    } catch (error) {
+      setListingError(error instanceof Error ? error.message : "Vendor listing unavailable.");
+    } finally {
+      setLoadingListing(false);
+    }
+  }
+
   return <VendorDialog heading={vendor.name} onClose={onClose}>
     <p className={styles.category}>{vendorCategories[vendor.category]}</p>
     {vendor.archivedAt && <p className={styles.notice}>Archived {formatEventDay(vendor.archivedAt, timeZone)}</p>}
@@ -189,6 +209,14 @@ export function VendorDetails({ vendor, eventName, timeZone, onClose, onEdit, on
       <div><dt>Related events</dt><dd>{vendor.eventIds.map(eventName).join(", ") || "No events assigned"}</dd></div>
       <div><dt>Notes</dt><dd>{vendor.notes ?? "—"}</dd></div>
     </dl>
+    {vendor.source !== "MANUAL" && <section className={styles.vendorListing} aria-label="External vendor listing">
+      {listing ? <PlaceSummary place={listing.place} mode={listing.mode} /> : <>
+        <button type="button" className={styles.secondary} onClick={() => void openListing()} disabled={loadingListing}>
+          {loadingListing ? "Loading listing…" : listingError ? "Retry listing" : vendor.source === "GOOGLE_PLACES" ? "View Google Maps listing" : "View sample listing"}
+        </button>
+        {listingError && <p role="alert" className={styles.error}>{listingError}</p>}
+      </>}
+    </section>}
     {!vendor.archivedAt && <footer className={styles.actions}>
       <button type="button" className={styles.secondary} onClick={onArchive}>Archive vendor</button>
       <button type="button" className={styles.primary} onClick={onEdit}>Edit vendor</button>

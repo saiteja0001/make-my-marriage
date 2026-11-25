@@ -1511,9 +1511,10 @@ Vendor {
 
     source:
         "MANUAL"
-        | "GOOGLE_PLACES",
+        | "GOOGLE_PLACES"
+        | "DISCOVERY_SAMPLE",
 
-    googlePlaceId: String?,
+    providerPlaceId: String?,
 
     archivedAt: Date?,
 
@@ -1568,24 +1569,9 @@ No vendor-event join collection is needed.
 
 # 52. Google Places Vendors
 
-When a user selects a Google Places result:
-
-```text
-Google Vendor
-     ↓
-Copy useful fields
-     ↓
-Create internal Vendor
-```
-
-Store:
-
-```text
-source = GOOGLE_PLACES
-googlePlaceId = ...
-```
-
-The internal vendor record remains usable even if Google becomes unavailable later.
+The internal vendor record stores the verified Place ID and the organiser’s
+own details. Google Maps listing data is fetched on demand. Sample
+discovery uses the same identifier field with a distinct source.
 
 ---
 
@@ -1598,17 +1584,11 @@ index(weddingId, category)
 
 index(weddingId, archivedAt)
 
-index(weddingId, googlePlaceId)
+unique(weddingId, source, providerPlaceId) // partial, when providerPlaceId exists
 ```
 
-Optional partial uniqueness:
-
-```text
-One Google Place
-per Wedding
-```
-
-can be enforced for non-null `googlePlaceId`.
+The discovery index prevents a second save of the same listing in the same
+wedding while retaining archived links.
 
 ---
 
