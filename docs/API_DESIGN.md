@@ -1597,10 +1597,9 @@ endpoint, public invitation page, email delivery, or RSVP submission. Guest CRUD
 never returns the raw token. Later sharing retrieves the existing secret rather
 than rotating it on each request. Deleting its owner invalidates any future link.
 
-The sharing and RSVP increment adds link retrieval, public invitation viewing,
-RSVP submission, and RSVP summaries (§45, §50–52). Guest email delivery, bulk
-actions and reminders (§46–49) remain deferred. Copy/open actions do not mark
-emails sent.
+Guest sharing supports link retrieval, public invitation viewing, RSVP
+submission, RSVP summaries, single-group email delivery, and manual WhatsApp
+sharing (§45–46, §50–52). Bulk actions and reminders (§47–49) remain deferred.
 
 ---
 
@@ -1611,15 +1610,26 @@ emails sent.
 Authentication required. Admin or Manager membership is required; the guest lookup
 uses the membership’s wedding ID. Cross-wedding or missing guests return 404.
 The stable URL uses the configured `NEXT_PUBLIC_APP_URL` origin, never the request
-Host header. Responses are private and not cached. UI supports copy (with a manual
-fallback) and open-in-new-tab; sharing via other apps is manual.
+Host header. Responses are private and not cached. The authenticated preview
+includes saved contact information and the exact message assembled for each
+channel. Copying the link, previewing the invitation, or opening WhatsApp leaves
+the email timestamp and RSVP unchanged.
 
 ### Response
 
 ```json
 {
   "data": {
-    "url": "https://makemymarriage.com/invite/abc123..."
+    "url": "https://makemymarriage.com/invite/abc123...",
+    "email": "family@example.com",
+    "phone": null,
+    "subject": "Wedding invitation from Ananya & Arjun",
+    "message": "Hi Sharma family, ...",
+    "whatsappMessage": "Hi Sharma family! ...",
+    "whatsappUrl": "https://wa.me/?text=...",
+    "hasWhatsappNumber": false,
+    "invitationSentAt": null,
+    "previewVersion": "<SHA-256 hex string>"
   }
 }
 ```
@@ -1635,9 +1645,22 @@ Used for:
 
 ## POST `/api/guests/:guestId/send-invitation`
 
-Authentication required.
+Admin or Manager membership is required. The recipient, wedding details and
+link are read from the authenticated wedding's saved data. A guest from another
+wedding returns 404.
 
-Guest must have email.
+### Request
+
+Send the last timestamp and preview version from §45. Use `null` for a group
+that has never been emailed. A resend uses the current timestamp after the
+organiser confirms the action.
+
+```json
+{
+  "previewVersion": "<SHA-256 hex string>",
+  "invitationSentAt": null
+}
+```
 
 ### Behaviour
 
@@ -1651,11 +1674,25 @@ Send through Resend immediately
 Update invitationSentAt
 ```
 
+Matching send attempts reuse a Resend idempotency key while the timestamp is
+unchanged. Missing email returns 400. A changed preview or send timestamp
+returns 409. The server claims the checked guest record before dispatch.
+While the claim is active, another matching send, guest edits, and deletion
+return 423 `INVITATION_SENDING` and can be retried. The claim expires after
+one minute if the request stops before releasing it.
+
+Guest email attempts are limited to 10 per group per 15 minutes and 50 per
+wedding per UTC day. The Resend adapter shares a five-request-per-second
+dispatch limit across guest and member invitations. Rate-limited guest
+requests return 429 and `Retry-After`. Provider failures return 503. The
+timestamp records provider acceptance.
+
 ### Response
 
 ```json
 {
-  "success": true
+  "success": true,
+  "data": { "invitationSentAt": "2027-01-15T09:00:00.000Z" }
 }
 ```
 

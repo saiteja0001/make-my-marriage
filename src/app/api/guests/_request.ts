@@ -1,4 +1,4 @@
-import { GuestCapacityConflict, GuestConflict, GuestCreationGone, GuestEventUnavailable, guestDraftContext } from "@/modules/guests/service";
+import { GuestCapacityConflict, GuestConflict, GuestCreationGone, GuestEventUnavailable, GuestInvitationSending, guestDraftContext } from "@/modules/guests/service";
 import { getWeddingForUser } from "@/modules/wedding/service";
 import { authError, forbiddenOrigin, sameOrigin } from "@/server/auth/http";
 import { getSignedInUser } from "@/server/auth/session";
@@ -7,7 +7,9 @@ export function guestNotFound() {
   return authError(404, "NOT_FOUND", "Guest group not found.");
 }
 
-export async function withGuestAccess(request: Request, handle: (weddingId: string) => Promise<Response>) {
+type WorkspaceWedding = NonNullable<Awaited<ReturnType<typeof getWeddingForUser>>>["wedding"];
+
+export async function withGuestAccess(request: Request, handle: (weddingId: string, wedding: WorkspaceWedding) => Promise<Response>) {
   const mutation = request.method !== "GET" && request.method !== "HEAD";
   if (mutation && !sameOrigin(request)) return forbiddenOrigin();
   try {
@@ -20,9 +22,10 @@ export async function withGuestAccess(request: Request, handle: (weddingId: stri
     if (mutation && draft !== null && draft !== guestDraftContext(current.membershipId, weddingId)) {
       return authError(409, "DRAFT_CHANGED", "Your account or wedding changed. Reopen the guest form before saving.");
     }
-    return await handle(weddingId);
+    return await handle(weddingId, current.wedding);
   } catch (error) {
     if (error instanceof GuestConflict) return authError(409, "CONFLICT", error.message);
+    if (error instanceof GuestInvitationSending) return authError(423, "INVITATION_SENDING", error.message);
     if (error instanceof GuestCapacityConflict) return authError(409, "CAPACITY_CONFLICT", error.message, { maxGuests: error.message });
     if (error instanceof GuestCreationGone) return authError(410, "GUEST_DELETED", error.message);
     if (error instanceof GuestEventUnavailable) {

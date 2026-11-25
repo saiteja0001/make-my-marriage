@@ -313,7 +313,7 @@ any pending integration work.
   no-referrer, and noindex protections, and exclude token-bearing request
   paths from incoming request logs. RSVP updates enforce capacity and version
   checks and reuse the existing MongoDB counters for per-link and shared
-  limits. Guest email delivery, WhatsApp shortcuts, and reminders are planned.
+  limits. Single-group email and WhatsApp sharing are tracked below.
 - Passed lint, TypeScript, and the production build. Chrome checked copy,
   clipboard fallback, opening a new tab, accepting and declining, editing a
   response, retrying after a failed submission, and a changed party limit.
@@ -326,6 +326,42 @@ any pending integration work.
   reviewing a newer RSVP. API checks confirmed that stale revisions cannot
   overwrite a different response, identical retries keep the saved timestamp,
   and simultaneous submissions respect guest capacity and revision checks.
+
+## Single-group invitation delivery — complete
+
+- Added a responsive panel to guest group details. It previews the saved
+  recipient and personalised email or WhatsApp message, with the same private
+  RSVP link in both channels. The panel handles missing contact details,
+  clipboard fallback, send progress and failures, and confirmed resends.
+- Guest emails use the existing Resend configuration and record the last
+  successful submission when Resend accepts the message. The server scopes
+  the guest lookup to the current wedding, validates the preview and last send
+  time, and uses provider idempotency for matching attempts.
+- Email dispatch claims the checked guest record and coordinates with guest
+  edits and deletion. Guest emails have per-group and per-wedding budgets,
+  and guest and member invitations share the Resend dispatch limit.
+  Isolated MongoDB and mocked Resend checks verified that a recipient
+  correction prevents a stale send, that edits and deletion wait while
+  email is in flight, and that retries and quota failures preserve the
+  send timestamp correctly.
+- WhatsApp opens an addressed chat for international-format numbers and a
+  contact picker for other numbers. The organiser sends the draft in WhatsApp.
+  This leaves the email send timestamp and RSVP status unchanged.
+- Lint, TypeScript, and the production build passed. Route checks with
+  test data and mocked Resend covered wedding isolation, stale previews,
+  rate limits, failure retries, and concurrent resends. The shared transport
+  also passed a member-invitation payload check. Chrome fixture checks at
+  320, 390, and 1440 px covered both channels, missing contacts, clipboard
+  fallback, send progress, retry, and resend confirmation. Live delivery
+  remains unverified.
+- Chrome QA followed the shared link through an anonymous RSVP and verified
+  that retrying after a lost send response did not duplicate the email.
+- If a session expires while loading a preview or sending an invitation,
+  the page offers sign-in in a new tab. Chrome verified that the organiser
+  can then retry the preview or send from the original page. The send panel
+  stayed open, and one email was accepted by mocked Resend after the
+  organiser explicitly retried. Lint, TypeScript, and production build passed.
+- Bulk email, batch progress, and pending-RSVP reminders are planned.
 
 ## Private organiser photo gallery — complete
 

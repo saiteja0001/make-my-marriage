@@ -1,5 +1,5 @@
 import "server-only";
-import { model, models, Schema, type Model, type Types } from "mongoose";
+import { deleteModel, model, models, Schema, type Model, type Types } from "mongoose";
 import { connectDatabase } from "@/server/db/mongoose";
 import { guestLimits, rsvpStatuses, type RsvpStatus } from "./validation";
 
@@ -15,6 +15,7 @@ export type GuestRecord = {
   invitedEventIds: Types.ObjectId[];
   invitationToken: string;
   invitationSentAt?: Date | null;
+  invitationSendExpiresAt?: Date;
   lastReminderSentAt?: Date | null;
   reminderCount: number;
   rsvpStatus: RsvpStatus;
@@ -35,6 +36,7 @@ const guestSchema = new Schema<GuestRecord>({
   invitedEventIds: { type: [Schema.Types.ObjectId], default: [] },
   invitationToken: { type: String, required: true, unique: true, select: false },
   invitationSentAt: { type: Date, default: null },
+  invitationSendExpiresAt: { type: Date, select: false },
   lastReminderSentAt: { type: Date, default: null },
   reminderCount: { type: Number, default: 0 },
   rsvpStatus: { type: String, enum: Object.keys(rsvpStatuses), default: "PENDING" },
@@ -47,7 +49,14 @@ guestSchema.index({ weddingId: 1, rsvpStatus: 1 });
 guestSchema.index({ weddingId: 1, emailNormalized: 1 });
 guestSchema.index({ weddingId: 1, invitedEventIds: 1 });
 
+if (process.env.NODE_ENV === "development" && models.WeddingGuest && !models.WeddingGuest.schema.path("invitationSendExpiresAt")) {
+  deleteModel("WeddingGuest");
+}
 export const WeddingGuest: Model<GuestRecord> = models.WeddingGuest ?? model<GuestRecord>("WeddingGuest", guestSchema, "guests");
+
+export function guestInvitationSendAvailable() {
+  return { invitationSendExpiresAt: { $not: { $gt: new Date() } } };
+}
 
 type GuestCreationRecord = { weddingId: Types.ObjectId; requestKey: string; guestId: Types.ObjectId };
 const creationSchema = new Schema<GuestCreationRecord>({

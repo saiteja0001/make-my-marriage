@@ -28,10 +28,12 @@ creation transactions. Set `NEXT_PUBLIC_APP_URL` to enable guest invitation
 links. Use the origin that visitors use to open the app, including the port
 when applicable.
 
-For wedding member invitations, set `RESEND_API_KEY`, `RESEND_FROM_EMAIL`
-(a verified Resend sender), and `NEXT_PUBLIC_APP_URL` (the invitation link
-origin). Invitations expire after seven days. The member list is available
-without the email configuration.
+For wedding member and guest invitation emails, set `RESEND_API_KEY`,
+`RESEND_FROM_EMAIL` (a verified Resend sender), and `NEXT_PUBLIC_APP_URL`
+(the invitation link origin). Use a publicly reachable app URL for messages
+real recipients will open. Member invitations expire after seven days. Guest
+invitations use their existing group RSVP links. Copying a guest link and
+sharing it on WhatsApp only require the app URL.
 
 For the private photo gallery, set `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`,
 `R2_SECRET_ACCESS_KEY`, and `R2_BUCKET_NAME` in `.env.local`. Use credentials

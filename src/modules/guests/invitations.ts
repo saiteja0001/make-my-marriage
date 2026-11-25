@@ -30,17 +30,14 @@ export class InvitationOriginUnavailable extends Error {
   }
 }
 
-export async function getGuestInvitationLink(weddingId: string, guestId: string) {
-  await connectDatabase();
-  const guest = await WeddingGuest.findOne({ weddingId, _id: guestId }).select("invitationToken").lean();
-  if (!guest || !guestInvitationTokenSchema.safeParse(guest.invitationToken).success) return null;
-
+export function guestInvitationUrl(token: string) {
+  if (!guestInvitationTokenSchema.safeParse(token).success) return null;
   const configured = process.env.NEXT_PUBLIC_APP_URL?.trim() ?? "";
   const parsed = URL.parse(configured);
   if (!parsed || !["https:", "http:"].includes(parsed.protocol) || parsed.username || parsed.password) {
     throw new InvitationOriginUnavailable();
   }
-  return new URL(`/invite/${guest.invitationToken}`, parsed.origin).href;
+  return new URL(`/invite/${token}`, parsed.origin).href;
 }
 
 async function findInvitation(token: string) {

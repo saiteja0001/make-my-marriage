@@ -4,12 +4,18 @@ import { Types, type ClientSession, type QueryFilter } from "mongoose";
 import { WeddingEvent } from "@/modules/events/model";
 import { lockActiveEventReferences } from "@/modules/events/service";
 import { connectDatabase } from "@/server/db/mongoose";
-import { GuestCreationRequest, prepareGuestStorage, WeddingGuest, type GuestRecord } from "./model";
+import { GuestCreationRequest, guestInvitationSendAvailable, prepareGuestStorage, WeddingGuest, type GuestRecord } from "./model";
 import type { GuestChanges, GuestFilters, GuestValues } from "./validation";
 
 export class GuestConflict extends Error {
   constructor() {
     super("This guest group changed. Open the latest version before trying again.");
+  }
+}
+
+export class GuestInvitationSending extends Error {
+  constructor() {
+    super("An invitation email is being sent for this guest group. Wait for it to finish, then try again.");
   }
 }
 
@@ -184,9 +190,15 @@ export async function updateGuest(weddingId: string, guestId: string, input: Gue
 
   const updated = await database.transaction(async (session) => {
     if (!await lockActiveEventReferences(weddingId, addedEvents, session)) throw new GuestEventUnavailable();
-    const record = await WeddingGuest.findOneAndUpdate(filter, { $set: set, $unset: unset, $inc: { __v: 1 } },
+    const record = await WeddingGuest.findOneAndUpdate({ ...filter, ...guestInvitationSendAvailable() },
+      { $set: set, $unset: unset, $inc: { __v: 1 } },
       { session, returnDocument: "after", runValidators: true }).select(projection).lean();
-    if (!record) throw new GuestConflict();
+    if (!record) {
+      if (await WeddingGuest.exists({ ...scope, invitationSendExpiresAt: { $gt: new Date() } }).session(session)) {
+        throw new GuestInvitationSending();
+      }
+      throw new GuestConflict();
+    }
     return record;
   });
   return (await guestDetails(weddingId, [updated]))[0];
@@ -195,9 +207,13 @@ export async function updateGuest(weddingId: string, guestId: string, input: Gue
 export async function deleteGuest(weddingId: string, guestId: string, revision?: number) {
   await connectDatabase();
   const scope = { weddingId, _id: guestId };
-  const result = await WeddingGuest.deleteOne(revision === undefined ? scope : {
-    ...scope, __v: revision === 0 ? { $in: [0, null] } : revision,
+  const result = await WeddingGuest.deleteOne({
+    ...scope, ...guestInvitationSendAvailable(),
+    ...(revision !== undefined && { __v: revision === 0 ? { $in: [0, null] } : revision }),
   });
-  if (!result.deletedCount && revision !== undefined && await WeddingGuest.exists(scope)) throw new GuestConflict();
-  return result.deletedCount > 0;
+  if (result.deletedCount) return true;
+  const current = await WeddingGuest.findOne(scope).select("_id +invitationSendExpiresAt").lean();
+  if (!current) return false;
+  if (current.invitationSendExpiresAt && current.invitationSendExpiresAt > new Date()) throw new GuestInvitationSending();
+  throw new GuestConflict();
 }

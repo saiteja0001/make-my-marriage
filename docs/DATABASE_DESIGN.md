@@ -1292,6 +1292,7 @@ Guest {
     invitationToken: String, // Stable share secret; excluded from ordinary reads.
 
     invitationSentAt: Date?,
+    invitationSendExpiresAt: Date?, // Internal, short-lived claim for an in-progress send.
 
     lastReminderSentAt: Date?,
 

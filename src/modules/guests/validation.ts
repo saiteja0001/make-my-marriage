@@ -24,6 +24,10 @@ const fields = z.strictObject({
 
 export const createGuestSchema = fields.extend({ maxGuests: maxGuests.default(1), invitedEventIds: invitedEventIds.default([]) });
 export const updateGuestSchema = fields.partial().refine((input) => Object.keys(input).length > 0, "Provide at least one field to update.");
+export const sendGuestInvitationSchema = z.strictObject({
+  previewVersion: z.string().regex(/^[a-f0-9]{64}$/),
+  invitationSentAt: z.iso.datetime().nullable(),
+});
 export const guestListSchema = z.strictObject({
   page: z.string().regex(/^\d+$/).transform(Number).pipe(z.number().int().min(1).max(100000)).optional().default(1),
   limit: z.string().regex(/^\d+$/).transform(Number).pipe(z.number().int().min(1).max(100)).optional().default(20),

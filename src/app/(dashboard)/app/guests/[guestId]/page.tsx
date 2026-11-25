@@ -7,7 +7,7 @@ import { requireWorkspaceGuest } from "../_workspace";
 import { GuestEvents } from "../guest-events";
 import { RsvpRefresh } from "../rsvp-refresh";
 import { DeleteGuest } from "./delete-guest";
-import { GuestInvitationLink } from "./invitation-link";
+import { GuestInvitationDelivery } from "./invitation-delivery";
 import styles from "../guests.module.css";
 
 export const metadata: Metadata = { title: "Guest group details" };
@@ -37,7 +37,8 @@ export default async function GuestPage({ params, searchParams }: {
 
       <RsvpRefresh />
       <div className={styles.shareLayout}>
-        <GuestInvitationLink key={guest.id} guestId={guest.id} guestName={guest.name} />
+        <GuestInvitationDelivery key={guest.id} guestId={guest.id} guestName={guest.name}
+          rsvpLabel={rsvpStatuses[guest.rsvpStatus]} timeZone={wedding.timeZone} edit={edit} />
         <dl className={styles.details}>
           <div><dt>Party limit</dt><dd>{guest.maxGuests.toLocaleString("en-IN")} {guest.maxGuests === 1 ? "guest" : "guests"}, including the named guest</dd></div>
           {guest.email && <div><dt>Email</dt><dd>{guest.email}</dd></div>}
