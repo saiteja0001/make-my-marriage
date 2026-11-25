@@ -3,18 +3,20 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
-import { formatExpenseAmount } from "@/modules/expenses/money";
+import { formatInr as formatExpenseAmount } from "@/lib/inr";
 import type { Expense } from "@/modules/expenses/service";
 import { expenseCategories } from "@/modules/expenses/validation";
 import { formatWeddingDate } from "@/modules/wedding/wedding-date";
 import { DeleteExpense, ExpenseDrawer } from "./expense-drawer";
-import { expenseRequest, ExpenseRequestError, type ExpenseEvent, type ExpensePage, type ExpenseSummary } from "./expense-http";
+import { expenseRequest, ExpenseRequestError, type ExpenseEvent, type ExpensePage, type ExpenseSummary, type ExpenseVendor } from "./expense-http";
 import styles from "./expenses.module.css";
 
-const blankFilters = { category: "", eventId: "", from: "", to: "" };
-const columns = ["Expense", "Category", "Event", "Date", "Amount", "Actions"];
+const blankFilters = { category: "", eventId: "", vendorId: "", from: "", to: "" };
+const columns = ["Expense", "Category", "Event", "Vendor", "Date", "Amount", "Actions"];
 
-export function ExpenseLedger({ events, context, today }: { events: ExpenseEvent[]; context: string; today: string }) {
+export function ExpenseLedger({ events, vendors, context, today }: {
+  events: ExpenseEvent[]; vendors: ExpenseVendor[]; context: string; today: string;
+}) {
   const router = useRouter();
   const [filters, setFilters] = useState(blankFilters);
   const [applied, setApplied] = useState(blankFilters);
@@ -122,6 +124,12 @@ export function ExpenseLedger({ events, context, today }: { events: ExpenseEvent
     </section>
   </main>;
 
+  function vendorName(id: string | null) {
+    if (!id) return "No vendor";
+    const vendor = vendors.find((entry) => entry.id === id);
+    return vendor ? vendor.name + (vendor.archived ? " (archived)" : "") : "Unavailable vendor";
+  }
+
   const records = list?.pagination.total ?? 0;
   const maxPage = list ? Math.max(1, Math.ceil(records / list.pagination.limit)) : 1;
 
@@ -159,6 +167,12 @@ export function ExpenseLedger({ events, context, today }: { events: ExpenseEvent
         <option value="">All events</option><option value="none">No event</option>
         {events.map(({ id }) => <option key={id} value={id}>{eventName(id)}</option>)}
       </select></div>
+      <div className={styles.filterField}><label htmlFor="expense-filter-vendor">Vendor</label>
+        <select id="expense-filter-vendor" value={filters.vendorId}
+          onChange={(event) => setFilters({ ...filters, vendorId: event.currentTarget.value })}>
+          <option value="">All vendors</option><option value="none">No vendor</option>
+          {vendors.map(({ id }) => <option key={id} value={id}>{vendorName(id)}</option>)}
+        </select></div>
       <div className={styles.filterField}><label htmlFor="expense-filter-from">From</label>
         <input id="expense-filter-from" type="date" value={filters.from} onChange={(event) => {
           setFilters({ ...filters, from: event.currentTarget.value }); setFilterError("");
@@ -189,6 +203,7 @@ export function ExpenseLedger({ events, context, today }: { events: ExpenseEvent
             <div className={styles.expenseName}><h3>{expense.title}</h3>{expense.notes && <p>{expense.notes}</p>}</div>
             <span className={styles.category}><span>{expenseCategories[expense.category]}</span></span>
             <span className={styles.event}>{eventName(expense.eventId)}</span>
+            <span className={styles.vendor}>{vendorName(expense.vendorId)}</span>
             <time dateTime={expense.expenseDate} className={styles.date}>{formatWeddingDate(expense.expenseDate)}</time>
             <strong className={styles.amount}>{formatExpenseAmount(expense.amountPaise)}</strong>
             <div className={styles.rowActions}>
@@ -212,7 +227,7 @@ export function ExpenseLedger({ events, context, today }: { events: ExpenseEvent
             : <button type="button" className={styles.primary} onClick={() => setForm("new")}>Add your first expense</button>}
       </section>}
     {form && <ExpenseDrawer key={form === "new" ? "new" : form.id} expense={form === "new" ? undefined : form}
-      context={context} events={events} today={today} onClose={(reload) => { setForm(undefined); if (reload) refreshAfterChange(); }}
+      context={context} events={events} vendors={vendors} today={today} onClose={(reload) => { setForm(undefined); if (reload) refreshAfterChange(); }}
       onSaved={(message) => { setForm(undefined); refreshAfterChange(message); }} />}
     {deleting && <DeleteExpense expense={deleting} context={context} onClose={(reload) => { setDeleting(undefined); if (reload) refreshAfterChange(); }}
       onDeleted={() => {

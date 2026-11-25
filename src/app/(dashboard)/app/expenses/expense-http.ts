@@ -1,6 +1,8 @@
 import type { expenseSummary, listExpenses } from "@/modules/expenses/service";
+import type { vendorOptions } from "@/modules/vendors/service";
 
 export type ExpenseEvent = { id: string; name: string; archived: boolean };
+export type ExpenseVendor = Awaited<ReturnType<typeof vendorOptions>>[number];
 export type ExpensePage = Awaited<ReturnType<typeof listExpenses>>;
 export type ExpenseSummary = Awaited<ReturnType<typeof expenseSummary>>;
 

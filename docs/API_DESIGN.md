@@ -1991,14 +1991,16 @@ limit
 
 category
 eventId
+vendorId
 from
 to
 ```
 
 Dates use `YYYY-MM-DD` and both ends of the range are inclusive. Use
-`eventId=none` for expenses without an event. The response includes
-`data`, `pagination`, and `subtotalPaise` for all matching records across
-pages. Vendor links and filters follow My Vendors.
+`eventId=none` or `vendorId=none` for expenses without that link.
+The response includes `data`, `pagination`, and `subtotalPaise` for
+all matching records across pages. Results can include historical links to
+archived vendors.
 
 Expense requests that supply `X-Expense-Draft` must match the signed-in
 membership and wedding. The organiser UI supplies it on reads and writes
@@ -2027,6 +2029,7 @@ expenseDate DESC, id DESC
   "expenseDate": "2026-09-01",
   "category": "PHOTOGRAPHY",
   "eventId": "...",
+  "vendorId": "...",
   "notes": "Advance payment"
 }
 ```
@@ -2089,9 +2092,9 @@ Authentication required.
 
 Authentication required.
 
-New event links must reference an active event in the same wedding. Existing
-links to archived events can be kept or cleared. Use null to clear optional
-event or notes fields. The organiser UI sends the saved revision in
+New event and vendor links must reference active records in the same wedding.
+Existing links to archived records can be kept or cleared. Use null to clear
+optional event, vendor, or notes fields. The organiser UI sends the saved revision in
 `If-Match` so a stale edit cannot overwrite another organiser’s change.
 
 ---
@@ -2121,7 +2124,20 @@ limit
 category
 search
 includeArchived
+status
 ```
+
+The default view shows active vendors. Use `status=archived` for the
+archived view, or `includeArchived=true` to include both when status is
+omitted. Search is literal and case-insensitive across vendor names and
+contact people. The response includes matching pagination and a separate
+wedding-wide directory summary for active and archived counts, linked
+events for active vendors, and total agreed cost in integer paise.
+
+Vendor requests that supply `X-Vendor-Draft` must match the signed-in
+membership and wedding. The organiser UI supplies it on reads and writes
+and prompts the organiser to reopen My Vendors after a `409 DRAFT_CHANGED`
+response.
 
 ---
 
@@ -2151,6 +2167,10 @@ Set:
 ```text
 source = MANUAL
 ```
+
+Only active events in the same wedding may be added as links. An optional
+`Idempotency-Key` UUID allows retries to return the current saved record
+without creating a duplicate. A changed retry returns a conflict.
 
 ---
 
@@ -2200,6 +2220,11 @@ source = GOOGLE_PLACES
 
 ## PATCH `/api/vendors/:vendorId`
 
+Archived vendors are available for reference. Active vendors accept partial
+updates. Use null to clear optional contact and cost fields, and an empty
+array to clear event links. An existing archived event may remain linked.
+The organiser UI sends the saved revision in `If-Match` on edit and archive.
+
 ---
 
 # 64. Archive Vendor
@@ -2213,6 +2238,9 @@ archivedAt
 ```
 
 rather than hard deleting.
+
+The response returns the archived vendor in `data`. Repeating a completed
+archive returns the same archived record.
 
 ---
 

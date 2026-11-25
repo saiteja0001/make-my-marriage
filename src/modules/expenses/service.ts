@@ -2,6 +2,7 @@ import "server-only";
 import { createHash } from "node:crypto";
 import { Types, type ClientSession, type QueryFilter } from "mongoose";
 import { lockActiveEventReferences } from "@/modules/events/service";
+import { lockActiveVendorReference } from "@/modules/vendors/service";
 import { connectDatabase } from "@/server/db/mongoose";
 import { ExpenseCreationRequest, prepareExpenseStorage, WeddingExpense, type ExpenseCreationRecord, type ExpenseRecord } from "./model";
 import type { ExpenseCategory, ExpenseChanges, ExpenseFilters, ExpenseValues } from "./validation";
@@ -20,7 +21,8 @@ function expenseView(expense: ExpenseRecord) {
   return {
     id: expense._id.toString(), title: expense.title, amountPaise: expense.amountPaise,
     currency: expense.currency, expenseDate: expense.expenseDate, category: expense.category,
-    eventId: expense.eventId?.toString() ?? null, notes: expense.notes ?? null, revision: expense.__v ?? 0,
+    eventId: expense.eventId?.toString() ?? null, vendorId: expense.vendorId?.toString() ?? null,
+    notes: expense.notes ?? null, revision: expense.__v ?? 0,
   };
 }
 
@@ -31,15 +33,21 @@ function eventUnavailable() {
   return new ExpenseProblem(404, "EVENT_UNAVAILABLE", message, { eventId: message });
 }
 
+function vendorUnavailable() {
+  const message = "Choose an active vendor from your wedding.";
+  return new ExpenseProblem(404, "VENDOR_UNAVAILABLE", message, { vendorId: message });
+}
+
 function conflict() {
   return new ExpenseProblem(409, "CONFLICT", "This expense changed. Reopen it to review the saved amounts.");
 }
 
-export async function listExpenses(weddingId: string, { page, limit, category, eventId, from, to }: ExpenseFilters) {
+export async function listExpenses(weddingId: string, { page, limit, category, eventId, vendorId, from, to }: ExpenseFilters) {
   await connectDatabase();
   const filter: QueryFilter<ExpenseRecord> = { weddingId: new Types.ObjectId(weddingId) };
   if (category) filter.category = category;
   if (eventId) filter.eventId = eventId === "none" ? null : new Types.ObjectId(eventId);
+  if (vendorId) filter.vendorId = vendorId === "none" ? null : new Types.ObjectId(vendorId);
   if (from || to) filter.expenseDate = { ...(from && { $gte: from }), ...(to && { $lte: to }) };
   const [result] = await WeddingExpense.aggregate<{ rows: ExpenseRecord[]; matched: { total: number; subtotalPaise: number }[] }>([
     { $match: filter },
@@ -76,10 +84,12 @@ export async function getExpense(weddingId: string, id: string) {
 export async function createExpense(weddingId: string, membershipId: string, values: ExpenseValues, requestKey?: string) {
   const database = await connectDatabase();
   await prepareExpenseStorage();
-  const { eventId, notes, ...fields } = values;
+  const { eventId, vendorId, notes, ...fields } = values;
   const request = { weddingId, membershipId, requestKey };
   const fingerprint = createHash("sha256").update(JSON.stringify([
+    // Preserve earlier request fingerprints for expenses created without a vendor.
     fields.title, fields.amountPaise, fields.currency, fields.expenseDate, fields.category, eventId ?? null, notes || null,
+    ...(vendorId ? [vendorId] : []),
   ])).digest("hex");
 
   async function replay(claim: ExpenseCreationRecord, session?: ClientSession) {
@@ -98,8 +108,10 @@ export async function createExpense(weddingId: string, membershipId: string, val
         if (existing) return replay(existing, session);
       }
       if (eventId && !await lockActiveEventReferences(weddingId, [eventId], session)) throw eventUnavailable();
+      if (vendorId && !await lockActiveVendorReference(weddingId, vendorId, session)) throw vendorUnavailable();
       const expense = await new WeddingExpense({
-        weddingId, createdByMembershipId: membershipId, ...fields, eventId: eventId || undefined, notes: notes || undefined,
+        weddingId, createdByMembershipId: membershipId, ...fields,
+        eventId: eventId || undefined, vendorId: vendorId || undefined, notes: notes || undefined,
       }).save({ session });
       if (requestKey) await new ExpenseCreationRequest({ ...request, expenseId: expense._id, fingerprint }).save({ session });
       return { expense: expenseView(expense), replayed: false };
@@ -115,20 +127,23 @@ export async function createExpense(weddingId: string, membershipId: string, val
 
 export async function updateExpense(weddingId: string, id: string, changes: ExpenseChanges, revision?: number) {
   const database = await connectDatabase();
-  const { eventId, notes, ...fields } = changes;
+  const { eventId, vendorId, notes, ...fields } = changes;
   const scope = { weddingId, _id: id };
   return database.transaction(async (session) => {
     const existing = await WeddingExpense.findOne(scope).session(session).lean();
     if (!existing) return null;
     const view = expenseView(existing);
-    const submitted = { ...fields, ...(eventId !== undefined && { eventId }), ...(notes !== undefined && { notes: notes || null }) };
+    const submitted = { ...fields, ...(eventId !== undefined && { eventId }), ...(vendorId !== undefined && { vendorId }),
+      ...(notes !== undefined && { notes: notes || null }) };
     if (Object.entries(submitted).every(([key, value]) => view[key as keyof Expense] === value)) return view;
     if (revision !== undefined && revision !== view.revision) throw conflict();
     if (eventId && eventId !== view.eventId && !await lockActiveEventReferences(weddingId, [eventId], session)) throw eventUnavailable();
+    if (vendorId && vendorId !== view.vendorId && !await lockActiveVendorReference(weddingId, vendorId, session)) throw vendorUnavailable();
 
     const updated = await WeddingExpense.findOneAndUpdate(scope, {
-      $set: { ...fields, ...(eventId && { eventId }), ...(notes && { notes }) },
-      $unset: { ...(eventId === null && { eventId: 1 }), ...(notes !== undefined && !notes && { notes: 1 }) },
+      $set: { ...fields, ...(eventId && { eventId }), ...(vendorId && { vendorId }), ...(notes && { notes }) },
+      $unset: { ...(eventId === null && { eventId: 1 }), ...(vendorId === null && { vendorId: 1 }),
+        ...(notes !== undefined && !notes && { notes: 1 }) },
       $inc: { __v: 1 },
     }, { session, returnDocument: "after", runValidators: true }).lean();
     return updated && expenseView(updated);

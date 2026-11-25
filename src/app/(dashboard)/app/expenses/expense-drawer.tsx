@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
-import { expenseAmountInput, formatExpenseAmount, parseExpenseAmount } from "@/modules/expenses/money";
+import { formatInr as formatExpenseAmount, inrInput as expenseAmountInput, parseInr as parseExpenseAmount } from "@/lib/inr";
 import type { Expense } from "@/modules/expenses/service";
 import { createExpenseSchema, expenseCategories, expenseNotesLimit, expenseTitleLimit } from "@/modules/expenses/validation";
 import { useWorkspaceDraft } from "../_components/workspace-draft";
-import { expenseRequest, ExpenseRequestError, type ExpenseEvent } from "./expense-http";
+import { expenseRequest, ExpenseRequestError, type ExpenseEvent, type ExpenseVendor } from "./expense-http";
 import styles from "./expenses.module.css";
 
 function Field({ name, label, error, children }: { name: string; label: string; error?: string; children: ReactNode }) {
@@ -22,10 +23,11 @@ function errorAttributes(name: string, details: Record<string, string>) {
   return { "aria-invalid": invalid, "aria-describedby": invalid ? name + "-error" : undefined };
 }
 
-export function ExpenseDrawer({ expense, events, today, context, onClose, onSaved }: {
-  expense?: Expense; events: ExpenseEvent[]; today: string; context: string;
+export function ExpenseDrawer({ expense, events, vendors, today, context, onClose, onSaved }: {
+  expense?: Expense; events: ExpenseEvent[]; vendors: ExpenseVendor[]; today: string; context: string;
   onClose: (refresh?: boolean) => void; onSaved: (message: string) => void;
 }) {
+  const router = useRouter();
   const dialog = useRef<HTMLDialogElement>(null);
   const key = useRef<string>(undefined);
   const saving = useRef(false);
@@ -33,14 +35,16 @@ export function ExpenseDrawer({ expense, events, today, context, onClose, onSave
   const [initial] = useState(() => ({
     title: expense?.title ?? "", amountPaise: expense ? expenseAmountInput(expense.amountPaise) : "",
     expenseDate: expense?.expenseDate ?? today, category: expense?.category ?? "",
-    eventId: expense?.eventId ?? "", notes: expense?.notes ?? "",
+    eventId: expense?.eventId ?? "", vendorId: expense?.vendorId ?? "", notes: expense?.notes ?? "",
   }));
   const [draft, setDraft] = useState(initial);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<ExpenseRequestError>();
   const [details, setDetails] = useState<Record<string, string>>({});
+  const [unavailableVendors, setUnavailableVendors] = useState<string[]>([]);
   const { requestLeave, allowNavigation } = useWorkspaceDraft(JSON.stringify(initial) !== JSON.stringify(draft), busy);
   const reloadNeeded = problem && ["CONFLICT", "DRAFT_CHANGED", "EXPENSE_ALREADY_CREATED", "EXPENSE_DELETED", "NOT_FOUND"].includes(problem.code);
+  const vendorUnavailable = unavailableVendors.includes(draft.vendorId);
 
   useEffect(() => {
     const panel = dialog.current;
@@ -51,13 +55,15 @@ export function ExpenseDrawer({ expense, events, today, context, onClose, onSave
   function change(name: keyof typeof draft, value: string) {
     setDraft((current) => ({ ...current, [name]: value }));
     setDetails((current) => ({ ...current, [name]: "" }));
+    if (name === "vendorId" && problem?.code === "VENDOR_UNAVAILABLE") setProblem(undefined);
   }
 
   async function save(event: FormEvent) {
     event.preventDefault();
-    if (saving.current || reloadNeeded) return;
+    if (saving.current || reloadNeeded || vendorUnavailable) return;
     const values = createExpenseSchema.safeParse({
-      ...draft, amountPaise: parseExpenseAmount(draft.amountPaise), eventId: draft.eventId || null, notes: draft.notes || null,
+      ...draft, amountPaise: parseExpenseAmount(draft.amountPaise), eventId: draft.eventId || null,
+      vendorId: draft.vendorId || null, notes: draft.notes || null,
     });
     setProblem(undefined);
     if (!values.success) {
@@ -82,6 +88,11 @@ export function ExpenseDrawer({ expense, events, today, context, onClose, onSave
       const next = error instanceof ExpenseRequestError ? error : new ExpenseRequestError(0, "", "We couldn’t confirm the save. Try again.");
       if (next.status === 0 || next.status >= 500 || (next.status >= 200 && next.status < 300)) {
         unconfirmedSave.current = true;
+      }
+      const vendorId = values.data.vendorId;
+      if (next.code === "VENDOR_UNAVAILABLE" && vendorId) {
+        setUnavailableVendors((current) => [...current, vendorId]);
+        router.refresh();
       }
       setProblem(next);
       setDetails(next.details ?? {});
@@ -138,6 +149,17 @@ export function ExpenseDrawer({ expense, events, today, context, onClose, onSave
               <option key={id} value={id}>{name}{archived ? " (archived)" : ""}</option>)}
           </select>
         </Field>
+        <Field name="vendorId" label="Related vendor (optional)" error={details.vendorId}>
+          <select id="vendorId" value={draft.vendorId} onChange={(event) => change("vendorId", event.currentTarget.value)}
+            {...errorAttributes("vendorId", details)}>
+            <option value="">No vendor</option>
+            {vendorUnavailable && <option value={draft.vendorId} disabled>Selected vendor is no longer available</option>}
+            {expense?.vendorId && !unavailableVendors.includes(expense.vendorId) && !vendors.some(({ id }) => id === expense.vendorId) &&
+              <option value={expense.vendorId}>Unavailable vendor</option>}
+            {vendors.filter(({ archived, id }) => !unavailableVendors.includes(id) && (!archived || expense?.vendorId === id)).map(({ id, name, archived }) =>
+              <option key={id} value={id}>{name}{archived ? " (archived)" : ""}</option>)}
+          </select>
+        </Field>
         <Field name="notes" label="Notes (optional)" error={details.notes}>
           <textarea id="notes" rows={3} maxLength={expenseNotesLimit} value={draft.notes}
             onChange={(event) => change("notes", event.currentTarget.value)} {...errorAttributes("notes", details)} />
@@ -149,7 +171,7 @@ export function ExpenseDrawer({ expense, events, today, context, onClose, onSave
       {problem?.status === 401 && <Link className={styles.secondary} href="/login" target="_blank" rel="noopener">Open sign-in in a new tab</Link>}
       <footer className={styles.formActions}>
         <button type="button" className={styles.secondary} disabled={busy} onClick={close}>{reloadNeeded ? "Back to expenses" : "Cancel"}</button>
-        <button type="submit" className={styles.primary} disabled={busy || Boolean(reloadNeeded)}>
+        <button type="submit" className={styles.primary} disabled={busy || Boolean(reloadNeeded) || vendorUnavailable}>
           {busy ? "Saving…" : problem && !problem.details ? "Retry save" : expense ? "Save changes" : "Add expense"}
         </button>
       </footer>

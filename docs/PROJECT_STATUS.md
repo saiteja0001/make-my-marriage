@@ -479,3 +479,67 @@ any pending integration work.
   editing, or deleting an expense, including after a lost create response
   was retried. Forward returns to the current ledger.
 - Vendor linking follows the My Vendors increment.
+
+## My Vendors directory — complete
+
+- Added the private vendor directory with search by vendor or contact name,
+  a category filter, pagination, and active and archived views.
+- Admins and Managers can create, view, edit, and archive vendors. The
+  responsive form handles contact details, an agreed cost in ₹, optional
+  notes, and multiple wedding events. Archived vendor details remain
+  available for reference.
+- The directory totals are based on active vendors and their event links.
+  The dashboard now shows the saved active-vendor count. Agreed costs are
+  stored as integer paise on the vendor record.
+- Passed lint, TypeScript, and the production build. Chrome checked
+  validation, draft discard, retry after a lost response, contact links,
+  search, category filtering, archived details, and the dashboard count.
+  Layouts were checked at widths from 320 to 1440 pixels.
+- Isolated API checks covered Admin and Manager access, wedding isolation,
+  exact paise totals, expense totals, archived event links, pagination,
+  literal search, and repeated or stale writes.
+- Closing after an unconfirmed save or archive refreshes the directory
+  and dashboard count. Directory reads use the page's membership and
+  wedding context, and a mismatch prompts the organiser to reopen My
+  Vendors. Edge checks with isolated MongoDB verified recovery after lost
+  responses, account switching, and dashboard totals on browser Back.
+- Chrome end-to-end QA verified that a mobile Manager can resume a vendor
+  edit after session expiry and sign-in. It also confirmed that closing
+  after a lost save or archive response refreshes the directory, and
+  browser Back shows the saved dashboard count after creating or archiving.
+- The dashboard and workspace menu use full navigation to My Vendors so
+  browser Back warns about an unsaved draft. Edge verified that staying
+  preserves the draft and that the dashboard count is current after Back
+  following a create or archive. The dashboard also refreshes when the
+  browser restores it from the Back/Forward cache. A simulated restoration
+  event verified that path because Edge fetched a fresh dashboard on Back.
+- Expense linking is tracked below. Vendor Discovery remains a separate increment.
+
+## Vendor links in Expenses — complete
+
+- Added the optional Related vendor field to expense creation and editing.
+  The ledger displays the saved vendor name and supports filtering by vendor
+  or by expenses with no vendor. The filtered subtotal covers all matching
+  rows across pages.
+- Existing links to archived vendors remain visible and editable. New links
+  require an active vendor from the current wedding. Saving a new link and
+  archiving that vendor are coordinated through a transaction.
+- Older expenses and their creation request keys remain compatible. Vendor
+  agreed costs stay on the vendor record, and expense totals use ledger
+  entries.
+- Passed lint, TypeScript, and the production build. Chrome checked vendor
+  selection, filtering, and keeping or clearing an archived link at widths
+  from 320 to 1440 pixels. API checks covered wedding isolation, archived
+  links, legacy request keys, exact totals, and no-vendor filtering.
+- Chrome QA also verified that a mobile Manager's vendor selection survives
+  session expiry and sign-in. The dashboard total was current on browser
+  Back after saving, and concurrent link and archive requests produced
+  consistent saved records in an isolated database.
+- Expenses uses the browser's discard confirmation when opened from the
+  dashboard or workspace sidebar. Chrome verified that staying keeps the
+  selected vendor and confirming navigation discards the draft.
+- When a save rejects a vendor archived in another tab, Expenses disables
+  that choice and refreshes the available vendors while keeping the draft.
+  Chrome verified that choosing a replacement or No vendor allows saving.
+  The expense vendor regression suite, lint, TypeScript, and the production
+  build passed.

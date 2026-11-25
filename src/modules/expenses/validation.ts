@@ -21,6 +21,7 @@ const fields = z.strictObject({
   expenseDate,
   category,
   eventId: expenseIdSchema.nullable().optional(),
+  vendorId: expenseIdSchema.nullable().optional(),
   notes: z.string().trim().max(expenseNotesLimit).nullable().optional(),
 });
 
@@ -31,6 +32,7 @@ export const expenseListSchema = z.strictObject({
   limit: z.string().regex(/^\d+$/).transform(Number).pipe(z.number().int().min(1).max(100)).optional().default(20),
   category: category.optional(),
   eventId: z.union([expenseIdSchema, z.literal("none")]).optional(),
+  vendorId: z.union([expenseIdSchema, z.literal("none")]).optional(),
   from: expenseDate.optional(),
   to: expenseDate.optional(),
 }).refine(({ from, to }) => !from || !to || from <= to, { path: ["to"], message: "End date must be on or after the start date." });

@@ -7,10 +7,12 @@ import { expenseSummary } from "@/modules/expenses/service";
 import { getGuestOverview } from "@/modules/guests/service";
 import { taskDayStart } from "@/modules/tasks/due-date";
 import { getTaskOverview } from "@/modules/tasks/service";
+import { activeVendorCount } from "@/modules/vendors/service";
 import { getWeddingForUser } from "@/modules/wedding/service";
 import { daysUntilWedding, formatWeddingDate, weddingLocalDate } from "@/modules/wedding/wedding-date";
 import { getSignedInUser } from "@/server/auth/session";
 import { WorkspaceShell } from "./_components/workspace-shell";
+import { DashboardHistoryRefresh } from "./dashboard-history-refresh";
 import { PlanningPreview } from "./planning-preview";
 import { WeddingCountdown } from "./wedding-countdown";
 import { WeddingUpdated } from "./wedding-updated";
@@ -27,16 +29,18 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
   const { membership, wedding } = current;
   const now = new Date();
   const dayStart = taskDayStart(weddingLocalDate(now, wedding.timeZone), wedding.timeZone);
-  const [events, tasks, guests, expenses] = await Promise.all([
+  const [events, tasks, guests, expenses, vendors] = await Promise.all([
     getEventOverview(wedding.id, now),
     getTaskOverview(wedding.id, dayStart ? new Date(dayStart) : now),
     getGuestOverview(wedding.id),
     expenseSummary(wedding.id).catch(() => null),
+    activeVendorCount(wedding.id).catch(() => undefined),
   ]);
   const couple = `${wedding.brideName} & ${wedding.groomName}`;
   return (
     <WorkspaceShell currentPath="/app" member={{ name: user.name, role: membership.role }}>
       <main className={styles.overview}>
+        <DashboardHistoryRefresh />
         {(await searchParams).updated === "1" && <WeddingUpdated />}
         <section className={styles.hero} aria-labelledby="wedding-heading">
           <div className={styles.heroDetails}>
@@ -75,7 +79,8 @@ export default async function WorkspacePage({ searchParams }: { searchParams: Pr
             <p className={styles.timeZone}>{wedding.timeZone}</p>
           </div>
         </section>
-        <PlanningPreview events={events} tasks={tasks} guests={guests} expenseTotal={expenses?.totalExpensePaise} timeZone={wedding.timeZone} />
+        <PlanningPreview events={events} tasks={tasks} guests={guests} expenseTotal={expenses?.totalExpensePaise}
+          vendorCount={vendors} timeZone={wedding.timeZone} />
       </main>
     </WorkspaceShell>
   );

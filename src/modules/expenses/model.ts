@@ -1,5 +1,5 @@
 import "server-only";
-import { model, models, Schema, type Model, type Types } from "mongoose";
+import { deleteModel, model, models, Schema, type Model, type Types } from "mongoose";
 import { expenseCategories, expenseMaxPaise, expenseNotesLimit, expenseTitleLimit, type ExpenseCategory } from "./validation";
 
 export type ExpenseRecord = {
@@ -12,6 +12,7 @@ export type ExpenseRecord = {
   expenseDate: string;
   category: ExpenseCategory;
   eventId?: Types.ObjectId;
+  vendorId?: Types.ObjectId;
   notes?: string;
   __v?: number;
 };
@@ -25,12 +26,19 @@ const schema = new Schema<ExpenseRecord>({
   expenseDate: { type: String, required: true },
   category: { type: String, required: true, enum: Object.keys(expenseCategories) },
   eventId: Schema.Types.ObjectId,
+  vendorId: Schema.Types.ObjectId,
   notes: { type: String, maxlength: expenseNotesLimit },
 }, { timestamps: true, autoCreate: false, autoIndex: false });
 
 schema.index({ weddingId: 1, expenseDate: -1, _id: -1 });
 schema.index({ weddingId: 1, category: 1, expenseDate: -1 });
 schema.index({ weddingId: 1, eventId: 1, expenseDate: -1 });
+schema.index({ weddingId: 1, vendorId: 1, expenseDate: -1 });
+
+// A dev reload must take the new vendor path before Mongoose casts expense writes.
+if (process.env.NODE_ENV === "development" && models.WeddingExpense && !models.WeddingExpense.schema.path("vendorId")) {
+  deleteModel("WeddingExpense");
+}
 export const WeddingExpense: Model<ExpenseRecord> = models.WeddingExpense ?? model("WeddingExpense", schema, "expenses");
 
 export type ExpenseCreationRecord = {

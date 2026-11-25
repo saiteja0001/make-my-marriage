@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { getEventOverview } from "@/modules/events/service";
 import { formatEventDay, formatEventTimeRange } from "@/modules/events/wedding-time";
-import { formatExpenseAmount } from "@/modules/expenses/money";
+import { formatInr as formatExpenseAmount } from "@/lib/inr";
 import type { getGuestOverview } from "@/modules/guests/service";
 import { taskDueDay } from "@/modules/tasks/due-date";
 import type { getTaskOverview } from "@/modules/tasks/service";
@@ -10,11 +10,12 @@ import { formatWeddingDate } from "@/modules/wedding/wedding-date";
 import { WorkspaceFormLink } from "./_components/workspace-form-link";
 import styles from "./dashboard.module.css";
 
-export function PlanningPreview({ events, tasks, guests, expenseTotal, timeZone }: {
+export function PlanningPreview({ events, tasks, guests, expenseTotal, vendorCount, timeZone }: {
   events: Awaited<ReturnType<typeof getEventOverview>>;
   tasks: Awaited<ReturnType<typeof getTaskOverview>>;
   guests: Awaited<ReturnType<typeof getGuestOverview>>;
   expenseTotal?: number;
+  vendorCount?: number;
   timeZone: string;
 }) {
   return (
@@ -47,12 +48,12 @@ export function PlanningPreview({ events, tasks, guests, expenseTotal, timeZone 
           <div className={styles.metric}>
             <dt>Total expenses</dt>
             <dd>{expenseTotal === undefined ? "Unavailable" : formatExpenseAmount(expenseTotal)}
-              <Link href="/app/expenses" className={styles.metricLink}>View expenses</Link>
+              <WorkspaceFormLink href="/app/expenses" className={styles.metricLink}>View expenses</WorkspaceFormLink>
             </dd>
           </div>
           <div className={styles.metric}>
-            <dt>Vendors</dt>
-            <dd>8<span className={styles.metricSample}>Sample data</span></dd>
+            <dt>Active vendors</dt>
+            <dd>{vendorCount?.toLocaleString("en-IN") ?? "Unavailable"}<WorkspaceFormLink href="/app/vendors" className={styles.metricLink}>View vendors</WorkspaceFormLink></dd>
           </div>
         </dl>
       </section>

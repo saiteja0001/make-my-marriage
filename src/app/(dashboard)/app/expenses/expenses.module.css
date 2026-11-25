@@ -47,7 +47,7 @@
 .breakdownList progress::-webkit-progress-value { background: var(--burgundy); }
 .breakdownList progress::-moz-progress-bar { background: var(--burgundy); }
 .filters {
-  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
   align-items: end; gap: 0.55rem; padding: 0.8rem; margin-block: 0.8rem;
 }
 .filterField, .field { display: grid; gap: 0.35rem; min-width: 0; font-size: 0.875rem; font-weight: 700; }
@@ -65,14 +65,14 @@
 .filtered strong { font-size: 1.15rem; overflow-wrap: anywhere; min-width: 0; }
 .ledger { overflow: hidden; }
 .ledgerHead, .row {
-  display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr) minmax(0, 1.1fr) minmax(0, 0.9fr) minmax(0, 1fr) minmax(5.5rem, 0.8fr);
+  display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.95fr) minmax(0, 0.95fr) minmax(0, 1fr) minmax(0, 0.92fr) minmax(0, 0.95fr) minmax(5.5rem, 0.8fr);
   align-items: start; gap: 0.55rem; padding: 0.72rem clamp(0.65rem, 1.5vw, 1.15rem);
 }
 .ledgerHead { font-size: 0.72rem; text-transform: uppercase; font-weight: 700; letter-spacing: 0.035em; color: var(--muted); background: #f4efea; }
 .row + .row { border-top: 1px solid var(--line); }
 .row > * { min-width: 0; overflow-wrap: anywhere; }
 .expenseName h3 { font-weight: 750; }
-.expenseName p, .event, .date { color: var(--muted); font-size: 0.85rem; }
+.expenseName p, .event, .vendor, .date { color: var(--muted); font-size: 0.85rem; }
 .expenseName p { margin-top: 0.25rem; white-space: pre-wrap; }
 .category { align-self: start; }
 .category > span { display: inline-block; border-radius: 0.65rem; padding: 0.25rem 0.55rem; background: var(--blush); color: var(--burgundy); font-size: 0.75rem; font-weight: 700; }
@@ -120,13 +120,14 @@
   .ledgerHead { display: none; }
   .row, .row + .row {
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    grid-template-areas: "name amount" "category event" "date actions";
+    grid-template-areas: "name amount" "category event" "vendor vendor" "date actions";
     margin-bottom: 0.55rem; padding: 0.85rem; border: 1px solid var(--line); border-radius: 0.75rem; background: white;
   }
   .expenseName { grid-area: name; }
   .amount { grid-area: amount; justify-self: end; text-align: right; }
   .category { grid-area: category; }
   .event { grid-area: event; text-align: right; }
+  .vendor { grid-area: vendor; }
   .date { grid-area: date; align-self: center; }
   .rowActions { grid-area: actions; justify-content: flex-end; }
   .pagination { border-radius: 0.65rem; }
